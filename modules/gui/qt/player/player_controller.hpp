@@ -170,6 +170,10 @@ public:
     Q_PROPERTY(int subtitleDelayMS READ getSubtitleDelayMS WRITE setSubtitleDelayMS NOTIFY subtitleDelayChanged FINAL)
     Q_PROPERTY(int secondarySubtitleDelayMS READ getSecondarySubtitleDelayMS WRITE setSecondarySubtitleDelayMS NOTIFY secondarySubtitleDelayChanged FINAL)
     Q_PROPERTY(float subtitleFPS READ getSubtitleFPS WRITE setSubtitleFPS NOTIFY subtitleFPSChanged FINAL)
+    // Size of the text of the subtitles in percent, and how far from the
+    // bottom of the video they are in pixels. Both are kept as options.
+    Q_PROPERTY(int subtitleTextScale READ getSubtitleTextScale WRITE setSubtitleTextScale NOTIFY subtitleTextScaleChanged FINAL)
+    Q_PROPERTY(int subtitleMargin READ getSubtitleMargin WRITE setSubtitleMargin NOTIFY subtitleMarginChanged FINAL)
     Q_PROPERTY(TimedText currentLyric READ getCurrentLyric NOTIFY currentLyricChanged FINAL)
     Q_PROPERTY(bool hasLyrics READ hasLyrics NOTIFY hasLyricsChanged FINAL)
     Q_PROPERTY(QList<TimedText> syltLyrics READ getSyltLyrics NOTIFY syltLyricsChanged FINAL)
@@ -364,6 +368,34 @@ public slots:
     float getSubtitleFPS( ) const;
     void setSubtitleFPS( float );
 
+    /**
+     * Turn an audio filter of what plays on or off, by the name of its
+     * module, and hand a setting to the audio output that plays if it has
+     * it. Neither is kept: that is what the options are for.
+     */
+    Q_INVOKABLE void enableAudioFilter( const QString& name, bool enable );
+    Q_INVOKABLE void applyAudioSetting( const QString& name, const QVariant& value );
+
+    /**
+     * Make the equalizer use one of its presets, by its name. What the
+     * equalizer reads are the bands and the gain of the preset, it does
+     * not load without them: they become options along with the name.
+     */
+    Q_INVOKABLE void setEqualizerPreset( const QString& name );
+
+    /**
+     * A variable of the video that plays, as the list of its filters or a
+     * setting of a filter that runs. Nothing happens for one that is not
+     * there, which is the case for the settings of a filter that does not
+     * run.
+     */
+    Q_INVOKABLE QVariant videoSetting( const QString& name ) const;
+    Q_INVOKABLE void applyVideoSetting( const QString& name, const QVariant& value );
+    int getSubtitleTextScale() const;
+    void setSubtitleTextScale( int );
+    int getSubtitleMargin() const;
+    void setSubtitleMargin( int );
+
     //title/chapters/menu
     TitleListModel* getTitles();
     ChapterListModel* getChapters();
@@ -475,6 +507,8 @@ signals:
     void subtitleDelayChanged(VLCDuration);
     void secondarySubtitleDelayChanged(VLCDuration);
     void subtitleFPSChanged(float);
+    void subtitleTextScaleChanged();
+    void subtitleMarginChanged();
 
     //title/chapters/menu
     void hasTitlesChanged( bool );

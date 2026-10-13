@@ -22,6 +22,9 @@
 
 #include "dialogs/extensions/extensions_manager.hpp"
 #include "player_controller.hpp"
+
+// The presets of the equalizer, which only the equalizer and its settings know
+#include "../../../audio_filter/equalizer_presets.h"
 #include "player_controller_p.hpp"
 #include "util/shared_input_item.hpp"
 
@@ -1590,6 +1593,169 @@ void PlayerController::setSubtitleFPS(float fps)
     if( !d->isCurrentItemSynced() )
         return;
     vlc_player_SetAssociatedSubsFPS( d->m_player, fps );
+}
+
+QVariant PlayerController::videoSetting(const QString& name) const
+{
+    const QByteArray key = name.toUtf8();
+
+    for ( const auto& vout : getVouts() )
+    {
+        switch ( var_Type( vout.get(), key.constData() ) & VLC_VAR_CLASS )
+        {
+        case VLC_VAR_BOOL:
+            return var_GetBool( vout.get(), key.constData() );
+        case VLC_VAR_INTEGER:
+            return QVariant::fromValue<qlonglong>( var_GetInteger( vout.get(), key.constData() ) );
+        case VLC_VAR_FLOAT:
+            return var_GetFloat( vout.get(), key.constData() );
+        case VLC_VAR_STRING:
+        {
+            char* value = var_GetString( vout.get(), key.constData() );
+            const QString ret = qfu( value );
+            free( value );
+            return ret;
+        }
+        default:
+            return {};
+        }
+    }
+    return {};
+}
+
+void PlayerController::applyVideoSetting(const QString& name, const QVariant& value)
+{
+    const QByteArray key = name.toUtf8();
+
+    for ( const auto& vout : getVouts() )
+    {
+        switch ( var_Type( vout.get(), key.constData() ) & VLC_VAR_CLASS )
+        {
+        case VLC_VAR_BOOL:
+            var_SetBool( vout.get(), key.constData(), value.toBool() );
+            break;
+        case VLC_VAR_INTEGER:
+            var_SetInteger( vout.get(), key.constData(), value.toLongLong() );
+            break;
+        case VLC_VAR_FLOAT:
+            var_SetFloat( vout.get(), key.constData(), value.toFloat() );
+            break;
+        case VLC_VAR_STRING:
+            var_SetString( vout.get(), key.constData(), value.toString().toUtf8().constData() );
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+void PlayerController::setEqualizerPreset(const QString& name)
+{
+    const QByteArray key = name.toUtf8();
+
+    for ( const eqz_preset_t& preset : eqz_preset_10b )
+    {
+        if ( key != preset.psz_name )
+            continue;
+
+        QStringList bands;
+        for ( int i = 0; i < preset.i_band; ++i )
+            bands += QString::number( preset.f_amp[i], 'f', 1 );
+        const QByteArray bandsValue = bands.join( ' ' ).toUtf8();
+
+        config_PutPsz( "equalizer-preset", preset.psz_name );
+        config_PutPsz( "equalizer-bands", bandsValue.constData() );
+        config_PutFloat( "equalizer-preamp", preset.f_preamp );
+
+        // An equalizer that is loaded listens to these on the audio output.
+        // One that is not takes the options when it loads.
+        SharedAOut aout = getAout();
+        if ( aout && var_Type( aout.get(), "equalizer-bands" ) != 0 )
+        {
+            var_SetString( aout.get(), "equalizer-preset", preset.psz_name );
+            var_SetString( aout.get(), "equalizer-bands", bandsValue.constData() );
+            var_SetFloat( aout.get(), "equalizer-preamp", preset.f_preamp );
+        }
+        return;
+    }
+}
+
+void PlayerController::enableAudioFilter(const QString& name, bool enable)
+{
+    Q_D(PlayerController);
+    vlc_player_aout_EnableFilter( d->m_player, qtu(name), enable );
+}
+
+void PlayerController::applyAudioSetting(const QString& name, const QVariant& value)
+{
+    SharedAOut aout = getAout();
+    if ( !aout )
+        return;
+
+    const QByteArray key = name.toUtf8();
+
+    // A filter that is not loaded has not created its settings there.
+    switch ( var_Type( aout.get(), key.constData() ) & VLC_VAR_CLASS )
+    {
+    case VLC_VAR_BOOL:
+        var_SetBool( aout.get(), key.constData(), value.toBool() );
+        break;
+    case VLC_VAR_INTEGER:
+        var_SetInteger( aout.get(), key.constData(), value.toLongLong() );
+        break;
+    case VLC_VAR_FLOAT:
+        var_SetFloat( aout.get(), key.constData(), value.toFloat() );
+        break;
+    case VLC_VAR_STRING:
+        var_SetString( aout.get(), key.constData(), value.toString().toUtf8().constData() );
+        break;
+    default:
+        break;
+    }
+}
+
+int PlayerController::getSubtitleTextScale() const
+{
+    Q_D(const PlayerController);
+    vlc_player_locker lock{ d->m_player };
+    return vlc_player_GetSubtitleTextScale( d->m_player );
+}
+
+void PlayerController::setSubtitleTextScale(int scale)
+{
+    Q_D(PlayerController);
+    {
+        vlc_player_locker lock{ d->m_player };
+        if ( vlc_player_GetSubtitleTextScale( d->m_player ) == (unsigned)scale )
+            return;
+        vlc_player_SetSubtitleTextScale( d->m_player, scale );
+    }
+    // The text renderer of a video output looks the scale up from there,
+    // and does not get to the player.
+    for ( const auto& vout : getVouts() )
+    {
+        if ( var_Type( vout.get(), "sub-text-scale" ) == 0 )
+            var_Create( vout.get(), "sub-text-scale", VLC_VAR_INTEGER );
+        var_SetInteger( vout.get(), "sub-text-scale", scale );
+    }
+    config_PutInt( "sub-text-scale", scale );
+    emit subtitleTextScaleChanged();
+}
+
+int PlayerController::getSubtitleMargin() const
+{
+    return config_GetInt( "sub-margin" );
+}
+
+void PlayerController::setSubtitleMargin(int margin)
+{
+    if ( config_GetInt( "sub-margin" ) == margin )
+        return;
+
+    config_PutInt( "sub-margin", margin );
+    for ( const auto& vout : getVouts() )
+        var_SetInteger( vout.get(), "sub-margin", margin );
+    emit subtitleMarginChanged();
 }
 
 //TITLE/CHAPTER/MENU

@@ -15,8 +15,9 @@ once the part runs in the Windows build and was looked at there.
 - [x] Tracks panel (video, audio and output device, subtitles) and its two buttons
 - [ ] Settings sidebar, opened by the settings button and by "Show Preferences"
   - [x] Panel with its four tabs, delays and speeds
-  - [ ] Subtitles: delay, font, size, outline, position, default track
-  - [ ] Audio: delay, default track, equalizer and filters
+  - [x] Subtitles: delay, font, colors, size, outline, position, default track
+  - [x] Audio: delay, default track, equalizer preset, filter switches, pitch
+  - [ ] Audio: stereo mode, equalizer bands, settings of each filter
   - [ ] Video: flip, rotate, zoom, crop, aspect ratio, colors
   - [ ] Playback: speed, sleep timer, what the bar shows
   - [ ] Presets for a show
