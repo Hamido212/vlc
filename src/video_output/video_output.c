@@ -1008,6 +1008,31 @@ static void ChangeFilters(vout_thread_sys_t *vout)
         }
     }
 
+    /* A previous filter may have changed the display's source chroma. When
+     * the chain returns to the original format, restore the display and pool
+     * too, including when a failed converter caused the filters to be removed. */
+    const es_format_t *fmt_out = filter_chain_GetFmtOut(sys->filter.chain_interactive);
+    if (es_format_IsSimilar(fmt_out, &fmt_target) &&
+        !video_format_IsSimilar(sys->display->source, &fmt_target.video))
+    {
+        picture_pool_t *pool = picture_pool_NewFromFormat(&fmt_target.video,
+                                                         FILTER_POOL_SIZE);
+        if (pool != NULL)
+        {
+            if (vout_SetDisplayFormat(sys->display, &fmt_target.video,
+                                      vctx_target) == VLC_SUCCESS)
+            {
+                picture_pool_Release(sys->private_pool);
+                sys->private_pool = pool;
+            }
+            else
+            {
+                picture_pool_Release(pool);
+                msg_Err(&vout->obj, "Failed to restore the display format after changing filters");
+            }
+        }
+    }
+
     es_format_Clean(&fmt_target);
 
     sys->filter.changed = false;

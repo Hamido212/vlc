@@ -19,6 +19,11 @@ once the part runs in the Windows build and was looked at there.
   - [x] Audio: delay, default track, equalizer preset, filter switches, pitch
   - [ ] Audio: stereo mode, equalizer bands, settings of each filter
   - [ ] Video: flip, rotate, zoom, crop, aspect ratio, colors
+    - [x] Negate Colors: visible activation and clean restoration on D3D11
+    - [x] Image Adjust: live brightness slider and clean restoration
+    - [x] Pixel crop fields: Top and Left changes and restoration
+    - [ ] Flip and rotation with hardware decoding
+    - [ ] Renderer list in the Video tab
   - [ ] Playback: speed, sleep timer, what the bar shows
   - [ ] Presets for a show
 - [ ] Queue panel

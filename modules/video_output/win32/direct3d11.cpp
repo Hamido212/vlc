@@ -189,6 +189,7 @@ static int  Direct3D11Open (vout_display_t *, video_format_t *, vlc_video_contex
 static void Direct3D11Close(vout_display_t *);
 
 static int SetupOutputFormat(vout_display_t *, video_format_t *, vlc_video_context *, video_format_t *quad);
+static const d3d_format_t *SelectOutputFormat(vout_display_t *, const video_format_t *, vlc_video_context *);
 static int  Direct3D11CreateFormatResources (vout_display_t *, const video_format_t *);
 static int  Direct3D11CreateGenericResources(vout_display_t *);
 static void Direct3D11DestroyResources(vout_display_t *);
@@ -528,6 +529,15 @@ static int ChangeSourceProjection(vout_display_t *vd, video_projection_mode_t pr
 static int UpdateFormat(vout_display_t *vd, const video_format_t *fmtp, vlc_video_context *vctx)
 {
     vout_display_sys_t *sys = static_cast<vout_display_sys_t *>(vd->sys);
+
+    /* update_format must accept the incoming chroma without a converter.
+     * In particular, planar CPU pictures cannot be uploaded as NV12. Check
+     * before changing resources so the core can append a converter instead. */
+    const d3d_format_t *texture_format = SelectOutputFormat(vd, fmtp, vctx);
+    if (texture_format == nullptr ||
+        (!is_d3d11_opaque(fmtp->i_chroma) &&
+         texture_format->fourcc != fmtp->i_chroma))
+        return VLC_EGENERIC;
 
     video_format_t fmt;
     video_format_Copy(&fmt, fmtp);
