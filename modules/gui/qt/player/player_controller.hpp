@@ -382,6 +382,15 @@ public slots:
      * not load without them: they become options along with the name.
      */
     Q_INVOKABLE void setEqualizerPreset( const QString& name );
+
+    /**
+     * A variable of the video that plays, as the list of its filters or a
+     * setting of a filter that runs. Nothing happens for one that is not
+     * there, which is the case for the settings of a filter that does not
+     * run.
+     */
+    Q_INVOKABLE QVariant videoSetting( const QString& name ) const;
+    Q_INVOKABLE void applyVideoSetting( const QString& name, const QVariant& value );
     int getSubtitleTextScale() const;
     void setSubtitleTextScale( int );
     int getSubtitleMargin() const;

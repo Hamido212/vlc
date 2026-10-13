@@ -1595,6 +1595,60 @@ void PlayerController::setSubtitleFPS(float fps)
     vlc_player_SetAssociatedSubsFPS( d->m_player, fps );
 }
 
+QVariant PlayerController::videoSetting(const QString& name) const
+{
+    const QByteArray key = name.toUtf8();
+
+    for ( const auto& vout : getVouts() )
+    {
+        switch ( var_Type( vout.get(), key.constData() ) & VLC_VAR_CLASS )
+        {
+        case VLC_VAR_BOOL:
+            return var_GetBool( vout.get(), key.constData() );
+        case VLC_VAR_INTEGER:
+            return QVariant::fromValue<qlonglong>( var_GetInteger( vout.get(), key.constData() ) );
+        case VLC_VAR_FLOAT:
+            return var_GetFloat( vout.get(), key.constData() );
+        case VLC_VAR_STRING:
+        {
+            char* value = var_GetString( vout.get(), key.constData() );
+            const QString ret = qfu( value );
+            free( value );
+            return ret;
+        }
+        default:
+            return {};
+        }
+    }
+    return {};
+}
+
+void PlayerController::applyVideoSetting(const QString& name, const QVariant& value)
+{
+    const QByteArray key = name.toUtf8();
+
+    for ( const auto& vout : getVouts() )
+    {
+        switch ( var_Type( vout.get(), key.constData() ) & VLC_VAR_CLASS )
+        {
+        case VLC_VAR_BOOL:
+            var_SetBool( vout.get(), key.constData(), value.toBool() );
+            break;
+        case VLC_VAR_INTEGER:
+            var_SetInteger( vout.get(), key.constData(), value.toLongLong() );
+            break;
+        case VLC_VAR_FLOAT:
+            var_SetFloat( vout.get(), key.constData(), value.toFloat() );
+            break;
+        case VLC_VAR_STRING:
+            var_SetString( vout.get(), key.constData(), value.toString().toUtf8().constData() );
+            break;
+        default:
+            break;
+        }
+    }
+}
+
 void PlayerController::setEqualizerPreset(const QString& name)
 {
     const QByteArray key = name.toUtf8();
