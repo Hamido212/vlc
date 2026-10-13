@@ -39,3 +39,11 @@ Inspect its three window images as well as the numeric result.
 `test-transform.ps1` checks consecutive horizontal/vertical flips, 90/180/270
 degree rotations, and restoration to 0/None. It checks bar colors, portrait
 placement, and the timestamp's position; inspect its images as well.
+
+`test-sleep-timer.ps1` sets a five-second timer, closes the settings panel,
+and checks that the video's embedded timestamp stops advancing after expiry.
+Inspect `sleep-finished.png` to verify that the timer returned to Off.
+
+For audio-only visualizer checks, run `create-test-audio.ps1` and supply
+`Videos/test-tone.wav` as `-Media`, with `-VlcArgs '--audio','--aout=dummy','--repeat'`.
+The dummy output keeps the test silent while the visualizer receives samples.

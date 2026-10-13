@@ -138,6 +138,8 @@ public:
     Q_PROPERTY(QString name READ getName NOTIFY nameChanged FINAL)
     Q_PROPERTY(float buffering READ getBuffering  NOTIFY bufferingChanged FINAL)
     Q_PROPERTY(float rate READ getRate WRITE setRate NOTIFY rateChanged FINAL)
+    Q_PROPERTY(int sleepTimerDuration READ getSleepTimerDuration NOTIFY sleepTimerChanged FINAL)
+    Q_PROPERTY(int sleepTimerRemaining READ getSleepTimerRemaining NOTIFY sleepTimerChanged FINAL)
     Q_PROPERTY(QUrl url READ getUrl NOTIFY inputChanged FINAL)
 
     Q_PROPERTY(VLCTime time READ getTime WRITE setTime NOTIFY timeChanged FINAL)
@@ -327,6 +329,9 @@ public slots:
     float getBuffering() const;
     float getRate() const;
     void setRate( float );
+    int getSleepTimerDuration() const;
+    int getSleepTimerRemaining() const;
+    Q_INVOKABLE void setSleepTimer( int seconds );
     VLCTime getTime() const;
     void setTime(VLCTime);
     VLCDuration getRemainingTime() const;
@@ -479,6 +484,7 @@ public slots:
 
 signals:
     void seekThumbnailChanged();
+    void sleepTimerChanged();
 
     //playback
     void playingStateChanged( PlayingState state );

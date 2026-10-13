@@ -36,6 +36,7 @@
 #include <vlc_cxx_helpers.hpp>
 #include <vlc_vout.h>
 #include <vlc_preparser.h>
+#include <vlc_playlist.h>
 
 #include <QFile>
 #include <QDir>
@@ -1304,6 +1305,32 @@ PlayerController::PlayerController( qt_intf_t *_p_intf )
 {
     connect( &d_ptr->m_position_timer, &QTimer::timeout, this, &PlayerController::updatePositionFromTimer );
     connect( &d_ptr->m_time_timer, &QTimer::timeout, this, &PlayerController::updateTimeFromTimer );
+    d_ptr->m_sleep_timer.setInterval(1000);
+    connect( &d_ptr->m_sleep_timer, &QTimer::timeout, this, [this]() {
+        Q_D(PlayerController);
+        // A monotonic deadline keeps elapsed time independent of UI delays
+        // and changes to playback speed or the current media.
+        d->m_sleepTimerRemaining = (d->m_sleep_deadline.remainingTime() + 999) / 1000;
+        if (d->m_sleepTimerRemaining == 0)
+        {
+            d->m_sleep_timer.stop();
+            d->m_sleepTimerDuration = 0;
+            vlc_player_locker lock{ d->m_player };
+            if (vlc_player_CanPause(d->m_player))
+            {
+                vlc_player_Pause(d->m_player);
+                msg_Dbg(d->p_intf, "Sleep timer expired, pausing playback");
+            }
+            else
+            {
+                // The playlist shares the player lock. Stop it as well so
+                // an unpausable stream does not advance to the next item.
+                vlc_playlist_Stop(d->p_intf->p_playlist);
+                msg_Dbg(d->p_intf, "Sleep timer expired, stopping playback");
+            }
+        }
+        emit sleepTimerChanged();
+    });
 }
 
 PlayerController::~PlayerController()
@@ -1370,6 +1397,34 @@ void PlayerController::setRate( float new_rate )
         d->m_rate = new_rate;
         emit rateChanged(d->m_rate);
     }
+}
+
+int PlayerController::getSleepTimerDuration() const
+{
+    Q_D(const PlayerController);
+    return d->m_sleepTimerDuration;
+}
+
+int PlayerController::getSleepTimerRemaining() const
+{
+    Q_D(const PlayerController);
+    return d->m_sleepTimerRemaining;
+}
+
+void PlayerController::setSleepTimer(int seconds)
+{
+    Q_D(PlayerController);
+    seconds = std::clamp(seconds, 0, 24 * 60 * 60);
+    d->m_sleepTimerDuration = seconds;
+    d->m_sleepTimerRemaining = seconds;
+    if (seconds == 0)
+        d->m_sleep_timer.stop();
+    else
+    {
+        d->m_sleep_deadline = QDeadlineTimer(seconds * 1000, Qt::PreciseTimer);
+        d->m_sleep_timer.start();
+    }
+    emit sleepTimerChanged();
 }
 
 void PlayerController::slower()

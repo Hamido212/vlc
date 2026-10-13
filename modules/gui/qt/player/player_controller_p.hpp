@@ -27,6 +27,7 @@
 #include "util/renderer_manager.hpp"
 
 #include <QTimer>
+#include <QDeadlineTimer>
 #include <QUrl>
 #include <QByteArray>
 #include <QPair>
@@ -165,6 +166,10 @@ public:
     bool seeking = false;
     QTimer m_position_timer;
     QTimer m_time_timer;
+    QTimer m_sleep_timer;
+    QDeadlineTimer m_sleep_deadline;
+    int m_sleepTimerDuration = 0;
+    int m_sleepTimerRemaining = 0;
 
     //title/chapters/menu
     TitleListModel m_titleList;

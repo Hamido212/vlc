@@ -154,25 +154,116 @@ PlayerPanel {
         return qsTr("%1 s").arg((ms / 1000).toFixed(3))
     }
 
+    // The sleep timer pauses what plays when its time is up. It is the
+    // player's and goes on with this panel closed. These are the times it is
+    // offered for, in seconds; any other time is typed.
+    readonly property var _sleepPresets: [900, 1800, 2700, 3600, 5400]
+    property bool _customSleep: false
+
+    function _timerText(seconds: int) : string {
+        return [Math.floor(seconds / 3600), Math.floor(seconds / 60) % 60, seconds % 60]
+            .map(value => String(value).padStart(2, "0")).join(":")
+    }
+
+    // The seconds of a time typed as "h:mm:ss", as "m:ss" or as minutes,
+    // -1 if it is none of these.
+    function _timerSeconds(text: string) : int {
+        const parts = text.trim().split(":")
+        if (parts.length > 3 || !parts.every(part => /^\d{1,3}$/.test(part)))
+            return -1
+
+        if (parts.length === 1)
+            return Number(parts[0]) * 60
+
+        return parts.reduce((seconds, part) => seconds * 60 + Number(part), 0)
+    }
+
+    Connections {
+        target: Player
+
+        function onSleepTimerChanged() {
+            if (Player.sleepTimerDuration === 0)
+                root._customSleep = false
+        }
+    }
+
     TabPage {
         Group {
-            title: qsTr("Speed")
+            ToggleSetting {
+                title: qsTr("Reverse")
+
+                // Few things can be played backwards.
+                enabled: Player.rewindable
+
+                checked: (Player.rate < 0)
+                onToggled: Player.reverse()
+            }
+
+            ChoiceSetting {
+                title: qsTr("Sleep Timer")
+
+                options: [{ value: 0, text: qsTr("Off") }]
+                    .concat(root._sleepPresets.map(seconds => ({ value: seconds, text: qsTr("%1 min").arg(seconds / 60) })))
+                    .concat([{ value: -1, text: qsTr("Custom") }])
+
+                value: root._customSleep ? -1 : Player.sleepTimerDuration
+
+                // While the timer runs, the time that is left
+                currentText: (Player.sleepTimerRemaining > 0) ? root._timerText(Player.sleepTimerRemaining)
+                                                              : ""
+
+                onChosen: (value) => {
+                    root._customSleep = (value === -1)
+
+                    if (value >= 0)
+                        Player.setSleepTimer(value)
+                }
+            }
+
+            FieldSetting {
+                title: qsTr("Duration")
+
+                visible: root._customSleep
+
+                placeholder: qsTr("hh:mm:ss")
+                text: (Player.sleepTimerDuration > 0) ? root._timerText(Player.sleepTimerDuration) : ""
+
+                onEdited: (text) => {
+                    // The field is also left when it goes away with the
+                    // timer: that is not asking for the timer again.
+                    if (!root._customSleep)
+                        return
+
+                    const seconds = root._timerSeconds(text)
+                    if (seconds >= 0 && seconds !== Player.sleepTimerDuration)
+                        Player.setSleepTimer(seconds)
+                }
+            }
+
+            ModelChoiceSetting {
+                title: qsTr("Audio Visualizer")
+
+                // The visualizers are those of the audio output, there are
+                // none without one.
+                enabled: (options.length > 0)
+                placeholderText: qsTr("Unavailable")
+
+                model: Player.audioVisualization
+            }
 
             SliderSetting {
-                title: qsTr("Playback Speed")
-                valueText: qsTr("%1x").arg(Player.rate.toFixed(2))
+                title: qsTr("Speed")
+                valueText: qsTr("%1x").arg(Number(Math.abs(Player.rate).toFixed(2)))
 
-                // A speed is a ratio: the slider is in powers of two, which
-                // puts the normal speed in its middle.
-                from: -2
+                from: 0.25
                 to: 2
-                origin: 0
                 stepSize: 0.05
+                ticks: 8
 
-                value: Math.log2(Player.rate)
-                onMoved: (value) => { Player.rate = Math.pow(2, value) }
+                value: Math.abs(Player.rate)
+                onMoved: (value) => { Player.rate = (Player.rate < 0) ? -value : value }
 
-                scaleLabels: [qsTr("0.25x"), qsTr("1x"), qsTr("4x")]
+                scaleLabels: ["0.25", "0.5", "0.75", "1", "1.25", "1.5", "1.75", "2"]
             }
         }
     }
@@ -1069,12 +1160,12 @@ PlayerPanel {
         }
     }
 
-    // Settings that belong together, under a title. A line sets a group apart
-    // from the one before it.
+    // Settings that belong together, under a title if they have one. A line
+    // sets a group apart from the one before it.
     component Group: Column {
         id: group
 
-        required property string title
+        property string title: ""
 
         // Something to know about the settings of the group
         property string note: ""
@@ -1094,6 +1185,8 @@ PlayerPanel {
         Item {
             width: parent.width
             height: VLCStyle.dp(39, VLCStyle.scale)
+
+            visible: (group.title !== "")
 
             T.Label {
                 x: VLCStyle.margin_large
@@ -1191,6 +1284,8 @@ PlayerPanel {
             width: VLCStyle.dp(68, VLCStyle.scale)
             height: VLCStyle.dp(32, VLCStyle.scale)
 
+            opacity: enabled ? 1.0 : 0.4
+
             Accessible.role: Accessible.CheckBox
             Accessible.name: toggle.title
             Accessible.checkable: true
@@ -1266,9 +1361,17 @@ PlayerPanel {
         // Bound to what the setting is, chosen() says what was asked for.
         property var value
 
+        // What the field shows when the setting is none of the options
+        property string placeholderText: ""
+
+        // What the field shows in place of the text of the option, if
+        // there is more to say about the setting than that
+        property string currentText: ""
+
         signal chosen(var value)
 
-        readonly property string _text: options.find(option => option.value === value)?.text ?? ""
+        readonly property string _text: (currentText !== "") ? currentText
+            : (options.find(option => option.value === value)?.text ?? placeholderText)
 
         width: parent.width
         height: VLCStyle.dp(48, VLCStyle.scale)
@@ -1291,6 +1394,8 @@ PlayerPanel {
 
             width: VLCStyle.dp(180, VLCStyle.scale)
             height: VLCStyle.dp(36, VLCStyle.scale)
+
+            opacity: enabled ? 1.0 : 0.4
 
             Accessible.role: Accessible.ComboBox
             Accessible.name: choice.title
@@ -1509,8 +1614,8 @@ PlayerPanel {
     }
 
     // A setting that is a number: its name, its value in a box, and a slider
-    // to change it, with what the ends and the middle of the slider stand for
-    // under it if that needs saying.
+    // to change it, with what places on the slider stand for under it if that
+    // needs saying.
     component SliderSetting: Column {
         id: setting
 
@@ -1531,7 +1636,8 @@ PlayerPanel {
         // moved() says what the user asked for.
         property real value: 0
 
-        // Texts for the start, the middle and the end of the slider
+        // Texts spread evenly under the slider, the first at its start and
+        // the last at its end
         property var scaleLabels: []
 
         signal moved(real value)
@@ -1616,7 +1722,7 @@ PlayerPanel {
             width: parent.width
             height: VLCStyle.dp(15, VLCStyle.scale)
 
-            visible: (setting.scaleLabels.length === 3)
+            visible: (setting.scaleLabels.length > 1)
 
             Repeater {
                 model: setting.scaleLabels
@@ -1625,7 +1731,7 @@ PlayerPanel {
                     required property string modelData
                     required property int index
 
-                    x: [0, (parent.width - width) / 2, parent.width - width][index]
+                    x: index * (parent.width - width) / (setting.scaleLabels.length - 1)
 
                     text: modelData
                     font.pixelSize: VLCStyle.dp(12, VLCStyle.scale)
