@@ -47,3 +47,9 @@ Inspect `sleep-finished.png` to verify that the timer returned to Off.
 For audio-only visualizer checks, run `create-test-audio.ps1` and supply
 `Videos/test-tone.wav` as `-Media`, with `-VlcArgs '--audio','--aout=dummy','--repeat'`.
 The dummy output keeps the test silent while the visualizer receives samples.
+
+Steps of `-Click` beyond a click: `c:x,y` is a double click, `d:x,y,x2,y2`
+presses, drags and releases (with `,1` at the end a picture is saved before
+the release). Several files in the queue: give the others in `-VlcArgs`.
+`m:17,76` is Ctrl+L (a key with a modifier held, set for VLC's thread only),
+`f:path` names a file in the file dialog VLC shows and accepts it.

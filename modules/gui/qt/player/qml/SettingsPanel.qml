@@ -132,7 +132,16 @@ PlayerPanel {
         }
     }
 
-    onOpened: _readTransform()
+    onOpened: {
+        _readTransform()
+        if (currentTab === SettingsPanel.Tab.Video)
+            Player.rendererManager.StartScan()
+    }
+
+    onCurrentTabChanged: {
+        if (visible && currentTab === SettingsPanel.Tab.Video)
+            Player.rendererManager.StartScan()
+    }
 
     // Audio filters are a list of module names in an option. This says
     // whether one is in it, and puts it in or takes it out, for what plays
@@ -374,6 +383,12 @@ PlayerPanel {
             ModelChoiceSetting {
                 title: qsTr("Crop")
                 model: Player.crop
+            }
+
+            ModelChoiceSetting {
+                title: qsTr("Render")
+                model: Player.rendererManager
+                noneText: qsTr("Local")
             }
         }
 
@@ -1841,8 +1856,11 @@ PlayerPanel {
 
         required property var model
 
+        // Models such as renderer discovery use -1 for a local/default choice.
+        property string noneText: ""
+
         function _read() {
-            const options = []
+            const options = noneText !== "" ? [{ value: -1, text: noneText }] : []
             let current = -1
 
             for (let i = 0; i < entries.count; ++i) {
@@ -1860,6 +1878,8 @@ PlayerPanel {
         }
 
         onChosen: (value) => modelChoice.model.toggleIndex(value)
+
+        Component.onCompleted: _read()
 
         Repeater {
             id: entries

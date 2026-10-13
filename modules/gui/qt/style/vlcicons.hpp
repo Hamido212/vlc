@@ -146,6 +146,7 @@ class VLCIcons : public QObject {
     Q_PROPERTY(QChar album MEMBER album CONSTANT FINAL)
     Q_PROPERTY(QChar genre MEMBER genre CONSTANT FINAL)
     Q_PROPERTY(QChar playback_settings MEMBER playback_settings CONSTANT FINAL)
+    Q_PROPERTY(QChar move MEMBER move CONSTANT FINAL)
 
 
 public:
@@ -288,6 +289,7 @@ public:
     static constexpr inline QChar album{ u'\ue081' };
     static constexpr inline QChar genre{ u'\ue082' };
     static constexpr inline QChar playback_settings{ u'\ue083' };
+    static constexpr inline QChar move{ u'\ue084' };
 
 };
 

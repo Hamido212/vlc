@@ -59,6 +59,7 @@ public:
 public slots:
     void StartScan();
     void StopScan();
+    void toggleIndex(int row);
 
     //QAbstractListModel override
 public:
