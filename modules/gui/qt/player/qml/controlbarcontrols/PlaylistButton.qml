@@ -18,23 +18,15 @@
 import QtQuick
 
 
-import VLC.MainInterface
-import VLC.Widgets as Widgets
 import VLC.Style
+import VLC.Player
 import VLC.Util
 
-
-Widgets.IconToolButton {
-    id: playlistBtn
+PanelButton {
+    panel: QueuePanel { }
+    tab: QueuePanel.Tab.Queue
 
     text: VLCIcons.playlist
-    onClicked: {
-        MainCtx.playqueuePanel.visible = !MainCtx.playqueuePanel.visible
-        if (MainCtx.playqueuePanel.visible && MainCtx.playqueuePanel.docked) {
-            playlistWidget.gainFocus(playlistBtn)
-        }
-    }
-    checked: MainCtx.playqueuePanel.visible
 
     description: qsTr("Play Queue")
 

@@ -21,6 +21,10 @@ param(
     #   "s:path"   save a picture of the window as it is now
     #   "p:ms"     wait for a filter or player event
     #   "e:text"   replace the focused field, then press Enter
+    #   "c:x,y"    double click there
+    #   "d:x,y,x2,y2"    press there, drag to the second place and release;
+    #              with ",1" at the end a picture is saved before the release,
+    #              next to -Out with "-drag" in its name
     [string]$Click = "",
     [switch]$KeepOpen
 )
@@ -196,6 +200,36 @@ foreach ($step in ($Click -split ";" | Where-Object { $_ })) {
         [Win]::PostMessage($h, 0x0100, [IntPtr]$key, [IntPtr]::Zero) | Out-Null
         [Win]::PostMessage($h, 0x0101, [IntPtr]$key, [IntPtr]0xC0000001) | Out-Null
         Start-Sleep -Milliseconds 600
+        continue
+    }
+    if ($step.StartsWith("d:") -or $step.StartsWith("c:")) {
+        $xy = $step.Substring(2).Split(",") | ForEach-Object { [int]$_ }
+        $x = $xy[0] - $dx
+        $y = $xy[1] - $dy
+        [Win]::PostMessage($h, 0x0200, [IntPtr]::Zero, (Pos $x $y)) | Out-Null
+        Start-Sleep -Milliseconds 300
+        if ($step.StartsWith("c:")) {
+            # A double click is a click and a press that says it is the second.
+            [Win]::PostMessage($h, 0x0201, [IntPtr]1, (Pos $x $y)) | Out-Null
+            [Win]::PostMessage($h, 0x0202, [IntPtr]::Zero, (Pos $x $y)) | Out-Null
+            [Win]::PostMessage($h, 0x0203, [IntPtr]1, (Pos $x $y)) | Out-Null
+            [Win]::PostMessage($h, 0x0202, [IntPtr]::Zero, (Pos $x $y)) | Out-Null
+        } else {
+            # Press, move there in a few steps with the button held, release.
+            $tx = $xy[2] - $dx
+            $ty = $xy[3] - $dy
+            [Win]::PostMessage($h, 0x0201, [IntPtr]1, (Pos $x $y)) | Out-Null
+            for ($i = 1; $i -le 8; ++$i) {
+                Start-Sleep -Milliseconds 40
+                $mx = [int]($x + ($tx - $x) * $i / 8)
+                $my = [int]($y + ($ty - $y) * $i / 8)
+                [Win]::PostMessage($h, 0x0200, [IntPtr]1, (Pos $mx $my)) | Out-Null
+            }
+            Start-Sleep -Milliseconds 300
+            if ($xy.Count -gt 4) { Shot ("$Out" -replace '\.png$', '-drag.png') }
+            [Win]::PostMessage($h, 0x0202, [IntPtr]::Zero, (Pos $tx $ty)) | Out-Null
+        }
+        Start-Sleep -Milliseconds 1200
         continue
     }
 

@@ -136,6 +136,7 @@
         {"key":"artist", "path": "./icons/redesign/artist.svg"},
         {"key":"album", "path": "./icons/redesign/album.svg"},
         {"key":"genre", "path": "./icons/redesign/genre.svg"},
-        {"key":"playback_settings", "path": "./icons/redesign/playback-settings.svg"}
+        {"key":"playback_settings", "path": "./icons/redesign/playback-settings.svg"},
+        {"key":"move", "path": "./icons/redesign/move.svg"}
     ]
 }

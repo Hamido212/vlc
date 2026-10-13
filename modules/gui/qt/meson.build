@@ -747,6 +747,7 @@ qml_modules += {
        'player/qml/TopBar.qml',
        'player/qml/TracksMenu.qml',
        'player/qml/TracksPanel.qml',
+       'player/qml/QueuePanel.qml',
        'player/qml/PlayerPanel.qml',
        'player/qml/SettingsPanel.qml',
        'player/qml/TracksPage.qml',

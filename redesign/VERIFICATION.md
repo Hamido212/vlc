@@ -100,6 +100,26 @@ tooltip of the slider.
   posted to the window does not keep Qt's hover state, the same as for the
   seek preview; this needs a look with the real pointer.
 
+## Queue panel (2026-10-13)
+
+Reference: Figma variant `491:1781`, noted in `design/queue-panel.md`. Four
+clips in the queue, panel opened with the queue button of the control bar.
+
+- Seen: the tab, "4 items - 10m", the five buttons and the rows with handle,
+  name and duration; what plays has its name in the accent.
+- Seen: a click picks a row and "remove" takes it out ("3 items - 7m").
+- Seen: a double click plays the row. VLC then closes whatever menu is open
+  as the video is set up anew, so the panel closes as well.
+- Seen: dragging a handle shows a line in the gap the row would go to; let go
+  of at the top and between two rows, the row is there afterwards.
+- Seen: shuffle and repeat switch to the accent, repeat goes on to "one".
+- Seen: the list of what to sort by; "Title" sorts, "Title" again turns the
+  order around.
+- Not tried: "add". It closes the panel and opens the file dialog of the
+  system, a window of its own that the test does not reach.
+- The tabs for bookmarks and chapters of the design are not there yet, they
+  come with their own item of the roadmap.
+
 ## Build and test environment
 
 - Use `make` for changes to `src/` or the D3D11 output module; use `qt` for
