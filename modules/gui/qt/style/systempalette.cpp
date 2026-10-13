@@ -599,6 +599,10 @@ void SystemPalette::makeLightPalette()
         setColor(CS, C::Fg, C::Primary, C::Normal, Qt::white);
         setColor(CS, C::Fg, C::Primary, C::Disabled, setColorAlpha(Qt::black, 0.3));
 
+        //the play button while playing: not the thing to press next
+        setColor(CS, C::Bg, C::Secondary, C::Normal, QColor("#6B6B6B"));
+        setColor(CS, C::Fg, C::Secondary, C::Normal, Qt::white);
+
         setColor(CS, C::Decoration, C::Border, C::Normal, Qt::transparent);
         setColor(CS, C::Decoration, C::Border, C::Focused, Qt::transparent);
         setColor(CS, C::Decoration, C::Border, C::Hovered, Qt::transparent);
@@ -693,13 +697,13 @@ void SystemPalette::makeDarkPalette()
 
     {
         C::ColorSet CS = C::View;
-        setColor(CS, C::Bg, C::Primary, C::Normal, darkGrey300 );
-        setColor(CS, C::Bg, C::Secondary, C::Normal, Qt::black );
+        setColor(CS, C::Bg, C::Primary, C::Normal, darkBgA3 );
+        setColor(CS, C::Bg, C::Secondary, C::Normal, darkBgB2 );
 
-        setColor(CS, C::Fg, C::Primary, C::Normal, Qt::white );
-        setColor(CS, C::Fg, C::Primary, C::Disabled, setColorAlpha(Qt::white, 0.3) );
+        setColor(CS, C::Fg, C::Primary, C::Normal, darkFg1 );
+        setColor(CS, C::Fg, C::Primary, C::Disabled, darkFgA4 );
 
-        setColor(CS, C::Fg, C::Secondary, C::Normal, setColorAlpha(Qt::white, 0.6));
+        setColor(CS, C::Fg, C::Secondary, C::Normal, darkFgA2);
 
         setColor(CS, C::Bg, C::Negative, C::Normal, QColor(Qt::darkRed));
         setColor(CS, C::Fg, C::Negative, C::Normal, Qt::red);
@@ -713,14 +717,14 @@ void SystemPalette::makeDarkPalette()
         setColor(CS, C::Decoration, C::VisualFocus, C::Normal, setColorAlpha(Qt::white, 0.0) );
         setColor(CS, C::Decoration, C::VisualFocus, C::Focused, Qt::white );
 
-        setColor(CS, C::Decoration, C::Border, C::Normal, setColorAlpha(Qt::white, 0.4) );
-        setColor(CS, C::Decoration, C::Border, C::Focused, setColorAlpha(Qt::white, 0.7) );
-        setColor(CS, C::Decoration, C::Border, C::Hovered, setColorAlpha(Qt::white, 0.7) );
+        setColor(CS, C::Decoration, C::Border, C::Normal, darkDividerBright );
+        setColor(CS, C::Decoration, C::Border, C::Focused, darkFgA3 );
+        setColor(CS, C::Decoration, C::Border, C::Hovered, darkFgA3 );
         setColor(CS, C::Decoration, C::Border, C::Disabled, setColorAlpha(Qt::white, 0.0) );
 
-        setColor(CS, C::Decoration, C::Shadow, C::Normal, setColorAlpha(Qt::black, 0.22));
+        setColor(CS, C::Decoration, C::Shadow, C::Normal, setColorAlpha(Qt::black, 0.46));
 
-        setColor(CS, C::Decoration, C::Separator, C::Normal, darkGrey800);
+        setColor(CS, C::Decoration, C::Separator, C::Normal, darkDividerDim);
 
         setColor(CS, C::Decoration, C::Accent, C::Normal, orange500);
         setColor(CS, C::Fg, C::Link, C::Normal, orange500);
@@ -729,9 +733,10 @@ void SystemPalette::makeDarkPalette()
     //window banner & miniplayer
     {
         C::ColorSet CS = C::Window;
-        setColor(CS, C::Bg, C::Primary, C::Normal, Qt::black); //FIXME
-        setColor(CS, C::Bg, C::Secondary, C::Normal, Qt::black);
-        setColor(CS, C::Decoration, C::Border, C::Normal, darkGrey800); //FIXME not a predef
+        setColor(CS, C::Bg, C::Primary, C::Normal, darkBgA3);
+        setColor(CS, C::Bg, C::Secondary, C::Normal, darkBgA4);
+        setColor(CS, C::Fg, C::Primary, C::Normal, darkFgA2);
+        setColor(CS, C::Decoration, C::Border, C::Normal, darkDividerDim);
     }
 
     //badges
@@ -759,13 +764,15 @@ void SystemPalette::makeDarkPalette()
     {
         C::ColorSet CS = C::ToolButton;
         setColor(CS, C::Bg, C::Primary, C::Normal, Qt::transparent);
-        setColor(CS, C::Bg, C::Secondary, C::Normal, Qt::black);
+        setColor(CS, C::Bg, C::Primary, C::Hovered, darkBgA1);
+        setColor(CS, C::Bg, C::Primary, C::Pressed, darkBgB1);
+        setColor(CS, C::Bg, C::Secondary, C::Normal, darkBgB2);
 
-        setColor(CS, C::Fg, C::Primary, C::Normal, setColorAlpha(Qt::white, 0.6));
-        setColor(CS, C::Fg, C::Primary, C::Focused, Qt::white);
-        setColor(CS, C::Fg, C::Primary, C::Hovered, Qt::white);
-        setColor(CS, C::Fg, C::Primary, C::Disabled, setColorAlpha(Qt::white, 0.2));
-        setColor(CS, C::Fg, C::Secondary, C::Normal, Qt::white);
+        setColor(CS, C::Fg, C::Primary, C::Normal, darkFgA2);
+        setColor(CS, C::Fg, C::Primary, C::Focused, darkFg1);
+        setColor(CS, C::Fg, C::Primary, C::Hovered, darkFg1);
+        setColor(CS, C::Fg, C::Primary, C::Disabled, darkFgA4);
+        setColor(CS, C::Fg, C::Secondary, C::Normal, darkFg1);
 
         setColor(CS, C::Decoration, C::Border, C::Normal, Qt::transparent);
         setColor(CS, C::Decoration, C::Border, C::Focused, Qt::transparent);
@@ -805,11 +812,16 @@ void SystemPalette::makeDarkPalette()
     {
         C::ColorSet CS = C::ButtonAccent;
         setColor(CS, C::Bg, C::Primary, C::Normal, orange500);
-        setColor(CS, C::Bg, C::Primary, C::Pressed, QColor("#e67a30"));  //FIXME not a predef
-        setColor(CS, C::Bg, C::Primary, C::Disabled, setColorAlpha(Qt::white, 0.2));
+        //Dark/Accent/Dim (#AB6314) for the default accent
+        setColor(CS, C::Bg, C::Primary, C::Pressed, orange500.darker(123));
+        setColor(CS, C::Bg, C::Primary, C::Disabled, darkBgA1);
 
-        setColor(CS, C::Fg, C::Primary, C::Normal, Qt::white);
-        setColor(CS, C::Fg, C::Primary, C::Disabled, setColorAlpha(Qt::white, 0.3));
+        setColor(CS, C::Fg, C::Primary, C::Normal, darkFgB1);
+        setColor(CS, C::Fg, C::Primary, C::Disabled, darkFgA4);
+
+        //the play button while playing: not the thing to press next
+        setColor(CS, C::Bg, C::Secondary, C::Normal, darkFgA3);
+        setColor(CS, C::Fg, C::Secondary, C::Normal, darkBgB1);
 
         setColor(CS, C::Decoration, C::Border, C::Normal, Qt::transparent);
         setColor(CS, C::Decoration, C::Border, C::Focused, Qt::transparent);
@@ -836,16 +848,17 @@ void SystemPalette::makeDarkPalette()
     //tooltip
     {
         C::ColorSet CS = C::Tooltip;
-        setColor(CS, C::Bg, C::Primary, C::Normal, darkGrey200);
-        setColor(CS, C::Fg, C::Primary, C::Normal, Qt::white);
+        setColor(CS, C::Bg, C::Primary, C::Normal, darkBgB1);
+        setColor(CS, C::Fg, C::Primary, C::Normal, darkFg1);
     }
 
     //slider
     {
         C::ColorSet CS = C::Slider;
-        setColor(CS, C::Bg, C::Primary, C::Normal, setColorAlpha("#929292", 0.2)); //FIXME not in the palette
-        setColor(CS, C::Bg, C::Primary, C::Focused, setColorAlpha("#929292", 0.4));
-        setColor(CS, C::Bg, C::Primary, C::Hovered, setColorAlpha("#929292", 0.4));
+        setColor(CS, C::Bg, C::Primary, C::Normal, darkBgB2);
+        //the part of the track that has already been played, this gives
+        //Dark/BG/Accent Bright (#371F06) for the default accent
+        setColor(CS, C::Bg, C::Secondary, C::Normal, orange500.darker(380));
 
         setColor(CS, C::Fg, C::Primary, C::Normal, orange500);
         setColor(CS, C::Fg, C::Positive, C::Normal, "#0F7B0F");  //FIXME

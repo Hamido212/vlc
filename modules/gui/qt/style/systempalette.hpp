@@ -111,8 +111,8 @@ public:
     Q_PROPERTY(CSDMetrics* csdMetrics READ getCSDMetrics NOTIFY CSDMetricsChanged FINAL)
 
     //standard color definitions used by light/dark themes
-    COLOR_DEFINITION(orange500, "#FF8800");
-    COLOR_DEFINITION(orange800, "#FF610A");
+    COLOR_DEFINITION(orange500, "#D37918");
+    COLOR_DEFINITION(orange800, "#E8851A");
 
     COLOR_DEFINITION(orange400, "#f89a06"); //FIXME name have been chosen randomly by me
     COLOR_DEFINITION(orange200, "#e29a06"); //FIXME name have been chosen randomly by me
@@ -132,6 +132,22 @@ public:
     COLOR_DEFINITION(lightGrey500, "#E9E9E9");
     COLOR_DEFINITION(lightGrey600, "#E5E5E5");
     COLOR_DEFINITION(lightGrey700, "#E0E0E0");
+
+    //dark theme tokens of the redesign, named after the Figma variables (Dark/BG/A3, ...)
+    COLOR_DEFINITION(darkBgA1, "#222222");
+    COLOR_DEFINITION(darkBgA3, "#1B1B1B");
+    COLOR_DEFINITION(darkBgA4, "#191919");
+    COLOR_DEFINITION(darkBgA5, "#151515");
+    COLOR_DEFINITION(darkBgB1, "#0E0E0E");
+    COLOR_DEFINITION(darkBgB2, "#090909");
+    COLOR_DEFINITION(darkFg1, "#EAEAEA");
+    COLOR_DEFINITION(darkFg2, "#C6C6C6");
+    COLOR_DEFINITION(darkFgA2, "#8F8F8F");
+    COLOR_DEFINITION(darkFgA3, "#6B6B6B");
+    COLOR_DEFINITION(darkFgA4, "#404040");
+    COLOR_DEFINITION(darkFgB1, "#161616");
+    COLOR_DEFINITION(darkDividerBright, "#373737");
+    COLOR_DEFINITION(darkDividerDim, "#222222");
 
     COLOR_DEFINITION(red500, "#FF0000");
 
