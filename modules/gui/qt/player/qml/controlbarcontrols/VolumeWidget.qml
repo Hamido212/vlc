@@ -118,7 +118,11 @@ T.Pane {
                     width: parent.width * (89 / 88)
                     height: parent.height * (27.3633 / 28)
 
-                    source: "qrc:///misc/volume_cone_bg.svg"
+                    // The same drawing in the track color of a dark and of a
+                    // light scheme, the one closer to the track color of
+                    // the scheme in use is taken.
+                    source: (volControl.bgColor.hslLightness < 0.5) ? "qrc:///misc/volume_cone_bg.svg"
+                                                                    : "qrc:///misc/volume_cone_bg_light.svg"
                 }
 
                 Item {

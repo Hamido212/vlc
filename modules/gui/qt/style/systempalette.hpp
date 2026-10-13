@@ -149,6 +149,20 @@ public:
     COLOR_DEFINITION(darkDividerBright, "#373737");
     COLOR_DEFINITION(darkDividerDim, "#222222");
 
+    //and those of the light theme (Light/BG/A3, ...)
+    COLOR_DEFINITION(lightBgA1, "#EDEDED");
+    COLOR_DEFINITION(lightBgA2, "#DDDDDD");
+    COLOR_DEFINITION(lightBgA3, "#D5D5D5");
+    COLOR_DEFINITION(lightBgA4, "#B3B3B3");
+    COLOR_DEFINITION(lightBgA5, "#888888");
+    COLOR_DEFINITION(lightBgB1, "#E7E7E7");
+    COLOR_DEFINITION(lightBgB2, "#DEDEDE");
+    COLOR_DEFINITION(lightFgA2, "#2E2E2E");
+    COLOR_DEFINITION(lightFgA3, "#6B6B6B");
+    COLOR_DEFINITION(lightFgB1, "#161616");
+    COLOR_DEFINITION(lightDividerBright, "#9B9B9B");
+    COLOR_DEFINITION(lightDividerDim, "#ACACAC");
+
     COLOR_DEFINITION(red500, "#FF0000");
 
 public:
