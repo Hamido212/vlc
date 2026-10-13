@@ -39,7 +39,7 @@ once the part runs in the Windows build and was looked at there.
           switch on does not exist yet
   - [ ] Presets for a show
 - [ ] Queue panel
-- [ ] Volume level next to the cone while it changes
+- [x] Volume level next to the cone while it changes
 - [ ] Bookmarks and chapters panels, subtitle timeline
 - [ ] Full screen: both bars on hover, an option to hide the interface
 - [ ] Resume prompt next to the playback controls

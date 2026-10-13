@@ -87,6 +87,19 @@ in the design: Reverse, Sleep Timer, Audio Visualizer, Speed.
   design. There is no subtitle timeline and no statistics display to switch
   on yet.
 
+## Volume level (2026-10-13)
+
+The box of the design ("audio value", 121x37) over the cone, in place of the
+tooltip of the slider.
+
+- Seen: a click on the cone changes the volume and the box says "38 %", it is
+  gone three seconds later; a click further right says "102 %". Run with
+  `--no-audio`: nothing is heard, the volume is still that of the output.
+- The dummy audio output takes no volume, so it cannot be used for this.
+- Not seen: the box while the pointer only rests on the cone. A pointer move
+  posted to the window does not keep Qt's hover state, the same as for the
+  seek preview; this needs a look with the real pointer.
+
 ## Build and test environment
 
 - Use `make` for changes to `src/` or the D3D11 output module; use `qt` for

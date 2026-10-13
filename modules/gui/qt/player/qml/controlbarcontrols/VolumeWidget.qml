@@ -166,12 +166,71 @@ T.Pane {
 
             enabled: !root.paintOnly // disables event handling depending on this
 
-            toolTipTextProvider: function (value) {
+            // The level has a box of its own, see below.
+            Widgets.PointingToolTipAttached.visible: false
+
+            // The volume in numbers: over the cone while the pointer is on
+            // it, and for a moment when the volume changed.
+            Rectangle {
+                id: levelBox
+
+                readonly property var palette: volControl.colorContext.palette
+                readonly property bool dark: palette.isDark
+
                 // the real value i.e 'Player.volume' bounds can be different
                 // from bounds of this widget and we want to show the current
                 // volume here, so directly use Player.volume instead of "value"
+                readonly property real volume: _player.volume
 
-                return Math.round(Player.volume * 100) + "%"
+                // What the volume was before, less than zero as long as the
+                // audio output has not said: that it gets known is no change.
+                property real _known: -1
+
+                onVolumeChanged: {
+                    if (_known >= 0 && Math.round(volume * 100) !== Math.round(_known * 100))
+                        levelTimer.restart()
+
+                    _known = volume
+                }
+
+                Component.onCompleted: _known = volume
+
+                x: (parent.width - width) / 2
+                y: -height - VLCStyle.margin_xsmall
+                z: 1
+
+                width: VLCStyle.dp(121, VLCStyle.scale)
+                height: VLCStyle.dp(37, VLCStyle.scale)
+                radius: VLCStyle.dp(6, VLCStyle.scale)
+
+                visible: !root.paintOnly && (volControl.hovered || volControl.pressed
+                                             || volControl.visualFocus || levelTimer.running)
+
+                color: dark ? Qt.alpha(palette.darkBgB1, 0.95) : Qt.alpha(palette.lightBgB1, 0.8)
+
+                Row {
+                    anchors.centerIn: parent
+
+                    spacing: VLCStyle.dp(4, VLCStyle.scale)
+
+                    T.Label {
+                        text: Math.round(Math.max(levelBox.volume, 0) * 100)
+                        font.pixelSize: VLCStyle.dp(14, VLCStyle.scale)
+                        color: levelBox.dark ? levelBox.palette.darkFgA1 : levelBox.palette.lightFgA1
+                    }
+
+                    T.Label {
+                        text: "%"
+                        font.pixelSize: VLCStyle.dp(14, VLCStyle.scale)
+                        color: levelBox.dark ? levelBox.palette.darkFgA3 : levelBox.palette.lightFgA3
+                    }
+                }
+
+                Timer {
+                    id: levelTimer
+
+                    interval: 2000
+                }
             }
 
             Accessible.name: qsTr("Volume")
@@ -232,11 +291,6 @@ T.Pane {
                 enabled: !paintOnly
 
                 function onVolumeChanged() { volControl._syncVolumeWithPlayer() }
-            }
-
-            Binding on Widgets.PointingToolTipAttached.visible {
-                when: sliderMouseArea.pressed
-                value: true
             }
 
             Navigation.leftItem: volumeBtn
