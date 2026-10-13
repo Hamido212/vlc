@@ -22,6 +22,8 @@ param(
     #   "p:ms"     wait for a filter or player event
     #   "e:text"   replace the focused field, then press Enter
     #   "c:x,y"    double click there
+    #   "n:"       go on with the second window VLC shows, the preferences
+    #              for one: the steps and pictures after it are of that window
     #   "f:path"   name that file in the file dialog VLC shows and accept it
     #   "m:mod,code"    press a key while a modifier is held, by their virtual
     #              key codes ("m:17,76" is Ctrl+L)
@@ -143,6 +145,27 @@ public class Win {
         SendMessage(edit, 0x000C, IntPtr.Zero, path);
         PostMessage(dialog, 0x0111, (IntPtr)1, IntPtr.Zero);
         return true;
+    }
+    // The largest window a process shows besides one of them: a dialog or
+    // a second window of the player. Zero if there is none.
+    public static IntPtr FindOtherWindow(uint processId, IntPtr main) {
+        IntPtr result = IntPtr.Zero;
+        long largestArea = 0;
+        EnumWindows((h, data) => {
+            uint owner;
+            GetWindowThreadProcessId(h, out owner);
+            RECT rect;
+            if (owner == processId && h != main && IsWindowVisible(h) && ClassOf(h).Contains("QWindow")
+                && GetWindowRect(h, out rect)) {
+                long area = (long)(rect.R - rect.L) * (rect.B - rect.T);
+                if (area > largestArea) {
+                    largestArea = area;
+                    result = h;
+                }
+            }
+            return true;
+        }, IntPtr.Zero);
+        return result;
     }
     public struct RECT { public int L, T, R, B; }
     public struct POINT { public int X, Y; }
@@ -271,6 +294,19 @@ foreach ($step in ($Click -split ";" | Where-Object { $_ })) {
         [Win]::PostMessage($h, 0x0100, [IntPtr]$key, [IntPtr]::Zero) | Out-Null
         [Win]::PostMessage($h, 0x0101, [IntPtr]$key, [IntPtr]0xC0000001) | Out-Null
         Start-Sleep -Milliseconds 600
+        continue
+    }
+    if ($step -eq "n:") {
+        $other = [Win]::FindOtherWindow($p.Id, $h)
+        if ($other -eq 0) { throw 'VLC shows no second window.' }
+        $h = $other
+        $wr = New-Object Win+RECT
+        [Win]::GetWindowRect($h, [ref]$wr) | Out-Null
+        $origin = New-Object Win+POINT
+        [Win]::ClientToScreen($h, [ref]$origin) | Out-Null
+        $dx = $origin.X - $wr.L
+        $dy = $origin.Y - $wr.T
+        "second window $($wr.R - $wr.L)x$($wr.B - $wr.T)"
         continue
     }
     if ($step.StartsWith("f:")) {
