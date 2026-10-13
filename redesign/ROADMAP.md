@@ -23,10 +23,8 @@ once the part runs in the Windows build and was looked at there.
     - [x] Image Adjust: live brightness slider and clean restoration
     - [x] Pixel crop fields: Top and Left changes and restoration
     - [x] Flip and rotation with hardware decoding, including restoration
-    - [ ] Renderer list in the Video tab
-      - Opening discovery was tested, but its 20-second shutdown blocked the
-        Qt thread and PrintWindow. Keep the UI experiment unapplied until the
-        discovery shutdown is fixed; see experiments/renderer-panel.patch.
+    - [x] "Render": the devices a scan finds, "Local" for this computer
+    - [ ] Playing on such a device: there was none to try it with
   - [ ] Playback: speed, sleep timer, what the bar shows
     - [x] The tab as one list, as in the design
     - [x] Speed: slider from 0.25x to 2x

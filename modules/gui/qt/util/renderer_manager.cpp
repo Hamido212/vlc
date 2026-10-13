@@ -23,6 +23,7 @@
 
 #include <QApplication>
 #include <QTimer>
+#include <QThreadPool>
 #include <QVector>
 #include <QHash>
 
@@ -218,6 +219,8 @@ public:
 
     //model automatically stops scanning after a while
     QTimer m_stop_scan_timer;
+    // Where discoveries that are no longer needed are closed, see StopScan()
+    QThreadPool m_release_pool;
     //remaining time in seconds
     unsigned m_scan_remain = 0;
 
@@ -236,6 +239,14 @@ void RendererManager::disableRenderer()
         //vlc_player synchronously report the renderer change
         vlc_player_SetRenderer( d->m_player, nullptr );
     }
+}
+
+void RendererManager::toggleIndex(int row)
+{
+    if (row == -1)
+        disableRenderer();
+    else if (row >= 0 && row < rowCount())
+        setData(index(row, 0), true, Qt::CheckStateRole);
 }
 
 QVariant RendererManager::data(const QModelIndex &index, int role) const
@@ -318,6 +329,8 @@ bool RendererManager::setData(const QModelIndex &index, const QVariant &value, i
 QHash<int,QByteArray> RendererManager::roleNames() const
 {
     return {
+        { Qt::DisplayRole, QByteArrayLiteral("display") },
+        { Qt::CheckStateRole, QByteArrayLiteral("checked") },
         { NAME, QByteArrayLiteral("name") },
         { TYPE, QByteArrayLiteral("type") },
         { DEMUX_FILTER, QByteArrayLiteral("demuxFilter") },
@@ -369,7 +382,10 @@ RendererManager::RendererManager( qt_intf_t *p_intf_, vlc_player_t* player )
 
 RendererManager::~RendererManager()
 {
+    Q_D(RendererManager);
     StopScan();
+    // The discoveries call back until they are closed.
+    d->m_release_pool.waitForDone();
 }
 
 int RendererManager::getScanRemain() const
@@ -437,8 +453,15 @@ void RendererManager::StopScan()
     Q_D(RendererManager);
     d->m_stop_scan_timer.stop();
 
-    for ( vlc_renderer_discovery_t* p_rd : d->m_rds )
-        vlc_rd_release( p_rd );
+    // Closing a discovery waits for its threads, which takes seconds for
+    // some of them: the interface must not stand still for that.
+    if ( !d->m_rds.empty() )
+    {
+        d->m_release_pool.start([rds = std::move(d->m_rds)]() {
+            for ( vlc_renderer_discovery_t* p_rd : rds )
+                vlc_rd_release( p_rd );
+        });
+    }
     d->m_rds.clear();
 
     /* Cleanup of outdated items, and notify removal */

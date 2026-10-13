@@ -49,17 +49,19 @@ and Bottom crop fields have not been checked at the image level yet.
 - Software decoding, other output backends, HDR transforms, and combined
   flip/rotation selections have not been verified yet.
 
-## Renderer discovery experiment (2026-10-13)
+## Renderer list (2026-10-13)
 
-The UI experiment added Render/Local, model display/checked roles and a scan
-button. The Windows build showed Local and the active countdown, and the log
-confirmed UPnP and mDNS discovery startup. No external renderer was selected.
+"Render" of the Video tab lists what the renderer manager of the player
+finds, with "Local" for none. The scan starts when the tab is shown and ends
+by itself after 20 seconds.
 
-At the end of the 20-second scan, the Qt window stopped responding and
-`PrintWindow` blocked. `RendererManager::StopScan()` synchronously releases
-discovery modules on the Qt thread. This needs further shutdown investigation
-before automatic discovery is enabled by the panel. The experiment is saved
-in `experiments/renderer-panel.patch` and is not applied to the shipped UI.
+- A first attempt stood still at the end of the scan: closing the discoveries
+  waits for their threads, UPnP's for seconds, and that was done on the
+  thread of the interface. They are closed on a thread of their own now.
+- Seen: "Render" says "Local"; the log has the start of the UPnP and the mDNS
+  discovery. 24 seconds later the window still answers: a list opens, the
+  tab changes.
+- Not tried: a device in the list and playing on it, there was none in reach.
 
 ## Playback tab (2026-10-13)
 
