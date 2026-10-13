@@ -19,6 +19,9 @@ import QtQuick
 import QtQuick.Layouts
 
 import VLC.MainInterface
+import VLC.PlayerControls
+import VLC.Widgets as Widgets
+import VLC.Util
 
 Repeater {
     id: repeater
@@ -27,6 +30,17 @@ Repeater {
 
     property real availableWidth: Number.MAX_VALUE
     property real availableHeight: Number.MAX_VALUE
+
+    // Space between two controls. Leave it at zero when the layout the
+    // controls are placed in spaces them already.
+    property real spacing: 0
+
+    // Width of a spacer control, which separates two groups of controls and
+    // is not spaced itself. Zero keeps the size the spacer asks for.
+    property real groupSpacing: 0
+
+    // Horizontal padding around the icon of the tool buttons.
+    property real buttonPadding: 0
 
     signal requestLockUnlockAutoHide(bool lock)
     signal menuOpened(var menu)
@@ -54,9 +68,26 @@ Repeater {
 
         focus: (index === 0)
 
+        readonly property bool isSpacer: (model.id === ControlListModel.WIDGET_SPACER)
+
+        readonly property bool _groupSpacer: (isSpacer && repeater.groupSpacing > 0)
+
+        Layout.leftMargin: (index === 0 || isSpacer || repeater.itemAt(index - 1)?.isSpacer) ? 0
+                                                                                           : repeater.spacing
+
         Layout.fillWidth: (item && item.Layout.minimumWidth > 0)
-        Layout.minimumWidth: Layout.fillWidth ? item.Layout.minimumWidth : (item ? item.implicitWidth : -1)
-        Layout.maximumWidth: Layout.fillWidth ? (item ? item.implicitWidth : -1) : -1
+        Layout.minimumWidth: {
+            if (Layout.fillWidth)
+                return item.Layout.minimumWidth
+            if (_groupSpacer)
+                return repeater.groupSpacing
+            return item ? item.implicitWidth : -1
+        }
+        Layout.maximumWidth: {
+            if (Layout.fillWidth)
+                return item ? item.implicitWidth : -1
+            return _groupSpacer ? repeater.groupSpacing : -1
+        }
 
         Layout.minimumHeight: 0
         Layout.maximumHeight: Math.min((item && item.implicitHeight <= 0) ? Number.MAX_VALUE : item.implicitHeight, repeater.availableHeight)
@@ -102,6 +133,9 @@ Repeater {
 
             if (typeof item.activeFocusOnTab === "boolean")
                 item.activeFocusOnTab = true
+
+            if (Helpers.isValidInstanceOf(item, Widgets.IconToolButton))
+                item.horizontalPadding = Qt.binding(function() { return repeater.buttonPadding })
 
             item.visible = Qt.binding(function() { return loader.visible })
 

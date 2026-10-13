@@ -40,6 +40,9 @@ FocusScope {
 
     readonly property int positionSliderY: controlBar.y + controlBar.sliderY
 
+    // Where what opens above the control bar has to stop
+    readonly property int topBarBottom: topBar.visible ? (topBar.y + topBar.height) : 0
+
     readonly property string coverSource: {
         if (Player.artwork &&
             Player.artwork.toString())
@@ -59,6 +62,13 @@ FocusScope {
     property bool _controlsUnderVideo: (MainCtx.pinVideoControls
                                         &&
                                         (MainCtx.intfMainWindow.visibility !== Window.FullScreen))
+
+    // Next to the bars, the video is a framed picture with round corners
+    // rather than something that fills the window.
+    readonly property bool _videoFramed: MainCtx.hasEmbededVideo && _controlsUnderVideo
+
+    readonly property real _videoFrameSide: VLCStyle.dp(10, VLCStyle.scale)
+    readonly property real _videoFrameTop: VLCStyle.dp(1, VLCStyle.scale)
 
     property bool _keyPressed: false
 
@@ -260,6 +270,9 @@ FocusScope {
                     id: videoSurface
 
                     anchors.fill: parent
+                    anchors.leftMargin: rootPlayer._videoFramed ? rootPlayer._videoFrameSide : 0
+                    anchors.rightMargin: anchors.leftMargin
+                    anchors.topMargin: rootPlayer._videoFramed ? rootPlayer._videoFrameTop : 0
 
                     // With regard to `ViewBlockingRectangle`, we
                     // do not need to prevent painting anything
@@ -929,6 +942,30 @@ FocusScope {
         }
     }
 
+    Rectangle {
+        // The frame around the video. Only its border is drawn, which is
+        // wide enough for its outer edge to be out of sight: what is left
+        // in view are the sides and the round inner corners. After an idea
+        // from Olmo Gutierrez' implementation of the redesign.
+        id: videoFrame
+
+        readonly property real _out: VLCStyle.dp(50, VLCStyle.scale)
+
+        visible: rootPlayer._videoFramed
+
+        x: playerSpecializationLoader.x + rootPlayer._videoFrameSide - _out
+        y: playerSpecializationLoader.y + rootPlayer._videoFrameTop - _out
+        width: playerSpecializationLoader.width - 2 * (rootPlayer._videoFrameSide - _out)
+        height: playerSpecializationLoader.height - rootPlayer._videoFrameTop + 2 * _out
+
+        color: "transparent"
+
+        radius: _out + VLCStyle.dp(9, VLCStyle.scale)
+
+        border.width: _out
+        border.color: windowTheme.bg.primary
+    }
+
     TopBar {
         id: topBar
 
@@ -954,7 +991,8 @@ FocusScope {
                   resumeVisible)
 
         focus: true
-        title: Player.title
+        // Not every media has a title, they all have a name.
+        title: Player.title || Player.name
 
         pinControls: MainCtx.pinVideoControls
 
@@ -1024,6 +1062,10 @@ FocusScope {
             }
 
             tintColor: windowTheme.bg.primary
+
+            // Next to the video the bars are plain surfaces, the desktop does
+            // not show through them.
+            enabled: !(rootPlayer._controlsUnderVideo && MainCtx.hasEmbededVideo)
 
             visible: MainCtx.pinVideoControls || (MainCtx.hasEmbededVideo && !rootPlayer.displayFadeRectangles)
         }
@@ -1294,11 +1336,11 @@ FocusScope {
 
         rightPadding: VLCStyle.applicationHorizontalMargin
         leftPadding: VLCStyle.applicationHorizontalMargin
-        bottomPadding: VLCStyle.applicationVerticalMargin + VLCStyle.margin_xsmall
+        bottomPadding: VLCStyle.applicationVerticalMargin + VLCStyle.controlBarInlinePadding
 
-        textPosition: (MainCtx.pinVideoControls)
-                      ? ControlBar.TimeTextPosition.LeftRightSlider
-                      : ControlBar.TimeTextPosition.AboveSlider
+        inlineSlider: true
+
+        textPosition: ControlBar.TimeTextPosition.LeftRightSlider
 
         // hide right text so that it won't overlap with play queue
         showRemainingTime: (textPosition !== ControlBar.TimeTextPosition.AboveSlider)
@@ -1343,7 +1385,8 @@ FocusScope {
                     return 0.6
                 } else if ((Window.visibility === Window.FullScreen) && MainCtx.hasEmbededVideo) {
                     return MainCtx.pinOpacity
-                } else if (AcrylicController.enabled || !MainCtx.hasEmbededVideo) {
+                } else if (!MainCtx.hasEmbededVideo
+                           || (AcrylicController.enabled && !rootPlayer._controlsUnderVideo)) {
                     return 0.7
                 } else {
                     return 1.0

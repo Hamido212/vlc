@@ -1,0 +1,1612 @@
+{
+ "source": "Figma file B7ifd32zHbliiZs9q00JG3, component set Icon (42:356)",
+ "count": 206,
+ "icons": [
+  {
+   "file": "accessibility.svg",
+   "name": "accessibility",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "999:4914"
+  },
+  {
+   "file": "add.svg",
+   "name": "add",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "463:550"
+  },
+  {
+   "file": "album-6206-13653.svg",
+   "name": "album",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "6206:13653"
+  },
+  {
+   "file": "album.svg",
+   "name": "album",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "6206:13629"
+  },
+  {
+   "file": "arrow-down-two-tone.svg",
+   "name": "arrow",
+   "variant": {
+    "direction": "down"
+   },
+   "twoTone": true,
+   "figmaNode": "2461:9739"
+  },
+  {
+   "file": "arrow-down.svg",
+   "name": "arrow",
+   "variant": {
+    "direction": "down"
+   },
+   "twoTone": false,
+   "figmaNode": "71:881"
+  },
+  {
+   "file": "arrow-left-two-tone.svg",
+   "name": "arrow",
+   "variant": {
+    "direction": "left"
+   },
+   "twoTone": true,
+   "figmaNode": "2461:9754"
+  },
+  {
+   "file": "arrow-left.svg",
+   "name": "arrow",
+   "variant": {
+    "direction": "left"
+   },
+   "twoTone": false,
+   "figmaNode": "71:890"
+  },
+  {
+   "file": "arrow-right-two-tone.svg",
+   "name": "arrow",
+   "variant": {
+    "direction": "right"
+   },
+   "twoTone": true,
+   "figmaNode": "2461:9749"
+  },
+  {
+   "file": "arrow-right.svg",
+   "name": "arrow",
+   "variant": {
+    "direction": "right"
+   },
+   "twoTone": false,
+   "figmaNode": "71:887"
+  },
+  {
+   "file": "arrow-up-two-tone.svg",
+   "name": "arrow",
+   "variant": {
+    "direction": "up"
+   },
+   "twoTone": true,
+   "figmaNode": "2461:9744"
+  },
+  {
+   "file": "arrow-up.svg",
+   "name": "arrow",
+   "variant": {
+    "direction": "up"
+   },
+   "twoTone": false,
+   "figmaNode": "71:884"
+  },
+  {
+   "file": "artist-active.svg",
+   "name": "artist",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "858:5164"
+  },
+  {
+   "file": "artist.svg",
+   "name": "artist",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "858:5155"
+  },
+  {
+   "file": "audio-active.svg",
+   "name": "audio",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "496:2439"
+  },
+  {
+   "file": "audio-two-tone.svg",
+   "name": "audio",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2461:9697"
+  },
+  {
+   "file": "audio.svg",
+   "name": "audio",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "44:407"
+  },
+  {
+   "file": "backward-10-sec.svg",
+   "name": "backward-10-sec",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "45:28"
+  },
+  {
+   "file": "backward-15-sec.svg",
+   "name": "backward-15-sec",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "45:36"
+  },
+  {
+   "file": "bookmark.svg",
+   "name": "bookmark",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2127:7779"
+  },
+  {
+   "file": "bookmarks-two-tone.svg",
+   "name": "bookmarks",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "6320:13921"
+  },
+  {
+   "file": "bookmarks.svg",
+   "name": "bookmarks",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2127:7548"
+  },
+  {
+   "file": "capture-device-two-tone.svg",
+   "name": "capture-device",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2493:9342"
+  },
+  {
+   "file": "capture-device.svg",
+   "name": "capture-device",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2493:9307"
+  },
+  {
+   "file": "chapters-two-tone.svg",
+   "name": "chapters",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "6321:14144"
+  },
+  {
+   "file": "chapters.svg",
+   "name": "chapters",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2127:7531"
+  },
+  {
+   "file": "check-active.svg",
+   "name": "check",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "494:2394"
+  },
+  {
+   "file": "check-selected-two-tone.svg",
+   "name": "check",
+   "variant": {
+    "state": "selected"
+   },
+   "twoTone": true,
+   "figmaNode": "4004:12348"
+  },
+  {
+   "file": "check-selected.svg",
+   "name": "check",
+   "variant": {
+    "state": "selected"
+   },
+   "twoTone": false,
+   "figmaNode": "2428:14606"
+  },
+  {
+   "file": "chevron-down.svg",
+   "name": "chevron",
+   "variant": {
+    "direction": "down"
+   },
+   "twoTone": false,
+   "figmaNode": "71:868"
+  },
+  {
+   "file": "chevron-left.svg",
+   "name": "chevron",
+   "variant": {
+    "direction": "left"
+   },
+   "twoTone": false,
+   "figmaNode": "71:878"
+  },
+  {
+   "file": "chevron-right.svg",
+   "name": "chevron",
+   "variant": {
+    "direction": "right"
+   },
+   "twoTone": false,
+   "figmaNode": "71:875"
+  },
+  {
+   "file": "chevron-up.svg",
+   "name": "chevron",
+   "variant": {
+    "direction": "up"
+   },
+   "twoTone": false,
+   "figmaNode": "71:872"
+  },
+  {
+   "file": "close-low.svg",
+   "name": "close",
+   "variant": {
+    "value": "low"
+   },
+   "twoTone": false,
+   "figmaNode": "182:193"
+  },
+  {
+   "file": "close-medium.svg",
+   "name": "close",
+   "variant": {
+    "value": "medium"
+   },
+   "twoTone": false,
+   "figmaNode": "182:187"
+  },
+  {
+   "file": "close-none.svg",
+   "name": "close",
+   "variant": {
+    "value": "none"
+   },
+   "twoTone": false,
+   "figmaNode": "182:198"
+  },
+  {
+   "file": "close.svg",
+   "name": "close",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "45:40"
+  },
+  {
+   "file": "collapse-sidebar.svg",
+   "name": "collapse-sidebar",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "858:5703"
+  },
+  {
+   "file": "disc-two-tone.svg",
+   "name": "disc",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2460:9552"
+  },
+  {
+   "file": "disc.svg",
+   "name": "disc",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "5884:24330"
+  },
+  {
+   "file": "divider.svg",
+   "name": "divider",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "71:863"
+  },
+  {
+   "file": "edit.svg",
+   "name": "edit",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2437:14888"
+  },
+  {
+   "file": "eq-classical.svg",
+   "name": "EQ",
+   "variant": {
+    "EQ": "classical"
+   },
+   "twoTone": false,
+   "figmaNode": "2372:8571"
+  },
+  {
+   "file": "eq-club.svg",
+   "name": "EQ",
+   "variant": {
+    "EQ": "club"
+   },
+   "twoTone": false,
+   "figmaNode": "2372:8578"
+  },
+  {
+   "file": "eq-dance.svg",
+   "name": "EQ",
+   "variant": {
+    "EQ": "dance"
+   },
+   "twoTone": false,
+   "figmaNode": "2372:8588"
+  },
+  {
+   "file": "eq-full-bass-and-treble.svg",
+   "name": "EQ",
+   "variant": {
+    "EQ": "full bass and treble"
+   },
+   "twoTone": false,
+   "figmaNode": "6114:13938"
+  },
+  {
+   "file": "eq-full-bass.svg",
+   "name": "EQ",
+   "variant": {
+    "EQ": "full bass"
+   },
+   "twoTone": false,
+   "figmaNode": "6114:13932"
+  },
+  {
+   "file": "eq-full-treble.svg",
+   "name": "EQ",
+   "variant": {
+    "EQ": "full treble"
+   },
+   "twoTone": false,
+   "figmaNode": "6114:13944"
+  },
+  {
+   "file": "eq-headphones.svg",
+   "name": "EQ",
+   "variant": {
+    "EQ": "headphones"
+   },
+   "twoTone": false,
+   "figmaNode": "6114:13955"
+  },
+  {
+   "file": "eq-large-hall.svg",
+   "name": "EQ",
+   "variant": {
+    "EQ": "large hall"
+   },
+   "twoTone": false,
+   "figmaNode": "6114:13961"
+  },
+  {
+   "file": "eq-live.svg",
+   "name": "EQ",
+   "variant": {
+    "EQ": "live"
+   },
+   "twoTone": false,
+   "figmaNode": "6114:13973"
+  },
+  {
+   "file": "eq-party.svg",
+   "name": "EQ",
+   "variant": {
+    "EQ": "party"
+   },
+   "twoTone": false,
+   "figmaNode": "6114:13979"
+  },
+  {
+   "file": "eq-pop.svg",
+   "name": "EQ",
+   "variant": {
+    "EQ": "pop"
+   },
+   "twoTone": false,
+   "figmaNode": "6114:13985"
+  },
+  {
+   "file": "eq-reggae.svg",
+   "name": "EQ",
+   "variant": {
+    "EQ": "reggae"
+   },
+   "twoTone": false,
+   "figmaNode": "6114:13967"
+  },
+  {
+   "file": "eq-rock.svg",
+   "name": "EQ",
+   "variant": {
+    "EQ": "rock"
+   },
+   "twoTone": false,
+   "figmaNode": "6114:13996"
+  },
+  {
+   "file": "eq-ska.svg",
+   "name": "EQ",
+   "variant": {
+    "EQ": "ska"
+   },
+   "twoTone": false,
+   "figmaNode": "6114:14002"
+  },
+  {
+   "file": "eq-soft-rock.svg",
+   "name": "EQ",
+   "variant": {
+    "EQ": "soft rock"
+   },
+   "twoTone": false,
+   "figmaNode": "6114:14014"
+  },
+  {
+   "file": "eq-soft.svg",
+   "name": "EQ",
+   "variant": {
+    "EQ": "soft"
+   },
+   "twoTone": false,
+   "figmaNode": "6114:14008"
+  },
+  {
+   "file": "eq-techno.svg",
+   "name": "EQ",
+   "variant": {
+    "EQ": "techno"
+   },
+   "twoTone": false,
+   "figmaNode": "6114:14021"
+  },
+  {
+   "file": "eq.svg",
+   "name": "EQ",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2372:8559"
+  },
+  {
+   "file": "expand-sidebar.svg",
+   "name": "expand-sidebar",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "858:5697"
+  },
+  {
+   "file": "favorite-active.svg",
+   "name": "favorite",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "2430:14666"
+  },
+  {
+   "file": "favorite-two-tone.svg",
+   "name": "favorite",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2511:9352"
+  },
+  {
+   "file": "favorite.svg",
+   "name": "favorite",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2430:14629"
+  },
+  {
+   "file": "file-two-tone.svg",
+   "name": "file",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2461:9644"
+  },
+  {
+   "file": "file.svg",
+   "name": "file",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2107:6307"
+  },
+  {
+   "file": "folder-active.svg",
+   "name": "folder",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "87:1031"
+  },
+  {
+   "file": "folder-selected.svg",
+   "name": "folder",
+   "variant": {
+    "state": "selected"
+   },
+   "twoTone": false,
+   "figmaNode": "467:502"
+  },
+  {
+   "file": "folder-two-tone.svg",
+   "name": "folder",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2461:9734"
+  },
+  {
+   "file": "folder.svg",
+   "name": "folder",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "51:808"
+  },
+  {
+   "file": "forward-10-sec.svg",
+   "name": "forward-10-sec",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "45:22"
+  },
+  {
+   "file": "forward-15-sec.svg",
+   "name": "forward-15-sec",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "45:32"
+  },
+  {
+   "file": "fullscreen-active.svg",
+   "name": "fullscreen",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "6031:13553"
+  },
+  {
+   "file": "fullscreen.svg",
+   "name": "fullscreen",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "48:54"
+  },
+  {
+   "file": "genre-two-tone.svg",
+   "name": "genre",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "6202:13602"
+  },
+  {
+   "file": "genre.svg",
+   "name": "genre",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "6191:13585"
+  },
+  {
+   "file": "grid.svg",
+   "name": "grid",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2107:6523"
+  },
+  {
+   "file": "hdr.svg",
+   "name": "HDR",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2146:9032"
+  },
+  {
+   "file": "home-active.svg",
+   "name": "home",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "87:1026"
+  },
+  {
+   "file": "home-selected.svg",
+   "name": "home",
+   "variant": {
+    "state": "selected"
+   },
+   "twoTone": false,
+   "figmaNode": "470:597"
+  },
+  {
+   "file": "home.svg",
+   "name": "home",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "70:828"
+  },
+  {
+   "file": "hotkeys-active.svg",
+   "name": "hotkeys",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "1089:4464"
+  },
+  {
+   "file": "hotkeys-two-tone.svg",
+   "name": "hotkeys",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2493:9253"
+  },
+  {
+   "file": "hotkeys.svg",
+   "name": "hotkeys",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "1089:4450"
+  },
+  {
+   "file": "info-two-tone.svg",
+   "name": "info",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2461:9651"
+  },
+  {
+   "file": "info.svg",
+   "name": "info",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2139:8985"
+  },
+  {
+   "file": "interface-active.svg",
+   "name": "interface",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "1088:4044"
+  },
+  {
+   "file": "interface.svg",
+   "name": "interface",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "999:4960"
+  },
+  {
+   "file": "link-active.svg",
+   "name": "link",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "774:1075"
+  },
+  {
+   "file": "link-two-tone.svg",
+   "name": "link",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "6063:13611"
+  },
+  {
+   "file": "link.svg",
+   "name": "link",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "774:1038"
+  },
+  {
+   "file": "list.svg",
+   "name": "list",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2107:6531"
+  },
+  {
+   "file": "lists-active.svg",
+   "name": "lists",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "467:492"
+  },
+  {
+   "file": "lists.svg",
+   "name": "lists",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "217:191"
+  },
+  {
+   "file": "maximize.svg",
+   "name": "maximize",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "48:51"
+  },
+  {
+   "file": "minimize.svg",
+   "name": "minimize",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "48:46"
+  },
+  {
+   "file": "more.svg",
+   "name": "more",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "247:418"
+  },
+  {
+   "file": "move.svg",
+   "name": "move",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "463:417"
+  },
+  {
+   "file": "music.svg",
+   "name": "music",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "999:4806"
+  },
+  {
+   "file": "new-folder-two-tone.svg",
+   "name": "new folder",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2461:9779"
+  },
+  {
+   "file": "new-folder.svg",
+   "name": "new folder",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2139:9022"
+  },
+  {
+   "file": "next-two-tone.svg",
+   "name": "next",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "6073:13875"
+  },
+  {
+   "file": "next.svg",
+   "name": "next",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "45:12"
+  },
+  {
+   "file": "open.svg",
+   "name": "open",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "330:267"
+  },
+  {
+   "file": "paint-active.svg",
+   "name": "paint",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "2150:9248"
+  },
+  {
+   "file": "paint-two-tone.svg",
+   "name": "paint",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2493:9283"
+  },
+  {
+   "file": "paint.svg",
+   "name": "paint",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2150:9212"
+  },
+  {
+   "file": "pause.svg",
+   "name": "pause",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "44:427"
+  },
+  {
+   "file": "pip.svg",
+   "name": "PiP",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2139:8439"
+  },
+  {
+   "file": "play.svg",
+   "name": "play",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "44:419"
+  },
+  {
+   "file": "playback-active.svg",
+   "name": "playback",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "3180:17978"
+  },
+  {
+   "file": "playback-selected-two-tone.svg",
+   "name": "playback",
+   "variant": {
+    "state": "selected"
+   },
+   "twoTone": true,
+   "figmaNode": "6073:13944"
+  },
+  {
+   "file": "playback-settings-active.svg",
+   "name": "playback settings",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "2238:9232"
+  },
+  {
+   "file": "playback-settings.svg",
+   "name": "playback settings",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2230:9222"
+  },
+  {
+   "file": "playback-two-tone.svg",
+   "name": "playback",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "4004:12338"
+  },
+  {
+   "file": "playback.svg",
+   "name": "playback",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "999:4802"
+  },
+  {
+   "file": "playlist-active.svg",
+   "name": "playlist",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "858:5098"
+  },
+  {
+   "file": "playlist-two-tone.svg",
+   "name": "playlist",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2461:9719"
+  },
+  {
+   "file": "playlist.svg",
+   "name": "playlist",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "42:357"
+  },
+  {
+   "file": "plugins-active.svg",
+   "name": "plugins",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "2516:9375"
+  },
+  {
+   "file": "plugins-two-tone.svg",
+   "name": "plugins",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2516:9378"
+  },
+  {
+   "file": "plugins.svg",
+   "name": "plugins",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2516:9369"
+  },
+  {
+   "file": "preferences-active.svg",
+   "name": "preferences",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "1803:2965"
+  },
+  {
+   "file": "preferences.svg",
+   "name": "preferences",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "1803:2957"
+  },
+  {
+   "file": "previous-two-tone.svg",
+   "name": "previous",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "6073:13879"
+  },
+  {
+   "file": "previous.svg",
+   "name": "previous",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "45:18"
+  },
+  {
+   "file": "privacy-active.svg",
+   "name": "privacy",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "3050:10424"
+  },
+  {
+   "file": "privacy-two-tone.svg",
+   "name": "privacy",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "3050:10420"
+  },
+  {
+   "file": "privacy.svg",
+   "name": "privacy",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "3046:10386"
+  },
+  {
+   "file": "profile-two-tone.svg",
+   "name": "profile",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2493:9300"
+  },
+  {
+   "file": "profile.svg",
+   "name": "profile",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2437:14784"
+  },
+  {
+   "file": "queue-two-tone.svg",
+   "name": "queue",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2461:9714"
+  },
+  {
+   "file": "queue.svg",
+   "name": "queue",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2127:7523"
+  },
+  {
+   "file": "quit-two-tone.svg",
+   "name": "quit",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "6073:14054"
+  },
+  {
+   "file": "quit.svg",
+   "name": "quit",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "6073:14046"
+  },
+  {
+   "file": "recent-two-tone.svg",
+   "name": "recent",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2493:9246"
+  },
+  {
+   "file": "recent.svg",
+   "name": "recent",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2154:9699"
+  },
+  {
+   "file": "record-active.svg",
+   "name": "record",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "6571:16751"
+  },
+  {
+   "file": "record-two-tone.svg",
+   "name": "record",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "6073:13901"
+  },
+  {
+   "file": "record.svg",
+   "name": "record",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2115:7482"
+  },
+  {
+   "file": "refresh-two-tone.svg",
+   "name": "refresh",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2461:9784"
+  },
+  {
+   "file": "refresh.svg",
+   "name": "refresh",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "1622:3137"
+  },
+  {
+   "file": "remove.svg",
+   "name": "remove",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "463:560"
+  },
+  {
+   "file": "repeat-right-two-tone.svg",
+   "name": "repeat",
+   "variant": {
+    "direction": "right"
+   },
+   "twoTone": true,
+   "figmaNode": "2460:9614"
+  },
+  {
+   "file": "repeat-right.svg",
+   "name": "repeat",
+   "variant": {
+    "direction": "right"
+   },
+   "twoTone": false,
+   "figmaNode": "187:470"
+  },
+  {
+   "file": "replay.svg",
+   "name": "replay",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "1919:9572"
+  },
+  {
+   "file": "save-two-tone.svg",
+   "name": "save",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2459:9548"
+  },
+  {
+   "file": "save.svg",
+   "name": "save",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2459:9542"
+  },
+  {
+   "file": "scope-two-tone.svg",
+   "name": "scope",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2139:8064"
+  },
+  {
+   "file": "search.svg",
+   "name": "search",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "856:2147"
+  },
+  {
+   "file": "settings-active.svg",
+   "name": "settings",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "470:507"
+  },
+  {
+   "file": "settings-two-tone.svg",
+   "name": "settings",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2493:9293"
+  },
+  {
+   "file": "settings.svg",
+   "name": "settings",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "42:355"
+  },
+  {
+   "file": "shuffle-right-two-tone.svg",
+   "name": "shuffle",
+   "variant": {
+    "direction": "right"
+   },
+   "twoTone": true,
+   "figmaNode": "2461:9618"
+  },
+  {
+   "file": "shuffle-right.svg",
+   "name": "shuffle",
+   "variant": {
+    "direction": "right"
+   },
+   "twoTone": false,
+   "figmaNode": "187:474"
+  },
+  {
+   "file": "sidebar-active.svg",
+   "name": "sidebar",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "87:1041"
+  },
+  {
+   "file": "sidebar-left.svg",
+   "name": "sidebar",
+   "variant": {
+    "direction": "left"
+   },
+   "twoTone": false,
+   "figmaNode": "69:814"
+  },
+  {
+   "file": "sidebar-right.svg",
+   "name": "sidebar",
+   "variant": {
+    "direction": "right"
+   },
+   "twoTone": false,
+   "figmaNode": "6586:17393"
+  },
+  {
+   "file": "snapshot.svg",
+   "name": "snapshot",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2115:7492"
+  },
+  {
+   "file": "songs-active.svg",
+   "name": "songs",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "87:1009"
+  },
+  {
+   "file": "songs-selected.svg",
+   "name": "songs",
+   "variant": {
+    "state": "selected"
+   },
+   "twoTone": false,
+   "figmaNode": "470:592"
+  },
+  {
+   "file": "songs.svg",
+   "name": "songs",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "71:851"
+  },
+  {
+   "file": "sort-active.svg",
+   "name": "sort",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "856:2206"
+  },
+  {
+   "file": "sort.svg",
+   "name": "sort",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "463:564"
+  },
+  {
+   "file": "spectometer-two-tone.svg",
+   "name": "spectometer",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2138:8026"
+  },
+  {
+   "file": "spectrum-two-tone.svg",
+   "name": "spectrum",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2139:8048"
+  },
+  {
+   "file": "speed-active.svg",
+   "name": "speed",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "2115:7391"
+  },
+  {
+   "file": "speed.svg",
+   "name": "speed",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2115:7386"
+  },
+  {
+   "file": "stop-two-tone.svg",
+   "name": "stop",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "6072:13836"
+  },
+  {
+   "file": "stop.svg",
+   "name": "stop",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "187:322"
+  },
+  {
+   "file": "streaming-active.svg",
+   "name": "streaming",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "477:1202"
+  },
+  {
+   "file": "streaming-selected.svg",
+   "name": "streaming",
+   "variant": {
+    "state": "selected"
+   },
+   "twoTone": false,
+   "figmaNode": "477:1208"
+  },
+  {
+   "file": "streaming-two-tone.svg",
+   "name": "streaming",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2461:9672"
+  },
+  {
+   "file": "streaming.svg",
+   "name": "streaming",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "70:833"
+  },
+  {
+   "file": "subtitle-2461-9663.svg",
+   "name": "subtitle",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2461:9663"
+  },
+  {
+   "file": "subtitle.svg",
+   "name": "subtitle",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "1911:8286"
+  },
+  {
+   "file": "subtitles-active.svg",
+   "name": "subtitles",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "467:497"
+  },
+  {
+   "file": "subtitles-two-tone.svg",
+   "name": "subtitles",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2461:9635"
+  },
+  {
+   "file": "subtitles.svg",
+   "name": "subtitles",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "42:398"
+  },
+  {
+   "file": "swap-two-tone.svg",
+   "name": "swap",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2461:9628"
+  },
+  {
+   "file": "swap.svg",
+   "name": "swap",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "1915:8362"
+  },
+  {
+   "file": "thumbnail-high.svg",
+   "name": "thumbnail",
+   "variant": {
+    "value": "high"
+   },
+   "twoTone": false,
+   "figmaNode": "2404:9204"
+  },
+  {
+   "file": "thumbnail-low.svg",
+   "name": "thumbnail",
+   "variant": {
+    "value": "low"
+   },
+   "twoTone": false,
+   "figmaNode": "2404:9215"
+  },
+  {
+   "file": "thumbnail-medium.svg",
+   "name": "thumbnail",
+   "variant": {
+    "value": "medium"
+   },
+   "twoTone": false,
+   "figmaNode": "2404:9211"
+  },
+  {
+   "file": "thumbnail.svg",
+   "name": "thumbnail",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2404:9198"
+  },
+  {
+   "file": "tv-active.svg",
+   "name": "tv",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "477:1101"
+  },
+  {
+   "file": "tv-selected.svg",
+   "name": "tv",
+   "variant": {
+    "state": "selected"
+   },
+   "twoTone": false,
+   "figmaNode": "477:1107"
+  },
+  {
+   "file": "tv.svg",
+   "name": "tv",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "477:1096"
+  },
+  {
+   "file": "ui-two-tone.svg",
+   "name": "ui",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "6075:14095"
+  },
+  {
+   "file": "ui.svg",
+   "name": "ui",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "6075:14088"
+  },
+  {
+   "file": "upload-up-two-tone.svg",
+   "name": "upload",
+   "variant": {
+    "direction": "up"
+   },
+   "twoTone": true,
+   "figmaNode": "6215:13606"
+  },
+  {
+   "file": "video-active.svg",
+   "name": "video",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "1102:5055"
+  },
+  {
+   "file": "video-two-tone.svg",
+   "name": "video",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "5886:24408"
+  },
+  {
+   "file": "video.svg",
+   "name": "video",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "999:4810"
+  },
+  {
+   "file": "videos-active.svg",
+   "name": "videos",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "87:1015"
+  },
+  {
+   "file": "videos-selected.svg",
+   "name": "videos",
+   "variant": {
+    "state": "selected"
+   },
+   "twoTone": false,
+   "figmaNode": "470:587"
+  },
+  {
+   "file": "videos.svg",
+   "name": "videos",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "71:857"
+  },
+  {
+   "file": "view-active.svg",
+   "name": "view",
+   "variant": {
+    "state": "active"
+   },
+   "twoTone": false,
+   "figmaNode": "856:3220"
+  },
+  {
+   "file": "view.svg",
+   "name": "view",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "856:3212"
+  },
+  {
+   "file": "vlc.svg",
+   "name": "vlc",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "48:57"
+  },
+  {
+   "file": "volume-high.svg",
+   "name": "volume",
+   "variant": {
+    "value": "high"
+   },
+   "twoTone": false,
+   "figmaNode": "182:179"
+  },
+  {
+   "file": "waveform-two-tone.svg",
+   "name": "waveform",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2139:8078"
+  },
+  {
+   "file": "window-two-tone.svg",
+   "name": "window",
+   "variant": {},
+   "twoTone": true,
+   "figmaNode": "2461:9640"
+  },
+  {
+   "file": "window.svg",
+   "name": "window",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2107:6312"
+  },
+  {
+   "file": "wrench.svg",
+   "name": "wrench",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2107:6319"
+  },
+  {
+   "file": "zoom.svg",
+   "name": "zoom",
+   "variant": {},
+   "twoTone": false,
+   "figmaNode": "2154:9680"
+  }
+ ]
+}

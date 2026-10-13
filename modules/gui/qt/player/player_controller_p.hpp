@@ -30,8 +30,12 @@
 #include <QUrl>
 #include <QByteArray>
 #include <QPair>
+#include <QHash>
 
+#include <memory>
 #include <optional>
+
+class QTemporaryDir;
 
 #ifndef QT_HAS_LIBATOMIC
 #warning "libatomic is not available. Read write lock is going to be used instead."
@@ -69,6 +73,12 @@ public:
     QList<TimedText> syltLyrics() const;
     void onArtFetchEnded(input_item_t *, bool fetched);
 
+    // Seek preview thumbnails
+    void requestSeekThumbnail(int bucket);
+    void startSeekThumbnail(int bucket);
+    void onSeekThumbnailEnded(unsigned generation, int bucket, const QString &file, bool ok);
+    void setSeekThumbnail(const QString &file);
+
     // SMPTE Timer
     void addSMPTETimer();
     void removeSMPTETimer();
@@ -92,6 +102,18 @@ public:
     qt_intf_t           *p_intf;
     vlc_player_t            *m_player;
     vlc_preparser_t         *m_preparser = nullptr;
+
+    // Seek preview thumbnails: one request in flight, the latest pending position waits for it
+    vlc_preparser_t         *m_thumbnailPreparser = nullptr;
+    std::unique_ptr<QTemporaryDir> m_thumbnailDir;
+    QHash<int, QString>     m_thumbnails;       // bucket -> file of the current item
+    QString                 m_thumbnailItemUri;
+    unsigned                m_thumbnailGeneration = 0;
+    unsigned                m_thumbnailSequence = 0;
+    bool                    m_thumbnailBusy = false;
+    int                     m_thumbnailWanted = -1;
+    int                     m_thumbnailPending = -1;
+    QUrl                    m_seekThumbnail;
 
     //callbacks
     vlc_player_listener_id* m_player_listener = nullptr;

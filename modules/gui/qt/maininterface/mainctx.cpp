@@ -494,7 +494,9 @@ void MainCtx::loadFromSettingsImpl(const bool callSignals)
 
     loadFromSettings(m_lyricsMode, "MainWindow/lyrics-mode", true, this, &MainCtx::lyricsModeChanged);
 
-    const auto colorSchemeIndex = getSettings()->value( "MainWindow/color-scheme-index", 0 ).toInt();
+    // The redesign is a dark interface first, start with the night scheme
+    // (see ColorSchemeModel) until the user picks another one.
+    const auto colorSchemeIndex = getSettings()->value( "MainWindow/color-scheme-index", 2 ).toInt();
     m_colorScheme->setCurrentIndex(colorSchemeIndex);
 
     /* user interface scale factor */

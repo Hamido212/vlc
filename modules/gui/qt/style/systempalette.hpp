@@ -111,8 +111,8 @@ public:
     Q_PROPERTY(CSDMetrics* csdMetrics READ getCSDMetrics NOTIFY CSDMetricsChanged FINAL)
 
     //standard color definitions used by light/dark themes
-    COLOR_DEFINITION(orange500, "#FF8800");
-    COLOR_DEFINITION(orange800, "#FF610A");
+    COLOR_DEFINITION(orange500, "#D37918");
+    COLOR_DEFINITION(orange800, "#E8851A");
 
     COLOR_DEFINITION(orange400, "#f89a06"); //FIXME name have been chosen randomly by me
     COLOR_DEFINITION(orange200, "#e29a06"); //FIXME name have been chosen randomly by me
@@ -132,6 +132,38 @@ public:
     COLOR_DEFINITION(lightGrey500, "#E9E9E9");
     COLOR_DEFINITION(lightGrey600, "#E5E5E5");
     COLOR_DEFINITION(lightGrey700, "#E0E0E0");
+
+    //dark theme tokens of the redesign, named after the Figma variables (Dark/BG/A3, ...)
+    COLOR_DEFINITION(darkBgA1, "#222222");
+    COLOR_DEFINITION(darkBgA3, "#1B1B1B");
+    COLOR_DEFINITION(darkBgA4, "#191919");
+    COLOR_DEFINITION(darkBgA5, "#151515");
+    COLOR_DEFINITION(darkBgB1, "#0E0E0E");
+    COLOR_DEFINITION(darkBgB2, "#090909");
+    COLOR_DEFINITION(darkFg1, "#EAEAEA");
+    COLOR_DEFINITION(darkFg2, "#C6C6C6");
+    COLOR_DEFINITION(darkFgA1, "#969696");
+    COLOR_DEFINITION(darkFgA2, "#8F8F8F");
+    COLOR_DEFINITION(darkFgA3, "#6B6B6B");
+    COLOR_DEFINITION(darkFgA4, "#404040");
+    COLOR_DEFINITION(darkFgB1, "#161616");
+    COLOR_DEFINITION(darkDividerBright, "#373737");
+    COLOR_DEFINITION(darkDividerDim, "#222222");
+
+    //and those of the light theme (Light/BG/A3, ...)
+    COLOR_DEFINITION(lightBgA1, "#EDEDED");
+    COLOR_DEFINITION(lightBgA2, "#DDDDDD");
+    COLOR_DEFINITION(lightBgA3, "#D5D5D5");
+    COLOR_DEFINITION(lightBgA4, "#B3B3B3");
+    COLOR_DEFINITION(lightBgA5, "#888888");
+    COLOR_DEFINITION(lightBgB1, "#E7E7E7");
+    COLOR_DEFINITION(lightBgB2, "#DEDEDE");
+    COLOR_DEFINITION(lightFgA1, "#3C3C3C");
+    COLOR_DEFINITION(lightFgA2, "#2E2E2E");
+    COLOR_DEFINITION(lightFgA3, "#6B6B6B");
+    COLOR_DEFINITION(lightFgB1, "#161616");
+    COLOR_DEFINITION(lightDividerBright, "#9B9B9B");
+    COLOR_DEFINITION(lightDividerDim, "#ACACAC");
 
     COLOR_DEFINITION(red500, "#FF0000");
 

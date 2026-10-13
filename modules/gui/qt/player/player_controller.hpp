@@ -229,6 +229,9 @@ public:
     // High resolution time fed by SMPTE Timer
     Q_PROPERTY(QString highResolutionTime READ highResolutionTime FINAL)
 
+    // Frame shown above the seek bar while hovering it (file URL, empty until generated)
+    Q_PROPERTY(QUrl seekThumbnail READ getSeekThumbnail NOTIFY seekThumbnailChanged FINAL)
+
     /* exposed actions */
 public slots:
     void reverse();
@@ -276,6 +279,8 @@ public slots:
     //misc
     void toggleABloopState();
     void snapshot();
+    // position is relative to the media length, from 0.0 to 1.0
+    Q_INVOKABLE void requestSeekThumbnail(double position);
     void toggleRecord();
     void toggleVisualization();
 
@@ -438,7 +443,11 @@ public slots:
     //Renderer
     RendererManager* getRendererManager();
 
+    QUrl getSeekThumbnail() const;
+
 signals:
+    void seekThumbnailChanged();
+
     //playback
     void playingStateChanged( PlayingState state );
     void inputChanged( bool hasInput );

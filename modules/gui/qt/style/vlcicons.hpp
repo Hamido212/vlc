@@ -110,6 +110,42 @@ class VLCIcons : public QObject {
     Q_PROPERTY(QChar medialibrary_remove MEMBER medialibrary_remove CONSTANT FINAL)
     Q_PROPERTY(QChar regex MEMBER regex CONSTANT FINAL)
     Q_PROPERTY(QChar ic_fluent_text_change_case_24_regular MEMBER ic_fluent_text_change_case_24_regular CONSTANT FINAL)
+    Q_PROPERTY(QChar folder MEMBER folder CONSTANT FINAL)
+    Q_PROPERTY(QChar audio MEMBER audio CONSTANT FINAL)
+    Q_PROPERTY(QChar subtitles MEMBER subtitles CONSTANT FINAL)
+    Q_PROPERTY(QChar divider MEMBER divider CONSTANT FINAL)
+    Q_PROPERTY(QChar queue MEMBER queue CONSTANT FINAL)
+    Q_PROPERTY(QChar cone MEMBER cone CONSTANT FINAL)
+    Q_PROPERTY(QChar panel_right MEMBER panel_right CONSTANT FINAL)
+    Q_PROPERTY(QChar pip MEMBER pip CONSTANT FINAL)
+    Q_PROPERTY(QChar chapters MEMBER chapters CONSTANT FINAL)
+    Q_PROPERTY(QChar bookmarks MEMBER bookmarks CONSTANT FINAL)
+    Q_PROPERTY(QChar speed MEMBER speed CONSTANT FINAL)
+    Q_PROPERTY(QChar music MEMBER music CONSTANT FINAL)
+    Q_PROPERTY(QChar video MEMBER video CONSTANT FINAL)
+    Q_PROPERTY(QChar lists MEMBER lists CONSTANT FINAL)
+    Q_PROPERTY(QChar preferences MEMBER preferences CONSTANT FINAL)
+    Q_PROPERTY(QChar hotkeys MEMBER hotkeys CONSTANT FINAL)
+    Q_PROPERTY(QChar arrow_right MEMBER arrow_right CONSTANT FINAL)
+    Q_PROPERTY(QChar arrow_up MEMBER arrow_up CONSTANT FINAL)
+    Q_PROPERTY(QChar arrow_down MEMBER arrow_down CONSTANT FINAL)
+    Q_PROPERTY(QChar file MEMBER file CONSTANT FINAL)
+    Q_PROPERTY(QChar new_folder MEMBER new_folder CONSTANT FINAL)
+    Q_PROPERTY(QChar favorite MEMBER favorite CONSTANT FINAL)
+    Q_PROPERTY(QChar favorite_filled MEMBER favorite_filled CONSTANT FINAL)
+    Q_PROPERTY(QChar edit MEMBER edit CONSTANT FINAL)
+    Q_PROPERTY(QChar sort MEMBER sort CONSTANT FINAL)
+    Q_PROPERTY(QChar view MEMBER view CONSTANT FINAL)
+    Q_PROPERTY(QChar refresh MEMBER refresh CONSTANT FINAL)
+    Q_PROPERTY(QChar replay MEMBER replay CONSTANT FINAL)
+    Q_PROPERTY(QChar disc MEMBER disc CONSTANT FINAL)
+    Q_PROPERTY(QChar open MEMBER open CONSTANT FINAL)
+    Q_PROPERTY(QChar quit MEMBER quit CONSTANT FINAL)
+    Q_PROPERTY(QChar profile MEMBER profile CONSTANT FINAL)
+    Q_PROPERTY(QChar artist MEMBER artist CONSTANT FINAL)
+    Q_PROPERTY(QChar album MEMBER album CONSTANT FINAL)
+    Q_PROPERTY(QChar genre MEMBER genre CONSTANT FINAL)
+    Q_PROPERTY(QChar playback_settings MEMBER playback_settings CONSTANT FINAL)
 
 
 public:
@@ -216,6 +252,42 @@ public:
     static constexpr inline QChar medialibrary_remove{ u'\ue05d' };
     static constexpr inline QChar regex{ u'\ue05e' };
     static constexpr inline QChar ic_fluent_text_change_case_24_regular{ u'\ue05f' };
+    static constexpr inline QChar folder{ u'\ue060' };
+    static constexpr inline QChar audio{ u'\ue061' };
+    static constexpr inline QChar subtitles{ u'\ue062' };
+    static constexpr inline QChar divider{ u'\ue063' };
+    static constexpr inline QChar queue{ u'\ue064' };
+    static constexpr inline QChar cone{ u'\ue065' };
+    static constexpr inline QChar panel_right{ u'\ue066' };
+    static constexpr inline QChar pip{ u'\ue067' };
+    static constexpr inline QChar chapters{ u'\ue068' };
+    static constexpr inline QChar bookmarks{ u'\ue069' };
+    static constexpr inline QChar speed{ u'\ue06a' };
+    static constexpr inline QChar music{ u'\ue06b' };
+    static constexpr inline QChar video{ u'\ue06c' };
+    static constexpr inline QChar lists{ u'\ue06d' };
+    static constexpr inline QChar preferences{ u'\ue06e' };
+    static constexpr inline QChar hotkeys{ u'\ue06f' };
+    static constexpr inline QChar arrow_right{ u'\ue070' };
+    static constexpr inline QChar arrow_up{ u'\ue071' };
+    static constexpr inline QChar arrow_down{ u'\ue072' };
+    static constexpr inline QChar file{ u'\ue073' };
+    static constexpr inline QChar new_folder{ u'\ue074' };
+    static constexpr inline QChar favorite{ u'\ue075' };
+    static constexpr inline QChar favorite_filled{ u'\ue076' };
+    static constexpr inline QChar edit{ u'\ue077' };
+    static constexpr inline QChar sort{ u'\ue078' };
+    static constexpr inline QChar view{ u'\ue079' };
+    static constexpr inline QChar refresh{ u'\ue07a' };
+    static constexpr inline QChar replay{ u'\ue07b' };
+    static constexpr inline QChar disc{ u'\ue07c' };
+    static constexpr inline QChar open{ u'\ue07d' };
+    static constexpr inline QChar quit{ u'\ue07e' };
+    static constexpr inline QChar profile{ u'\ue07f' };
+    static constexpr inline QChar artist{ u'\ue080' };
+    static constexpr inline QChar album{ u'\ue081' };
+    static constexpr inline QChar genre{ u'\ue082' };
+    static constexpr inline QChar playback_settings{ u'\ue083' };
 
 };
 

@@ -34,6 +34,20 @@ FocusScope {
 
     property real layoutSpacing: VLCStyle.margin_xxlarge // spacing between layouts (left, center, and right)
 
+    // The following only apply when there are no controls in the center,
+    // which leaves the left and the right ones in a single row.
+
+    property real rightSpacing: spacing // spacing between the controls on the right
+
+    property real groupSpacing: 0 // width of a spacer control, see ControlRepeater
+
+    property real buttonPadding: 0 // see ControlRepeater
+
+    // Empty item between the left and the right controls, null when there
+    // are controls in the center. Whoever wants to use that room can put an
+    // item in it.
+    readonly property Item filler: loaderLeftRight.item?.filler ?? null
+
     property int identifier: -1
 
     readonly property PlayerControlbarModel model: {
@@ -82,9 +96,13 @@ FocusScope {
         focus: active
 
         sourceComponent: RowLayout {
-            spacing: playerControlLayout.spacing
+            // The repeaters space the controls, the two sides do not have
+            // to use the same spacing.
+            spacing: 0
 
             focus: true
+
+            readonly property Item filler: fillerItem
 
             // TODO: Qt >= 5.13 Use QConcatenateTablesProxyModel
             //       instead of multiple repeaters
@@ -97,6 +115,10 @@ FocusScope {
                     player: Player
                     ctx: MainCtx
                 }
+
+                spacing: playerControlLayout.spacing
+                groupSpacing: playerControlLayout.groupSpacing
+                buttonPadding: playerControlLayout.buttonPadding
 
                 Navigation.parentItem: playerControlLayout
                 Navigation.rightAction: function() {
@@ -118,6 +140,8 @@ FocusScope {
             }
 
             Item {
+                id: fillerItem
+
                 function containsVisibleItem(repeater) {
                     for (let i = 0; i < repeater.count; ++i) {
                         const item = repeater.itemAt(i)
@@ -133,6 +157,7 @@ FocusScope {
                                                                                                                : 0
 
                 Layout.fillWidth: true
+                Layout.fillHeight: true
                 visible: true
             }
 
@@ -144,6 +169,10 @@ FocusScope {
                     player: Player
                     ctx: MainCtx
                 }
+
+                spacing: playerControlLayout.rightSpacing
+                groupSpacing: playerControlLayout.groupSpacing
+                buttonPadding: playerControlLayout.buttonPadding
 
                 Navigation.parentItem: playerControlLayout
                 Navigation.leftAction: function() {

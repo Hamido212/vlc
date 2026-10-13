@@ -941,6 +941,9 @@ libqt_plugin_la_RES = \
 	pixmaps/misc/theme_dark.svg \
 	pixmaps/misc/theme_daynight.svg \
 	pixmaps/misc/theme_light.svg \
+	pixmaps/misc/volume_cone_bg.svg \
+	pixmaps/misc/volume_cone_bg_light.svg \
+	pixmaps/misc/volume_cone_fill.svg \
 	pixmaps/misc/wait1.svg \
 	pixmaps/misc/wait2.svg \
 	pixmaps/misc/wait3.svg \
@@ -1180,6 +1183,9 @@ libqml_module_player_a_QML = \
 	player/qml/SliderBar.qml \
 	player/qml/TopBar.qml \
 	player/qml/TracksMenu.qml \
+	player/qml/TracksPanel.qml \
+	player/qml/PlayerPanel.qml \
+	player/qml/SettingsPanel.qml \
 	player/qml/TracksPage.qml \
 	player/qml/TracksPageAudio.qml \
 	player/qml/TracksPageSpeed.qml \
@@ -1217,6 +1223,9 @@ libqml_module_playercontrols_a_QML = \
 	player/qml/controlbarcontrols/FullscreenButton.qml \
 	player/qml/controlbarcontrols/InfoButton.qml \
 	player/qml/controlbarcontrols/LangButton.qml \
+	player/qml/controlbarcontrols/AudioButton.qml \
+	player/qml/controlbarcontrols/SubtitleButton.qml \
+	player/qml/controlbarcontrols/PanelButton.qml \
 	player/qml/controlbarcontrols/LoopButton.qml \
 	player/qml/controlbarcontrols/MenuButton.qml \
 	player/qml/controlbarcontrols/NavigationBoxButton.qml \
@@ -1355,6 +1364,7 @@ libqml_module_widgets_a_QML = \
 	widgets/qml/TextAutoScroller.qml \
 	widgets/qml/SearchBox.qml \
 	widgets/qml/SliderExt.qml \
+	widgets/qml/BarSlider.qml \
 	widgets/qml/SortControl.qml \
 	widgets/qml/SpinBoxExt.qml \
 	widgets/qml/StackViewExt.qml \
