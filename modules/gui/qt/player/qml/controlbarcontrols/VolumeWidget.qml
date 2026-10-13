@@ -97,21 +97,50 @@ T.Pane {
         Widgets.SliderExt {
             id: volControl
 
-            // FIXME: use VLCStyle
-            implicitWidth: VLCStyle.dp(100, VLCStyle.scale)
+            implicitWidth: VLCStyle.dp(88, VLCStyle.scale)
+            implicitHeight: VLCStyle.controlBarItemHeight
 
-            // WARNING: Directly setting the insets break handle and background positioning.
-            Binding on topInset {
-                when: MainCtx.usingTouch
-                value: VLCStyle.touchHandlerMargin
-            }
-            Binding on bottomInset {
-                when: MainCtx.usingTouch
-                value: VLCStyle.touchHandlerMargin
+            Layout.leftMargin: VLCStyle.margin_xsmall
+            Layout.alignment: Qt.AlignVCenter
+
+            // The cone lying on its side: the whole of it is the track, the
+            // volume fills it up from the tip.
+            background: Item {
+                implicitWidth: volControl.implicitWidth
+                implicitHeight: volControl.implicitHeight
+
+                // Sizes and offsets of the two drawings are relative to the
+                // 88x28 box they were made for.
+
+                Widgets.ScaledImage {
+                    anchors.centerIn: parent
+
+                    width: parent.width * (89 / 88)
+                    height: parent.height * (27.3633 / 28)
+
+                    source: "qrc:///misc/volume_cone_bg.svg"
+                }
+
+                Item {
+                    width: volControl.visualPosition * parent.width
+                    height: parent.height
+
+                    clip: true
+
+                    Widgets.ScaledImage {
+                        x: volControl.background.width * (1.5 / 88)
+                        y: (volControl.background.height - height) / 2
+
+                        width: volControl.background.width * (86 / 88)
+                        height: volControl.background.height * (24.56 / 28)
+
+                        source: "qrc:///misc/volume_cone_fill.svg"
+                    }
+                }
             }
 
-            Layout.fillHeight: true
-            Layout.margins: VLCStyle.margin_xsmall
+            // There is no handle to grab, the fill tells where the volume is.
+            handle: Item { }
 
             property bool _inhibitPlayerVolumeUpdate: false
 
@@ -248,8 +277,9 @@ T.Pane {
                 // NOTE: This shouldn't be visible when the volume stops before a 100.
                 visible: (root._maxvol > 100)
 
-                // FIXME: tick mark is not visible when it's over slider
-                color: root.sliderColor
+                // Not drawn, the colors of the cone already tell where a 100
+                // is. It is only here for its mouse area.
+                color: "transparent"
 
                 // NOTE: This is a helper to select the default volume when clicking on the
                 //       tickmark. We apply a higher clamp value to achieve that behavior on

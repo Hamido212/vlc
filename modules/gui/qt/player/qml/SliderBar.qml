@@ -28,7 +28,24 @@ import VLC.MainInterface
 T.ProgressBar {
     id: control
 
-    readonly property real _hoveredScalingFactor: 1.8
+    // A tall track with the played part and the handle drawn inside of it,
+    // instead of a thin line with a round handle that shows up on hover.
+    property bool thick: false
+
+    readonly property real _thickInset: VLCStyle.dp(2, VLCStyle.scale)
+    readonly property real _thickHandleWidth: VLCStyle.dp(8, VLCStyle.scale)
+    readonly property real _thickRadius: VLCStyle.dp(4, VLCStyle.scale)
+
+    // Right edge of the played part, the handle sits at the end of it.
+    readonly property real _thickPlayedEnd: _thickInset + Math.max(_thickHandleWidth,
+                                                                    visualPosition * (availableWidth - 2 * _thickInset))
+
+    // Geometry of what is drawn on the track: chapters, played part, buffer.
+    readonly property real _segmentHeight: thick ? (barHeight - 2 * _thickInset) : barHeight
+    readonly property real _segmentY: thick ? _thickInset : 0
+    readonly property color _playedColor: thick ? theme.bg.secondary : theme.fg.primary
+
+    readonly property real _hoveredScalingFactor: thick ? 1.0 : 1.8
     property int barHeight: VLCStyle.dp(5, VLCStyle.scale)
     readonly property real _scaledBarHeight: control.barHeight * _hoveredScalingFactor
     readonly property real _scaledY: (-control.barHeight / 2) * (control._hoveredScalingFactor - 1)
@@ -321,10 +338,10 @@ T.ProgressBar {
 
         Rectangle {
             id: sliderRect
-            visible: !Player.hasChapters
+            visible: control.thick || !Player.hasChapters
             color: control.backgroundColor
             anchors.fill: parent
-            radius: implicitHeight
+            radius: control.thick ? VLCStyle.dp(6, VLCStyle.scale) : implicitHeight
         }
 
         Repeater {
@@ -357,9 +374,11 @@ T.ProgressBar {
                     readonly property bool _hovered: hoverHandler.hovered &&
                                             (hoverHandler.point.position.x > x && hoverHandler.point.position.x < x+width)
 
-                    color: _currentChapter < 0 ? theme.fg.primary : control.backgroundColor
+                    color: _currentChapter < 0 ? control._playedColor
+                                               : (control.thick ? "transparent" : control.backgroundColor)
                     width: sliderRect.width * seekpointsRect.endPosition - x - control._seekPointsDistance
-                    x: sliderRect.width * seekpointsRect.startPosition
+                    x: Math.max(control.thick ? control._thickInset : 0,
+                                sliderRect.width * seekpointsRect.startPosition)
 
                     Rectangle {
                         id: progressRepRect
@@ -368,9 +387,10 @@ T.ProgressBar {
                         anchors.bottom: parent.bottom
                         radius: parent.radius
 
-                        width: sliderRect.width * control.visualPosition - parent.x - control._seekPointsDistance
+                        width: control.thick ? (control._thickPlayedEnd - parent.x)
+                                             : (sliderRect.width * control.visualPosition - parent.x - control._seekPointsDistance)
                         visible: parent._currentChapter === 0
-                        color: theme.fg.primary
+                        color: control._playedColor
 
                         // We use dynamic mutability group because time interpolation
                         // may induce rapid change:
@@ -405,9 +425,9 @@ T.ProgressBar {
                             target: control;
                             _currentChapterHovered: seekpointsRect._currentChapter === 0 ? false : control._currentChapterHovered
                         }
-                        PropertyChanges { target: seekpointsRect; height: control.barHeight }
-                        PropertyChanges { target: seekpointsRect; y: 0 }
-                        PropertyChanges { target: seekpointsRect; radius: control._seekPointsRadius }
+                        PropertyChanges { target: seekpointsRect; height: control._segmentHeight }
+                        PropertyChanges { target: seekpointsRect; y: control._segmentY }
+                        PropertyChanges { target: seekpointsRect; radius: control.thick ? control._thickRadius : control._seekPointsRadius }
                     },
                     State {
                         name: "visibleLarge"
@@ -415,9 +435,9 @@ T.ProgressBar {
                             target: control;
                             _currentChapterHovered: seekpointsRect._currentChapter === 0 ? true : control._currentChapterHovered
                         }
-                        PropertyChanges { target: seekpointsRect; height: control._scaledBarHeight }
-                        PropertyChanges { target: seekpointsRect; y: control._scaledY }
-                        PropertyChanges { target: seekpointsRect; radius: control._scaledSeekPointsRadius }
+                        PropertyChanges { target: seekpointsRect; height: control.thick ? control._segmentHeight : control._scaledBarHeight }
+                        PropertyChanges { target: seekpointsRect; y: control.thick ? control._segmentY : control._scaledY }
+                        PropertyChanges { target: seekpointsRect; radius: control.thick ? control._thickRadius : control._scaledSeekPointsRadius }
                     }
                 ]
 
@@ -429,11 +449,14 @@ T.ProgressBar {
 
         Rectangle {
             id: progressRect
-            width: control.visualPosition * parent.width
+            x: control.thick ? control._thickInset : 0
+            y: control._segmentY
+            width: control.thick ? (control._thickPlayedEnd - x)
+                                 : (control.visualPosition * parent.width)
             visible: !Player.hasChapters
-            color: theme.fg.primary
-            height: control.barHeight
-            radius: control._seekPointsRadius
+            color: control._playedColor
+            height: control._segmentHeight
+            radius: control.thick ? control._thickRadius : control._seekPointsRadius
 
             // We use dynamic mutability group because time interpolation
             // may induce rapid change:
@@ -456,10 +479,11 @@ T.ProgressBar {
             property bool display: false
             property bool buffering: Player.buffering > 0 && Player.buffering < 1
 
-            height: control.barHeight
+            y: control._segmentY
+            height: control._segmentHeight
             opacity: 0.4
             color: theme.fg.neutral //FIXME buffer color ?
-            radius: control.barHeight
+            radius: control.thick ? control._thickRadius : control.barHeight
 
             // TODO: Do not use `Binding` when minimum Qt is 6.12:
             Binding {
@@ -570,12 +594,13 @@ T.ProgressBar {
 
         property int _size: control.barHeight * 3
 
-        x: (control.visualPosition * control.availableWidth) - width / 2
+        x: control.thick ? (control._thickPlayedEnd - width)
+                         : ((control.visualPosition * control.availableWidth) - width / 2)
         y: (control.barHeight - height) / 2
 
-        implicitWidth: sliderHandle._size
-        implicitHeight: sliderHandle._size
-        radius: VLCStyle.margin_small
+        implicitWidth: control.thick ? control._thickHandleWidth : sliderHandle._size
+        implicitHeight: control.thick ? control._segmentHeight : sliderHandle._size
+        radius: control.thick ? control._thickRadius : VLCStyle.margin_small
         color: theme.fg.primary
 
         // We use dynamic mutability group because time interpolation
@@ -625,8 +650,10 @@ T.ProgressBar {
             }
         ]
 
-        state: (hoverHandler.hovered || control.visualFocus)
-               ? ((control._currentChapterHovered || (Player.hasChapters && fsm._state === fsm.fsmHeld)) ? "visibleLarge" : "visible")
-               : "hidden"
+        // The handle of the thick track is always there and never changes size.
+        state: control.thick ? ""
+                             : ((hoverHandler.hovered || control.visualFocus)
+                                ? ((control._currentChapterHovered || (Player.hasChapters && fsm._state === fsm.fsmHeld)) ? "visibleLarge" : "visible")
+                                : "hidden")
     }
 }

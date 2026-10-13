@@ -1025,6 +1025,10 @@ FocusScope {
 
             tintColor: windowTheme.bg.primary
 
+            // Next to the video the bars are plain surfaces, the desktop does
+            // not show through them.
+            enabled: !(rootPlayer._controlsUnderVideo && MainCtx.hasEmbededVideo)
+
             visible: MainCtx.pinVideoControls || (MainCtx.hasEmbededVideo && !rootPlayer.displayFadeRectangles)
         }
     }
@@ -1294,11 +1298,11 @@ FocusScope {
 
         rightPadding: VLCStyle.applicationHorizontalMargin
         leftPadding: VLCStyle.applicationHorizontalMargin
-        bottomPadding: VLCStyle.applicationVerticalMargin + VLCStyle.margin_xsmall
+        bottomPadding: VLCStyle.applicationVerticalMargin + VLCStyle.controlBarInlinePadding
 
-        textPosition: (MainCtx.pinVideoControls)
-                      ? ControlBar.TimeTextPosition.LeftRightSlider
-                      : ControlBar.TimeTextPosition.AboveSlider
+        inlineSlider: true
+
+        textPosition: ControlBar.TimeTextPosition.LeftRightSlider
 
         // hide right text so that it won't overlap with play queue
         showRemainingTime: (textPosition !== ControlBar.TimeTextPosition.AboveSlider)
@@ -1343,7 +1347,8 @@ FocusScope {
                     return 0.6
                 } else if ((Window.visibility === Window.FullScreen) && MainCtx.hasEmbededVideo) {
                     return MainCtx.pinOpacity
-                } else if (AcrylicController.enabled || !MainCtx.hasEmbededVideo) {
+                } else if (!MainCtx.hasEmbededVideo
+                           || (AcrylicController.enabled && !rootPlayer._controlsUnderVideo)) {
                     return 0.7
                 } else {
                     return 1.0

@@ -98,26 +98,24 @@ decltype (ControlbarProfileModel::m_defaults)
                 N_("Default Style"),
                 {
                     {
+                        // No controls in the center: that is where the seek
+                        // bar goes, see ControlBar.inlineSlider
                         PlayerControlbarModel::Videoplayer,
                         {
                             {
                                 {
-                                    ControlListModel::LANG_BUTTON,
-                                    ControlListModel::BOOKMARK_BUTTON,
-                                    ControlListModel::EXTENDED_BUTTON,
-                                    ControlListModel::NAVIGATION_BUTTONS
-                                },
-                                {
-                                    ControlListModel::SKIP_BACK_BUTTON,
                                     ControlListModel::PREVIOUS_BUTTON,
                                     ControlListModel::PLAY_BUTTON,
-                                    ControlListModel::NEXT_BUTTON,
-                                    ControlListModel::SKIP_FW_BUTTON
+                                    ControlListModel::NEXT_BUTTON
                                 },
+                                {},
                                 {
                                     ControlListModel::VOLUME,
-                                    ControlListModel::RENDERER_BUTTON,
-                                    ControlListModel::FULLSCREEN_BUTTON
+                                    ControlListModel::WIDGET_SPACER,
+                                    ControlListModel::LANG_BUTTON,
+                                    ControlListModel::EXTENDED_BUTTON,
+                                    ControlListModel::WIDGET_SPACER,
+                                    ControlListModel::PLAYLIST_BUTTON
                                 }
                             }
                         }
@@ -127,21 +125,18 @@ decltype (ControlbarProfileModel::m_defaults)
                         {
                             {
                                 {
-                                    ControlListModel::LANG_BUTTON,
-                                    ControlListModel::BOOKMARK_BUTTON,
-                                    ControlListModel::EXTENDED_BUTTON
-                                },
-                                {
-                                    ControlListModel::RANDOM_BUTTON,
                                     ControlListModel::PREVIOUS_BUTTON,
                                     ControlListModel::PLAY_BUTTON,
-                                    ControlListModel::NEXT_BUTTON,
-                                    ControlListModel::LOOP_BUTTON
+                                    ControlListModel::NEXT_BUTTON
                                 },
+                                {},
                                 {
                                     ControlListModel::VOLUME,
-                                    ControlListModel::RENDERER_BUTTON,
-                                    ControlListModel::FULLSCREEN_BUTTON
+                                    ControlListModel::WIDGET_SPACER,
+                                    ControlListModel::LANG_BUTTON,
+                                    ControlListModel::EXTENDED_BUTTON,
+                                    ControlListModel::WIDGET_SPACER,
+                                    ControlListModel::PLAYLIST_BUTTON
                                 }
                             }
                         }

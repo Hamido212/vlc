@@ -327,6 +327,12 @@ QtObject {
     readonly property int controlLayoutHeight: MainCtx.dp(64, scale)
     readonly property int controlLayoutHeightPinned: MainCtx.dp(32, scale)
 
+    // Control bar with the seek bar in the same row as the controls
+    readonly property int controlBarInlineHeight: MainCtx.dp(32, scale) // the row
+    readonly property int controlBarInlinePadding: MainCtx.dp(11, scale) // above and below the row
+    readonly property int controlBarInlineMargin: MainCtx.dp(20, scale) // left, right, and between groups of controls
+    readonly property int controlBarItemHeight: MainCtx.dp(28, scale) // seek bar, play button, volume
+
     // Scroll bar (size means width or height, depending on the orientation):
     readonly property real scrollBarInteractingSize: MainCtx.dp(8, scale)
     readonly property real scrollBarNonInteractingSize: MainCtx.dp(2, scale)
