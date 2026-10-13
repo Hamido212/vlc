@@ -22,6 +22,9 @@ param(
     #   "p:ms"     wait for a filter or player event
     #   "e:text"   replace the focused field, then press Enter
     #   "c:x,y"    double click there
+    #   "f:path"   name that file in the file dialog VLC shows and accept it
+    #   "m:mod,code"    press a key while a modifier is held, by their virtual
+    #              key codes ("m:17,76" is Ctrl+L)
     #   "d:x,y,x2,y2"    press there, drag to the second place and release;
     #              with ",1" at the end a picture is saved before the release,
     #              next to -Out with "-drag" in its name
@@ -73,6 +76,74 @@ public class Win {
     [DllImport("user32.dll")] public static extern bool PostMessage(IntPtr h, uint msg, IntPtr w, IntPtr l);
     [DllImport("user32.dll")] public static extern bool PrintWindow(IntPtr h, IntPtr dc, uint flags);
     [DllImport("user32.dll")] public static extern IntPtr SendMessageTimeout(IntPtr h, uint msg, IntPtr w, IntPtr l, uint flags, uint timeout, out IntPtr result);
+    [DllImport("kernel32.dll")] public static extern uint GetCurrentThreadId();
+    [DllImport("user32.dll")] public static extern bool AttachThreadInput(uint from, uint to, bool attach);
+    [DllImport("user32.dll")] public static extern bool GetKeyboardState(byte[] state);
+    [DllImport("user32.dll")] public static extern bool SetKeyboardState(byte[] state);
+    // A key pressed while a modifier is held, for the window only: the
+    // state of the keyboard is set for its thread, the keyboard is not used.
+    public static void Chord(IntPtr h, int modifier, int key) {
+        uint process;
+        uint target = GetWindowThreadProcessId(h, out process);
+        uint self = GetCurrentThreadId();
+        AttachThreadInput(self, target, true);
+        var state = new byte[256];
+        GetKeyboardState(state);
+        var held = (byte[])state.Clone();
+        held[modifier] |= 0x80;
+        // Qt asks for the left and the right key of a modifier, which come
+        // after the modifiers: Shift 16 -> 160, Ctrl 17 -> 162, Alt 18 -> 164.
+        if (modifier >= 16 && modifier <= 18)
+            held[160 + 2 * (modifier - 16)] |= 0x80;
+        SetKeyboardState(held);
+        PostMessage(h, 0x0100, (IntPtr)key, (IntPtr)1);
+        PostMessage(h, 0x0101, (IntPtr)key, new IntPtr(unchecked((int)0xC0000001)));
+        System.Threading.Thread.Sleep(300);
+        SetKeyboardState(state);
+        AttachThreadInput(self, target, false);
+    }
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern IntPtr SendMessage(IntPtr h, uint msg, IntPtr w, string l);
+    [DllImport("user32.dll")] public static extern bool EnumChildWindows(IntPtr parent, EnumWindowProc callback, IntPtr data);
+    [DllImport("user32.dll")] public static extern IntPtr GetParent(IntPtr h);
+    [DllImport("user32.dll")] public static extern bool IsWindowVisible(IntPtr h);
+    static string ClassOf(IntPtr h) {
+        var name = new System.Text.StringBuilder(256);
+        GetClassName(h, name, name.Capacity);
+        return name.ToString();
+    }
+    // Gives the file dialog a process shows the name of a file and accepts
+    // it, with messages to the dialog. False if there is no such dialog.
+    public static bool AnswerFileDialog(uint processId, string path) {
+        IntPtr dialog = IntPtr.Zero;
+        EnumWindows((h, data) => {
+            uint owner;
+            GetWindowThreadProcessId(h, out owner);
+            if (owner == processId && IsWindowVisible(h) && ClassOf(h) == "#32770") {
+                dialog = h;
+                return false;
+            }
+            return true;
+        }, IntPtr.Zero);
+        if (dialog == IntPtr.Zero)
+            return false;
+
+        // The field for the name is the edit of a combo box, other edits of
+        // the dialog are for searching and for the folder.
+        IntPtr edit = IntPtr.Zero;
+        EnumChildWindows(dialog, (h, data) => {
+            if (ClassOf(h) == "Edit" && ClassOf(GetParent(GetParent(h))) == "ComboBoxEx32") {
+                edit = h;
+                return false;
+            }
+            return true;
+        }, IntPtr.Zero);
+        if (edit == IntPtr.Zero)
+            return false;
+
+        SendMessage(edit, 0x000C, IntPtr.Zero, path);
+        PostMessage(dialog, 0x0111, (IntPtr)1, IntPtr.Zero);
+        return true;
+    }
     public struct RECT { public int L, T, R, B; }
     public struct POINT { public int X, Y; }
 }
@@ -200,6 +271,22 @@ foreach ($step in ($Click -split ";" | Where-Object { $_ })) {
         [Win]::PostMessage($h, 0x0100, [IntPtr]$key, [IntPtr]::Zero) | Out-Null
         [Win]::PostMessage($h, 0x0101, [IntPtr]$key, [IntPtr]0xC0000001) | Out-Null
         Start-Sleep -Milliseconds 600
+        continue
+    }
+    if ($step.StartsWith("f:")) {
+        $answered = $false
+        for ($i = 0; $i -lt 20 -and -not $answered; ++$i) {
+            Start-Sleep -Milliseconds 250
+            $answered = [Win]::AnswerFileDialog($p.Id, $step.Substring(2))
+        }
+        if (-not $answered) { throw 'VLC did not show a file dialog.' }
+        Start-Sleep -Milliseconds 1500
+        continue
+    }
+    if ($step.StartsWith("m:")) {
+        $keys = $step.Substring(2).Split(",") | ForEach-Object { [int]$_ }
+        [Win]::Chord($h, $keys[0], $keys[1])
+        Start-Sleep -Milliseconds 1000
         continue
     }
     if ($step.StartsWith("d:") -or $step.StartsWith("c:")) {

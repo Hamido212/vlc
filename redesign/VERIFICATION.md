@@ -108,15 +108,22 @@ clips in the queue, panel opened with the queue button of the control bar.
 - Seen: the tab, "4 items - 10m", the five buttons and the rows with handle,
   name and duration; what plays has its name in the accent.
 - Seen: a click picks a row and "remove" takes it out ("3 items - 7m").
-- Seen: a double click plays the row. VLC then closes whatever menu is open
-  as the video is set up anew, so the panel closes as well.
+- Seen: a double click plays the row, the panel stays and the accent goes to
+  that row. The panel is the player view's, not the button's: the buttons of
+  the bar are made anew when the video goes and comes back.
+- Seen: Ctrl+L opens and closes the panel; the button opens it, closes it
+  with a second press and it closes with a click next to it. The menu entry
+  sets the same property as the shortcut and was not clicked.
 - Seen: dragging a handle shows a line in the gap the row would go to; let go
   of at the top and between two rows, the row is there afterwards.
 - Seen: shuffle and repeat switch to the accent, repeat goes on to "one".
 - Seen: the list of what to sort by; "Title" sorts, "Title" again turns the
   order around.
-- Not tried: "add". It closes the panel and opens the file dialog of the
-  system, a window of its own that the test does not reach.
+- Seen: "add" closes the panel and shows the file dialog of the system; with
+  a clip named in it the queue is one longer. The test answers the dialog
+  with messages (`f:` step of `shot.ps1`).
+- A queue that is open in the library does not open the panel when a video
+  starts; the first press or shortcut then does. Not tried.
 - The tabs for bookmarks and chapters of the design are not there yet, they
   come with their own item of the roadmap.
 

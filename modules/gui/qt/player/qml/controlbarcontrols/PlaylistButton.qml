@@ -18,15 +18,24 @@
 import QtQuick
 
 
+import VLC.MainInterface
+import VLC.Widgets as Widgets
 import VLC.Style
-import VLC.Player
 import VLC.Util
 
-PanelButton {
-    panel: QueuePanel { }
-    tab: QueuePanel.Tab.Queue
+
+Widgets.IconToolButton {
+    id: playlistBtn
+
+    // The player shows the queue as a panel. That can be closed while the
+    // queue is still to be seen, see Player.qml.
+    readonly property Item _player: ((typeof rootPlayer !== 'undefined') && (rootPlayer !== null)) ? rootPlayer
+                                                                                                    : null
 
     text: VLCIcons.playlist
+    onClicked: MainCtx.playqueuePanel.visible = !MainCtx.playqueuePanel.visible
+
+    checked: _player ? _player.queueOpen : MainCtx.playqueuePanel.visible
 
     description: qsTr("Play Queue")
 

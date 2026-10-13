@@ -38,11 +38,12 @@ once the part runs in the Windows build and was looked at there.
     - [ ] "Show Subtitle Timeline on Seekbar" and "Show Statistics": what they
           switch on does not exist yet
   - [ ] Presets for a show
-- [ ] Queue panel
+- [x] Queue panel
   - [x] The list and its head: how much there is, sort, repeat, shuffle, remove
   - [x] Play a row with a double click, move it by its handle
-  - [ ] Add: opens the file dialog of the system, which was not tried
-  - [ ] The "Play Queue" shortcut and menu entry still show the old list
+  - [x] Add files from the file dialog
+  - [x] The button, the "Play Queue" shortcut and the menu entry all show it,
+        and it stays while another row is played
 - [x] Volume level next to the cone while it changes
 - [ ] Bookmarks and chapters panels, subtitle timeline
 - [ ] Full screen: both bars on hover, an option to hide the interface
