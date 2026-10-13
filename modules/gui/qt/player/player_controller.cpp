@@ -38,12 +38,16 @@
 #include <QDir>
 #include <QSignalMapper>
 #include <QThreadPool>
+#include <QTemporaryDir>
 #ifndef QT_HAS_LIBATOMIC
 #include <QReadLocker>
 #include <QWriteLocker>
 #endif
 
 #include <cassert>
+#include <algorithm>
+#include <cmath>
+#include <utility>
 
 #define POSITION_MIN_UPDATE_INTERVAL VLC_TICK_FROM_MS(15)
 
@@ -68,6 +72,8 @@ PlayerControllerPrivate::~PlayerControllerPrivate()
     vlc_player_RemoveTimer( m_player, m_player_timer );
     if (m_preparser != nullptr)
         vlc_preparser_Delete(m_preparser);
+    if (m_thumbnailPreparser != nullptr)
+        vlc_preparser_Delete(m_thumbnailPreparser);
 }
 
 bool PlayerControllerPrivate::isCurrentItemSynced()
@@ -1121,6 +1127,26 @@ static void on_preparse_ended_callback(vlc_preparser_req *req,
     me->onArtFetchEnded(p_item, input_item_IsArtFetched(p_item));
 }
 
+// Seek preview thumbnail: the bucket and the file are kept until the thumbnailer is done
+struct SeekThumbnailJob
+{
+    PlayerControllerPrivate *d;
+    unsigned generation;
+    int bucket;
+    QByteArray file;
+};
+
+static void on_seek_thumbnail_ended(vlc_preparser_req *, int status,
+                                    const bool *result_array, size_t result_count, void *data)
+{
+    std::unique_ptr<SeekThumbnailJob> job(static_cast<SeekThumbnailJob *>(data));
+    const bool ok = status == VLC_SUCCESS && result_array != nullptr && result_count > 0 && result_array[0];
+    job->d->callAsync([d = job->d, generation = job->generation, bucket = job->bucket,
+                       file = QString::fromUtf8(job->file), ok] {
+        d->onSeekThumbnailEnded(generation, bucket, file, ok);
+    });
+}
+
 
 } //extern "C"
 
@@ -1194,6 +1220,17 @@ static const struct vlc_preparser_cbs art_fetcher_cbs = []{
     cbs.on_ended = on_preparse_ended_callback;
     return cbs;
 }();
+
+static const struct vlc_thumbnailer_to_files_cbs seek_thumbnail_cbs = []{
+    struct vlc_thumbnailer_to_files_cbs cbs{};
+    cbs.on_ended = on_seek_thumbnail_ended;
+    return cbs;
+}();
+
+// The seek preview is generated every 0.5 % of the media length, at the size of the Figma preview image
+static constexpr int kSeekThumbnailBuckets = 200;
+static constexpr int kSeekThumbnailWidth = 252;
+static constexpr int kSeekThumbnailHeight = 142;
 
 
 PlayerControllerPrivate::PlayerControllerPrivate(PlayerController *playercontroller, qt_intf_t *p_intf)
@@ -2071,6 +2108,154 @@ void PlayerController::snapshot()
 
         QThreadPool::globalInstance()->start(new SnapshotTask(std::move(vout)));
     }
+}
+
+void PlayerController::requestSeekThumbnail(double position)
+{
+    Q_D(PlayerController);
+
+    if (!std::isfinite(position))
+        return;
+    d->requestSeekThumbnail(std::clamp(static_cast<int>(std::lround(position * kSeekThumbnailBuckets)),
+                                       0, kSeekThumbnailBuckets));
+}
+
+QUrl PlayerController::getSeekThumbnail() const
+{
+    Q_D(const PlayerController);
+
+    return d->m_seekThumbnail;
+}
+
+void PlayerControllerPrivate::requestSeekThumbnail(int bucket)
+{
+    QString uri;
+    {
+        vlc_player_locker locker{ m_player };
+        input_item_t *item = vlc_player_GetCurrentMedia( m_player );
+        if (item == nullptr)
+            return;
+        uri = QString::fromUtf8(vlc::wrap_cptr(input_item_GetURI(item)).get());
+    }
+
+    m_thumbnailWanted = bucket;
+
+    // The thumbnails belong to one media: a new media drops them and any result still in flight
+    if (uri != m_thumbnailItemUri)
+    {
+        m_thumbnailItemUri = uri;
+        m_thumbnails.clear();
+        m_thumbnailPending = -1;
+        ++m_thumbnailGeneration;
+        setSeekThumbnail(QString());
+    }
+
+    const auto cached = m_thumbnails.constFind(bucket);
+    if (cached != m_thumbnails.cend())
+    {
+        setSeekThumbnail(cached.value());
+        return;
+    }
+
+    // Only one thumbnail is generated at a time; the latest position replaces any waiting one
+    if (m_thumbnailBusy)
+        m_thumbnailPending = bucket;
+    else
+        startSeekThumbnail(bucket);
+}
+
+void PlayerControllerPrivate::startSeekThumbnail(int bucket)
+{
+    if (m_thumbnailPreparser == nullptr)
+    {
+        const struct vlc_preparser_cfg cfg = []{
+            struct vlc_preparser_cfg cfg{};
+            cfg.types = VLC_PREPARSER_TYPE_THUMBNAIL_TO_FILES;
+            cfg.max_thumbnailer_threads = 1;
+            cfg.timeout = VLC_TICK_FROM_SEC(10);
+            cfg.external_process = false;
+            return cfg;
+        }();
+        m_thumbnailPreparser = vlc_preparser_New(VLC_OBJECT(p_intf), &cfg);
+        if (unlikely(m_thumbnailPreparser == nullptr))
+            return;
+    }
+
+    if (!m_thumbnailDir)
+    {
+        m_thumbnailDir = std::make_unique<QTemporaryDir>();
+        if (!m_thumbnailDir->isValid())
+        {
+            m_thumbnailDir.reset();
+            return;
+        }
+    }
+
+    vlc_player_locker locker{ m_player };
+    input_item_t *item = vlc_player_GetCurrentMedia( m_player );
+    if (item == nullptr)
+        return;
+
+    auto *job = new SeekThumbnailJob{ this, m_thumbnailGeneration, bucket,
+        m_thumbnailDir->filePath(QStringLiteral("seek-%1.jpg").arg(++m_thumbnailSequence)).toUtf8() };
+
+    vlc_thumbnailer_arg arg{};
+    arg.seek.type = vlc_thumbnailer_arg::seek::VLC_THUMBNAILER_SEEK_POS;
+    arg.seek.pos = static_cast<double>(bucket) / kSeekThumbnailBuckets;
+    arg.seek.speed = vlc_thumbnailer_arg::seek::VLC_THUMBNAILER_SEEK_FAST;
+
+    vlc_thumbnailer_output output{};
+    output.format = VLC_THUMBNAILER_FORMAT_JPEG;
+    output.width = kSeekThumbnailWidth;
+    output.height = kSeekThumbnailHeight;
+    output.crop = true;
+    output.file_path = job->file.constData();
+    output.creat_mode = 0600;
+
+    vlc_preparser_req *req = vlc_preparser_req_NewThumbnailToFiles( m_thumbnailPreparser, item,
+                                                                    &arg, &output, 1,
+                                                                    &seek_thumbnail_cbs, job );
+    if (unlikely(req == nullptr))
+    {
+        delete job;
+        return;
+    }
+
+    m_thumbnailBusy = true;
+    const int ret = vlc_preparser_Submit( m_thumbnailPreparser, req );
+    vlc_preparser_req_Release( req );
+    if (ret != VLC_SUCCESS)
+    {
+        // No callback on failure, so the job is ours to free
+        m_thumbnailBusy = false;
+        delete job;
+    }
+}
+
+void PlayerControllerPrivate::onSeekThumbnailEnded(unsigned generation, int bucket, const QString &file, bool ok)
+{
+    m_thumbnailBusy = false;
+
+    if (ok && generation == m_thumbnailGeneration)
+    {
+        m_thumbnails.insert(bucket, file);
+        if (bucket == m_thumbnailWanted)
+            setSeekThumbnail(file);
+    }
+
+    if (m_thumbnailPending >= 0)
+        requestSeekThumbnail(std::exchange(m_thumbnailPending, -1));
+}
+
+void PlayerControllerPrivate::setSeekThumbnail(const QString &file)
+{
+    Q_Q(PlayerController);
+
+    const QUrl url = file.isEmpty() ? QUrl() : QUrl::fromLocalFile(file);
+    if (url == m_seekThumbnail)
+        return;
+    m_seekThumbnail = url;
+    emit q->seekThumbnailChanged();
 }
 
 QString PlayerController::highResolutionTime() const

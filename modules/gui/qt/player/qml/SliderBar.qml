@@ -47,6 +47,13 @@ T.ProgressBar {
 
     readonly property real _hoveredScalingFactor: thick ? 1.0 : 1.8
     property int barHeight: VLCStyle.dp(5, VLCStyle.scale)
+
+    // Whether the pointer is over the bar, and where as a fraction of its
+    // width. This is for the preview of the frame at that position.
+    readonly property bool pointerOver: hoverHandler.hovered
+    readonly property real pointerPosition: (width > 0) ? Helpers.clamp(hoverHandler.point.position.x / width, 0., 1.)
+                                                        : 0.
+
     readonly property real _scaledBarHeight: control.barHeight * _hoveredScalingFactor
     readonly property real _scaledY: (-control.barHeight / 2) * (control._hoveredScalingFactor - 1)
 
@@ -88,7 +95,10 @@ T.ProgressBar {
         onTriggered: control._isSeekPointsShown = false
     }
 
-    Widgets.PointingToolTipAttached.visible: (hoverHandler.hovered || control.visualFocus || dragHandler.active)
+    // The thick bar comes with a preview of what is under the pointer, which
+    // has the time on it.
+    Widgets.PointingToolTipAttached.visible: control.visualFocus
+                                             || (!control.thick && (hoverHandler.hovered || dragHandler.active))
 
     Widgets.PointingToolTipAttached.text: {
         if (!Widgets.PointingToolTipAttached.instance?.visible)

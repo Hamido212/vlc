@@ -412,4 +412,55 @@ T.Pane {
             }
         }
     }
+
+    // The frame under the pointer and its time, above the seek bar. Its
+    // parent is the control itself: the layout of the content would take
+    // it for a row.
+    Rectangle {
+        id: seekPreview
+
+        parent: root
+
+        readonly property bool active: root._inlineSlider && trackPositionSlider.pointerOver
+                                       && Player.seekable && Player.length.valid()
+
+        readonly property real pointerX: trackPositionSlider.mapToItem(root, trackPositionSlider.pointerPosition * trackPositionSlider.width, 0).x
+
+        visible: active
+        z: 1
+
+        width: VLCStyle.dp(272, VLCStyle.scale)
+        height: VLCStyle.dp(189, VLCStyle.scale)
+        radius: VLCStyle.dp(14, VLCStyle.scale)
+
+        color: Qt.alpha(theme.bg.secondary, 0.95)
+
+        x: Math.max(0, Math.min(seekPreview.pointerX - width / 2, root.width - width))
+        y: trackPositionSlider.mapToItem(root, 0, 0).y - height - VLCStyle.margin_xsmall
+
+        Image {
+            x: VLCStyle.dp(10, VLCStyle.scale)
+            y: VLCStyle.dp(10, VLCStyle.scale)
+            width: VLCStyle.dp(252, VLCStyle.scale)
+            height: VLCStyle.dp(142, VLCStyle.scale)
+            fillMode: Image.PreserveAspectCrop
+            source: Player.seekThumbnail
+        }
+
+        T.Label {
+            x: (parent.width - width) / 2
+            y: VLCStyle.dp(162, VLCStyle.scale)
+            text: Player.length.scale(trackPositionSlider.pointerPosition).formatHMS()
+            color: theme.fg.primary
+            font.pixelSize: VLCStyle.dp(15, VLCStyle.scale)
+        }
+    }
+
+    Connections {
+        target: trackPositionSlider
+        enabled: seekPreview.active
+
+        function onPointerPositionChanged() { Player.requestSeekThumbnail(trackPositionSlider.pointerPosition) }
+        function onPointerOverChanged() { if (trackPositionSlider.pointerOver) Player.requestSeekThumbnail(trackPositionSlider.pointerPosition) }
+    }
 }
