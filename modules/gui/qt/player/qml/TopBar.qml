@@ -76,6 +76,12 @@ FocusScope{
         return (parts.length >= 2) ? decodeURIComponent(parts[parts.length - 2]) : ""
     }
 
+    // Whether the window buttons, which are not always ours to draw, have
+    // taken the full screen button in.
+    readonly property bool _fullscreenInCSD: showCSD
+                                             && (csdDecorations.status === Loader.Ready)
+                                             && csdDecorations.item.hasOwnProperty("beforeClose")
+
     // Aliases
 
     property alias resumeVisible: resumeDialog.visible
@@ -211,6 +217,29 @@ FocusScope{
     }
 
     // Children
+
+    Component {
+        id: fullscreenComponent
+
+        Widgets.IconToolButton {
+            font.pixelSize: VLCStyle.icon_normal
+            padding: VLCStyle.margin_xxxsmall
+            horizontalPadding: VLCStyle.dp(6, VLCStyle.scale)
+
+            enabled: Player.hasVideoOutput
+            text: Player.fullscreen ? VLCIcons.defullscreen : VLCIcons.fullscreen
+            description: qsTr("Fullscreen")
+
+            AccessibleCompat.id: "topBarFullscreenButton"
+
+            Navigation.parentItem: root
+            Navigation.leftItem: folderBtn.visible ? folderBtn : backBtn
+
+            onClicked: Player.fullscreen = !Player.fullscreen
+
+            onHoveredChanged: root.requestLockUnlockAutoHide(hovered)
+        }
+    }
 
     //drag and dbl click the titlebar in CSD mode
     Loader {
@@ -379,7 +408,7 @@ FocusScope{
 
                     Navigation.parentItem: root
                     Navigation.leftItem: menuSelector.visible ? menuSelector : null
-                    Navigation.rightItem: folderBtn.visible ? folderBtn : fullscreenBtn
+                    Navigation.rightItem: folderBtn.visible ? folderBtn : fullscreenLoader.item
                     onClicked: root.backRequested()
 
                     onHoveredChanged: root.requestLockUnlockAutoHide(hovered)
@@ -419,7 +448,7 @@ FocusScope{
 
                     Navigation.parentItem: root
                     Navigation.leftItem: backBtn
-                    Navigation.rightItem: fullscreenBtn
+                    Navigation.rightItem: fullscreenLoader.item
 
                     Keys.priority: Keys.AfterItem
                     Keys.onPressed: (event) => Navigation.defaultKeyAction(event)
@@ -582,6 +611,11 @@ FocusScope{
             ? "qrc:///qt/qml/VLC/Widgets/CSDThemeButtonSet.qml"
             : "qrc:///qt/qml/VLC/Widgets/CSDWindowButtonSet.qml"
 
+        onLoaded: {
+            if (item.hasOwnProperty("beforeClose"))
+                item.beforeClose = fullscreenComponent
+        }
+
         Connections {
             target: csdDecorations.item
             enabled: csdDecorations.status === Loader.Ready
@@ -603,29 +637,15 @@ FocusScope{
 
         visible: root._showTopBar
 
-        Widgets.IconToolButton {
-            id: fullscreenBtn
+        Loader {
+            id: fullscreenLoader
 
             anchors.verticalCenter: parent.verticalCenter
 
-            font.pixelSize: VLCStyle.icon_normal
-            padding: VLCStyle.margin_xxxsmall
-            horizontalPadding: VLCStyle.dp(6, VLCStyle.scale)
+            // It is among the window buttons when there are any.
+            active: !root._fullscreenInCSD
 
-            enabled: Player.hasVideoOutput
-            text: Player.fullscreen ? VLCIcons.defullscreen : VLCIcons.fullscreen
-            description: qsTr("Fullscreen")
-
-            AccessibleCompat.id: "topBarFullscreenButton"
-
-            focus: root.showToolbar
-
-            Navigation.parentItem: root
-            Navigation.leftItem: folderBtn.visible ? folderBtn : backBtn
-
-            onClicked: Player.fullscreen = !Player.fullscreen
-
-            onHoveredChanged: root.requestLockUnlockAutoHide(hovered)
+            sourceComponent: fullscreenComponent
         }
     }
 }
