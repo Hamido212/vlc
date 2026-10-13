@@ -92,9 +92,19 @@ mkdir -p /host/out/portable
 # A VLC that is still running, or stuck while quitting, keeps its plugins
 # open. Windows does not let them be overwritten then, but they can be moved
 # out of the way.
-QT_PLUGIN=/host/out/plugins/gui/libqt_plugin.dll
-rm -f "$QT_PLUGIN".*.old 2>/dev/null || true
 if ! cp -ru "$PKG"/. /host/out/; then
-    mv "$QT_PLUGIN" "$QT_PLUGIN.$(date +%s).old"
+    # Core builds also replace vlc.exe and libvlccore.dll. Retry changed
+    # binaries individually, moving only files Windows still keeps locked.
+    export PKG
+    find "$PKG" -type f \( -name '*.dll' -o -name '*.exe' \) -print0 |
+        xargs -0 -r -n 64 sh -c '
+            for file; do
+                relative=${file#"$PKG"/}
+                target=/host/out/$relative
+                if ! cp -u "$file" "$target"; then
+                    mv "$target" "$target.$(date +%s).old" || exit 1
+                    cp "$file" "$target" || exit 1
+                fi
+            done' sh
     cp -ru "$PKG"/. /host/out/
 fi

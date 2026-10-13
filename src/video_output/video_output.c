@@ -960,14 +960,16 @@ static void ChangeFilters(vout_thread_sys_t *vout)
 
         /* Shallow local copy */
         es_format_t tmp = *p_fmt_current;
-        /* Assign the same chroma to compare everything except the chroma */
+        /* Chroma and orientation changes can be handled by the display
+         * without converting the filtered pictures back to the source. */
         tmp.i_codec = fmt_target.i_codec;
         tmp.video.i_chroma = fmt_target.video.i_chroma;
+        tmp.video.orientation = fmt_target.video.orientation;
 
         int ret = VLC_EGENERIC;
 
-        bool only_chroma_changed = es_format_IsSimilar(&tmp, &fmt_target);
-        if (only_chroma_changed)
+        bool only_chroma_or_orientation_changed = es_format_IsSimilar(&tmp, &fmt_target);
+        if (only_chroma_or_orientation_changed)
         {
             picture_pool_t *new_private_pool =
                     picture_pool_NewFromFormat(&p_fmt_current->video,
@@ -976,7 +978,7 @@ static void ChangeFilters(vout_thread_sys_t *vout)
             {
                 msg_Dbg(&vout->obj, "Changing vout format to %4.4s",
                                     (const char *) &p_fmt_current->video.i_chroma);
-                /* Only the chroma changed, request the vout to update the format */
+                /* Ask the display to accept the new chroma or orientation. */
                 ret = vout_SetDisplayFormat(sys->display, &p_fmt_current->video,
                                             vctx_current);
                 if (ret != VLC_SUCCESS)
@@ -1004,6 +1006,31 @@ static void ChangeFilters(vout_thread_sys_t *vout)
                 DelAllFilterCallbacks(vout);
                 filter_chain_Reset(sys->filter.chain_static,      &fmt_target, vctx_target, &fmt_target);
                 filter_chain_Reset(sys->filter.chain_interactive, &fmt_target, vctx_target, &fmt_target);
+            }
+        }
+    }
+
+    /* A previous filter may have changed the display's source chroma. When
+     * the chain returns to the original format, restore the display and pool
+     * too, including when a failed converter caused the filters to be removed. */
+    const es_format_t *fmt_out = filter_chain_GetFmtOut(sys->filter.chain_interactive);
+    if (es_format_IsSimilar(fmt_out, &fmt_target) &&
+        !video_format_IsSimilar(sys->display->source, &fmt_target.video))
+    {
+        picture_pool_t *pool = picture_pool_NewFromFormat(&fmt_target.video,
+                                                         FILTER_POOL_SIZE);
+        if (pool != NULL)
+        {
+            if (vout_SetDisplayFormat(sys->display, &fmt_target.video,
+                                      vctx_target) == VLC_SUCCESS)
+            {
+                picture_pool_Release(sys->private_pool);
+                sys->private_pool = pool;
+            }
+            else
+            {
+                picture_pool_Release(pool);
+                msg_Err(&vout->obj, "Failed to restore the display format after changing filters");
             }
         }
     }

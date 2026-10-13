@@ -12,3 +12,6 @@ queried at will (the Figma MCP server allows 20 calls a month on a free plan).
   The asset links in the code are temporary.
 - `tokens.json`: the paint styles of the file, dark and light, from
   Olmo Gutierrez' implementation (see ../README.md).
+- `playback-reference.tsx`: Figma's reference code for Playback, file
+  `kJ3O3At8xC5cqxEwD2LD1n`, node `2238:9432`. Like the player reference,
+  it contains temporary asset links and is not compiled into VLC.
