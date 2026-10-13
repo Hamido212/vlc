@@ -88,4 +88,13 @@ touch "$PKG/.stripped"
 # With a "portable" directory next to vlc.exe, VLC keeps its settings there
 # instead of in the user's profile.
 mkdir -p /host/out/portable
-cp -ru "$PKG"/. /host/out/
+
+# A VLC that is still running, or stuck while quitting, keeps its plugins
+# open. Windows does not let them be overwritten then, but they can be moved
+# out of the way.
+QT_PLUGIN=/host/out/plugins/gui/libqt_plugin.dll
+rm -f "$QT_PLUGIN".*.old 2>/dev/null || true
+if ! cp -ru "$PKG"/. /host/out/; then
+    mv "$QT_PLUGIN" "$QT_PLUGIN.$(date +%s).old"
+    cp -ru "$PKG"/. /host/out/
+fi
