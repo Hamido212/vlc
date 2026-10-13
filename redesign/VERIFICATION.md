@@ -49,6 +49,18 @@ and Bottom crop fields have not been checked at the image level yet.
 - Software decoding, other output backends, HDR transforms, and combined
   flip/rotation selections have not been verified yet.
 
+## Renderer discovery experiment (2026-10-13)
+
+The UI experiment added Render/Local, model display/checked roles and a scan
+button. The Windows build showed Local and the active countdown, and the log
+confirmed UPnP and mDNS discovery startup. No external renderer was selected.
+
+At the end of the 20-second scan, the Qt window stopped responding and
+`PrintWindow` blocked. `RendererManager::StopScan()` synchronously releases
+discovery modules on the Qt thread. This needs further shutdown investigation
+before automatic discovery is enabled by the panel. The experiment is saved
+in `experiments/renderer-panel.patch` and is not applied to the shipped UI.
+
 ## Build and test environment
 
 - Use `make` for changes to `src/` or the D3D11 output module; use `qt` for

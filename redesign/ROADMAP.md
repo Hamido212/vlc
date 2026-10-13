@@ -24,6 +24,9 @@ once the part runs in the Windows build and was looked at there.
     - [x] Pixel crop fields: Top and Left changes and restoration
     - [x] Flip and rotation with hardware decoding, including restoration
     - [ ] Renderer list in the Video tab
+      - Opening discovery was tested, but its 20-second shutdown blocked the
+        Qt thread and PrintWindow. Keep the UI experiment unapplied until the
+        discovery shutdown is fixed; see experiments/renderer-panel.patch.
   - [ ] Playback: speed, sleep timer, what the bar shows
   - [ ] Presets for a show
 - [ ] Queue panel

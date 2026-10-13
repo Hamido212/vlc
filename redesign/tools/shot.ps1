@@ -68,6 +68,7 @@ public class Win {
     [DllImport("user32.dll")] public static extern bool SetWindowPos(IntPtr h, IntPtr after, int x, int y, int cx, int cy, uint flags);
     [DllImport("user32.dll")] public static extern bool PostMessage(IntPtr h, uint msg, IntPtr w, IntPtr l);
     [DllImport("user32.dll")] public static extern bool PrintWindow(IntPtr h, IntPtr dc, uint flags);
+    [DllImport("user32.dll")] public static extern IntPtr SendMessageTimeout(IntPtr h, uint msg, IntPtr w, IntPtr l, uint flags, uint timeout, out IntPtr result);
     public struct RECT { public int L, T, R, B; }
     public struct POINT { public int X, Y; }
 }
@@ -126,8 +127,13 @@ $dy = $origin.Y - $wr.T
 function Pos([int]$x, [int]$y) { [IntPtr](($y -shl 16) -bor ($x -band 0xFFFF)) }
 
 function Shot([string]$path) {
+    $reply = [IntPtr]::Zero
+    # Avoid waiting forever in PrintWindow when the Qt event loop is blocked.
+    if ([Win]::SendMessageTimeout($h, 0, [IntPtr]::Zero, [IntPtr]::Zero, 3, 2000, [ref]$reply) -eq [IntPtr]::Zero) {
+        throw 'The VLC window is not responding; PrintWindow was skipped.'
+    }
     $r = New-Object Win+RECT
-    [Win]::GetWindowRect($h, [ref]$r) | Out-Null
+    if (-not [Win]::GetWindowRect($h, [ref]$r)) { throw 'The VLC window no longer exists.' }
     $w = $r.R - $r.L
     $ht = $r.B - $r.T
     $bmp = New-Object System.Drawing.Bitmap $w, $ht
