@@ -112,7 +112,8 @@ decltype (ControlbarProfileModel::m_defaults)
                                 {
                                     ControlListModel::VOLUME,
                                     ControlListModel::WIDGET_SPACER,
-                                    ControlListModel::LANG_BUTTON,
+                                    ControlListModel::AUDIO_BUTTON,
+                                    ControlListModel::SUBTITLE_BUTTON,
                                     ControlListModel::EXTENDED_BUTTON,
                                     ControlListModel::WIDGET_SPACER,
                                     ControlListModel::PLAYLIST_BUTTON
@@ -133,7 +134,8 @@ decltype (ControlbarProfileModel::m_defaults)
                                 {
                                     ControlListModel::VOLUME,
                                     ControlListModel::WIDGET_SPACER,
-                                    ControlListModel::LANG_BUTTON,
+                                    ControlListModel::AUDIO_BUTTON,
+                                    ControlListModel::SUBTITLE_BUTTON,
                                     ControlListModel::EXTENDED_BUTTON,
                                     ControlListModel::WIDGET_SPACER,
                                     ControlListModel::PLAYLIST_BUTTON
