@@ -60,6 +60,13 @@ FocusScope {
                                         &&
                                         (MainCtx.intfMainWindow.visibility !== Window.FullScreen))
 
+    // Next to the bars, the video is a framed picture with round corners
+    // rather than something that fills the window.
+    readonly property bool _videoFramed: MainCtx.hasEmbededVideo && _controlsUnderVideo
+
+    readonly property real _videoFrameSide: VLCStyle.dp(10, VLCStyle.scale)
+    readonly property real _videoFrameTop: VLCStyle.dp(1, VLCStyle.scale)
+
     property bool _keyPressed: false
 
     // Settings
@@ -260,6 +267,9 @@ FocusScope {
                     id: videoSurface
 
                     anchors.fill: parent
+                    anchors.leftMargin: rootPlayer._videoFramed ? rootPlayer._videoFrameSide : 0
+                    anchors.rightMargin: anchors.leftMargin
+                    anchors.topMargin: rootPlayer._videoFramed ? rootPlayer._videoFrameTop : 0
 
                     // With regard to `ViewBlockingRectangle`, we
                     // do not need to prevent painting anything
@@ -929,6 +939,30 @@ FocusScope {
         }
     }
 
+    Rectangle {
+        // The frame around the video. Only its border is drawn, which is
+        // wide enough for its outer edge to be out of sight: what is left
+        // in view are the sides and the round inner corners. After an idea
+        // from Olmo Gutierrez' implementation of the redesign.
+        id: videoFrame
+
+        readonly property real _out: VLCStyle.dp(50, VLCStyle.scale)
+
+        visible: rootPlayer._videoFramed
+
+        x: playerSpecializationLoader.x + rootPlayer._videoFrameSide - _out
+        y: playerSpecializationLoader.y + rootPlayer._videoFrameTop - _out
+        width: playerSpecializationLoader.width - 2 * (rootPlayer._videoFrameSide - _out)
+        height: playerSpecializationLoader.height - rootPlayer._videoFrameTop + 2 * _out
+
+        color: "transparent"
+
+        radius: _out + VLCStyle.dp(9, VLCStyle.scale)
+
+        border.width: _out
+        border.color: windowTheme.bg.primary
+    }
+
     TopBar {
         id: topBar
 
@@ -954,7 +988,8 @@ FocusScope {
                   resumeVisible)
 
         focus: true
-        title: Player.title
+        // Not every media has a title, they all have a name.
+        title: Player.title || Player.name
 
         pinControls: MainCtx.pinVideoControls
 

@@ -396,7 +396,8 @@ vlc_module_begin ()
     add_obsolete_integer( "qt-continue" )
 
 #ifdef UPDATE_CHECK
-    add_bool( "qt-updates-notif", true, UPDATER_TEXT,
+    /* The updates VLC would find are VideoLAN's releases, not builds of this fork */
+    add_bool( "qt-updates-notif", false, UPDATER_TEXT,
               UPDATER_LONGTEXT )
     add_integer_with_range( "qt-updates-days", 3, 0, 180,
               UPDATER_DAYS_TEXT, nullptr )

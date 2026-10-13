@@ -24,6 +24,7 @@ import QtQuick.Window
 
 import VLC.MainInterface
 import VLC.Style
+import VLC.Player
 import VLC.PlayerControls
 import VLC.Playlist
 import VLC.Widgets as Widgets
@@ -65,11 +66,21 @@ FocusScope{
 
     readonly property int _sideMargin: VLCStyle.margin_small + sideMargin
 
+    // The folder a local file is in. Other media have none.
+    readonly property string _folderName: {
+        const url = Player.url.toString()
+        if (!url.startsWith("file:"))
+            return ""
+
+        const parts = url.split("/")
+        return (parts.length >= 2) ? decodeURIComponent(parts[parts.length - 2]) : ""
+    }
+
     // Aliases
 
     property alias resumeVisible: resumeDialog.visible
 
-    property alias playlistVisible: playlistButton.checked
+    property bool playlistVisible: false
 
     // Signals
 
@@ -269,39 +280,197 @@ FocusScope{
 
             visible: (root._showTopBar && root.resumeVisible === false)
 
-            implicitHeight: VLCStyle.icon_banner + VLCStyle.margin_xxsmall * 2
-            implicitWidth: backBtn.implicitWidth + logo.implicitWidth + VLCStyle.margin_xxsmall
+            implicitHeight: VLCStyle.dp(40, VLCStyle.scale)
+            implicitWidth: logoRow.implicitWidth
 
-            Widgets.IconToolButton {
-                id: backBtn
+            Row {
+                id: logoRow
 
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
+                anchors.fill: parent
 
-                objectName: "IconToolButton"
-                font.pixelSize: VLCStyle.icon_banner
-                text: VLCIcons.back
-                description: qsTr("Back")
+                // One pixel short of the 13 the logo is from the edge in the
+                // redesign: the rest is the margin of the parent.
+                leftPadding: VLCStyle.dp(1, VLCStyle.scale)
 
-                AccessibleCompat.id: "topBarBackButton"
+                Widgets.IconLabel {
+                    id: logo
 
-                focus: true
+                    anchors.verticalCenter: parent.verticalCenter
 
-                Navigation.parentItem: root
-                Navigation.rightItem: menuSelector
-                onClicked: root.backRequested()
+                    text: VLCIcons.cone
+                    font.pixelSize: VLCStyle.icon_normal
+                    color: theme.accent
+                }
 
-                onHoveredChanged: root.requestLockUnlockAutoHide(hovered)
-            }
+                Item {
+                    id: logoSpacer
 
-            Widgets.BannerCone {
-                id: logo
+                    width: VLCStyle.dp(14, VLCStyle.scale)
+                    height: 1
+                }
 
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: backBtn.right
-                anchors.leftMargin: VLCStyle.margin_xxsmall
+                Widgets.IconToolButton {
+                    id: menuSelector
 
-                color: theme.accent
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    visible: !root.showToolbar
+                    enabled: visible
+
+                    // The dots are drawn smaller than the other icons, in a box
+                    // of the same size.
+                    font.pixelSize: VLCStyle.dp(18, VLCStyle.scale)
+                    padding: VLCStyle.dp(5, VLCStyle.scale)
+
+                    text: VLCIcons.more
+                    description: qsTr("Menu")
+
+                    AccessibleCompat.id: "topBarMenuButton"
+
+                    checked: contextMenu.shown
+
+                    Navigation.parentItem: root
+                    Navigation.rightItem: backBtn
+
+                    onClicked: contextMenu.popup(this.mapToGlobal(0, height))
+
+                    onHoveredChanged: root.requestLockUnlockAutoHide(hovered)
+
+                    Menus.QmlGlobalMenu {
+                        id: contextMenu
+
+                        ctx: MainCtx
+
+                        onAboutToShow: root.requestLockUnlockAutoHide(true)
+                        onAboutToHide: root.requestLockUnlockAutoHide(false)
+                    }
+
+                    Connections {
+                        target: root
+
+                        function onForceUnlock() {
+                            contextMenu.close()
+                        }
+                    }
+                }
+
+                Item {
+                    id: menuSpacer
+
+                    width: menuSelector.visible ? VLCStyle.dp(10, VLCStyle.scale) : 0
+                    height: 1
+                }
+
+                Widgets.IconToolButton {
+                    id: backBtn
+
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    objectName: "IconToolButton"
+                    font.pixelSize: VLCStyle.icon_normal
+                    padding: VLCStyle.margin_xxxsmall
+
+                    text: VLCIcons.panel_left
+                    description: qsTr("Library")
+
+                    AccessibleCompat.id: "topBarBackButton"
+
+                    focus: true
+
+                    Navigation.parentItem: root
+                    Navigation.leftItem: menuSelector.visible ? menuSelector : null
+                    Navigation.rightItem: folderBtn.visible ? folderBtn : fullscreenBtn
+                    onClicked: root.backRequested()
+
+                    onHoveredChanged: root.requestLockUnlockAutoHide(hovered)
+                }
+
+                Widgets.IconLabel {
+                    id: divider
+
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    visible: folderBtn.visible
+
+                    text: VLCIcons.divider
+                    font.pixelSize: VLCStyle.icon_normal
+                    color: theme.separator
+                }
+
+                T.AbstractButton {
+                    // What the current media is part of: the way back to the
+                    // rest of it.
+                    id: folderBtn
+
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    visible: (text !== "")
+
+                    text: root._folderName
+
+                    padding: 0
+                    rightPadding: VLCStyle.margin_xxsmall
+
+                    implicitWidth: implicitContentWidth + leftPadding + rightPadding
+                    implicitHeight: implicitContentHeight + topPadding + bottomPadding
+
+                    Accessible.name: qsTr("Library, %1").arg(text)
+                    AccessibleCompat.id: "topBarFolderButton"
+
+                    Navigation.parentItem: root
+                    Navigation.leftItem: backBtn
+                    Navigation.rightItem: fullscreenBtn
+
+                    Keys.priority: Keys.AfterItem
+                    Keys.onPressed: (event) => Navigation.defaultKeyAction(event)
+
+                    onClicked: root.backRequested()
+
+                    onHoveredChanged: root.requestLockUnlockAutoHide(hovered)
+
+                    readonly property ColorContext colorContext: ColorContext {
+                        id: folderTheme
+
+                        colorSet: ColorContext.ToolButton
+
+                        focused: folderBtn.visualFocus
+                        hovered: folderBtn.hovered
+                        pressed: folderBtn.down
+                    }
+
+                    background: Widgets.AnimatedBackground {
+                        enabled: folderTheme.initialized
+
+                        radius: VLCStyle.dp(6, VLCStyle.scale)
+
+                        color: folderTheme.bg.primary
+
+                        border.color: folderBtn.visualFocus ? folderTheme.visualFocus : "transparent"
+                    }
+
+                    contentItem: Row {
+                        spacing: VLCStyle.margin_xxsmall
+
+                        Widgets.IconLabel {
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            width: VLCStyle.dp(28, VLCStyle.scale)
+                            height: width
+
+                            text: VLCIcons.folder
+                            font.pixelSize: VLCStyle.icon_normal
+                            color: folderTheme.fg.primary
+                        }
+
+                        T.Label {
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            text: folderBtn.text
+                            font.pixelSize: VLCStyle.dp(14, VLCStyle.scale)
+                            color: folderTheme.fg.primary
+                        }
+                    }
+                }
             }
         }
 
@@ -435,74 +604,26 @@ FocusScope{
         visible: root._showTopBar
 
         Widgets.IconToolButton {
-            id: menuSelector
+            id: fullscreenBtn
 
             anchors.verticalCenter: parent.verticalCenter
-            visible: !root.showToolbar
-            enabled: visible
-            focus: visible
-            font.pixelSize: VLCStyle.icon_banner
 
-            width: VLCStyle.bannerButton_width
-            height: VLCStyle.bannerButton_height
+            font.pixelSize: VLCStyle.icon_normal
+            padding: VLCStyle.margin_xxxsmall
+            horizontalPadding: VLCStyle.dp(6, VLCStyle.scale)
 
-            text: VLCIcons.more
-            description: qsTr("Menu")
+            enabled: Player.hasVideoOutput
+            text: Player.fullscreen ? VLCIcons.defullscreen : VLCIcons.fullscreen
+            description: qsTr("Fullscreen")
 
-            AccessibleCompat.id: "topBarMenuButton"
-
-            checked: contextMenu.shown
-
-            Navigation.parentItem: root
-            Navigation.leftItem: backBtn
-            Navigation.rightItem: playlistButton
-
-            onClicked: contextMenu.popup(this.mapToGlobal(0, height))
-
-            onHoveredChanged: root.requestLockUnlockAutoHide(hovered)
-
-            Menus.QmlGlobalMenu {
-                id: contextMenu
-
-                ctx: MainCtx
-
-                onAboutToShow: root.requestLockUnlockAutoHide(true)
-                onAboutToHide: root.requestLockUnlockAutoHide(false)
-            }
-
-            Connections {
-                target: root
-
-                function onForceUnlock() {
-                    contextMenu.close()
-                }
-            }
-        }
-
-        PlaylistPane.PlaylistToggleButton {
-            id: playlistButton
-
-            anchors.verticalCenter: parent.verticalCenter
-            objectName: ControlListModel.PLAYLIST_BUTTON
-            font.pixelSize: VLCStyle.icon_banner
-            text: VLCIcons.playlist
-            description: qsTr("Play Queue")
-
-            AccessibleCompat.id: "topBarPlayqueueButton"
+            AccessibleCompat.id: "topBarFullscreenButton"
 
             focus: root.showToolbar
 
-            width: VLCStyle.bannerButton_width
-            height: VLCStyle.bannerButton_height
-
-            plListView: root.plListView
-            
             Navigation.parentItem: root
-            Navigation.leftItem: menuSelector.visible ? menuSelector : backBtn
+            Navigation.leftItem: folderBtn.visible ? folderBtn : backBtn
 
-            onClicked: togglePlaylistVisibility()
-
-            Accessible.onToggleAction:togglePlaylistVisibility()
+            onClicked: Player.fullscreen = !Player.fullscreen
 
             onHoveredChanged: root.requestLockUnlockAutoHide(hovered)
         }

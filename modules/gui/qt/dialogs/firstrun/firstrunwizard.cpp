@@ -145,7 +145,8 @@ void FirstRunWizard::finish()
     config_PutInt( "qt-menubar", ui.layoutGroup->checkedId() );
     config_PutInt( "qt-titlebar", ui.layoutGroup->checkedId() );
 
-    config_PutInt( "qt-pin-controls", ui.layoutGroup->checkedId() );
+    /* The bars of the redesign sit above and below the video in both layouts */
+    config_PutInt( "qt-pin-controls", 1 );
 
     {
         ControlbarProfileModel* controlbarModel = p_intf->p_mi->controlbarProfileModel();
@@ -300,7 +301,12 @@ void FirstRunWizard::initializePage( int id )
             colorSchemeGroup->setId( schemeButtons.at(i), schemes.at(i).scheme );
             colorSchemeImages->setId( schemeImages.at(i), schemes.at(i).scheme );
             schemeButtons.at(i)->setText( schemes.at(i).text );
-            if( !i ) updateColorLabel( schemeButtons.at(i) );
+            /* The redesign is a dark interface first */
+            if( schemes.at(i).scheme == ColorSchemeModel::Night )
+            {
+                schemeButtons.at(i)->setChecked( true );
+                updateColorLabel( schemeButtons.at(i) );
+            }
         }
     }
     else if ( id == FOLDER_PAGE )
@@ -321,13 +327,12 @@ void FirstRunWizard::reject()
     config_PutInt( "metadata-network-access", 1 );
     config_PutInt( "qt-privacy-ask", 0 );
 
-    /* Colour Page settings */
-    p_intf->p_mi->getColorScheme()->setCurrentIndex( 0 );
+    /* Colour Page settings: keep the scheme the interface started with */
 
     /* Layout Page settings */
     config_PutInt( "qt-menubar", 0 );
     config_PutInt( "qt-titlebar", 0 );
-    p_intf->p_mi->setPinVideoControls( 0 );
+    p_intf->p_mi->setPinVideoControls( 1 );
 
     if( p_intf->p_mi->getMediaLibrary() )
         p_intf->p_mi->getMediaLibrary()->reload();

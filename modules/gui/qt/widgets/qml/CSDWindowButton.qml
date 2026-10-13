@@ -37,7 +37,7 @@ T.Button {
     readonly property bool _paintHovered: control.hovered || showHovered
 
     padding: 0
-    width: VLCStyle.dp(40, VLCStyle.scale)
+    width: VLCStyle.dp(36, VLCStyle.scale)
 
     implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
                             implicitContentWidth + leftPadding + rightPadding)
@@ -67,20 +67,9 @@ T.Button {
             anchors.centerIn: parent
             text: control.iconTxt
 
-            font.family:{
-                if (MainCtx.osName === MainCtx.Windows)
-                {
-                    if(MainCtx.osVersion === 10)
-                        return "Segoe MDL2 Assets"
+            font.family: VLCIcons.fontFamily
 
-                    else if(MainCtx.osVersion >= 11)
-                        return "Segoe Fluent Icons"
-                }
-     
-                return VLCIcons.fontFamily
-            }
-
-            font.pixelSize: VLCStyle.icon_CSD
+            font.pixelSize: VLCStyle.icon_normal
             color: control.color
         }
     }

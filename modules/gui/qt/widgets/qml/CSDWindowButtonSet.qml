@@ -33,7 +33,9 @@ Row {
     property color color: theme.fg.primary
     property color hoverColor: theme.bg.primary.alpha(0.5)
 
-    readonly property bool useWinIcons: ((MainCtx.osName === MainCtx.Windows)&&(MainCtx.osVersion >= 10))
+    // The window buttons are drawn like the rest of the interface, not with
+    // the glyphs of the system.
+    readonly property bool useWinIcons: false
 
     readonly property bool buttonHovered: {
         let h = false
@@ -91,9 +93,7 @@ Row {
                                 : "\uE922"
 
                     else
-                        return (MainCtx.intfMainWindow.visibility === Window.Maximized)
-                                ? VLCIcons.window_restore
-                                : VLCIcons.window_maximize
+                        return VLCIcons.window_maximize
                 }
 
                 case CSDButton.Close:

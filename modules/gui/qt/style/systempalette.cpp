@@ -737,6 +737,7 @@ void SystemPalette::makeDarkPalette()
         setColor(CS, C::Bg, C::Secondary, C::Normal, darkBgA4);
         setColor(CS, C::Fg, C::Primary, C::Normal, darkFgA2);
         setColor(CS, C::Decoration, C::Border, C::Normal, darkDividerDim);
+        setColor(CS, C::Decoration, C::Separator, C::Normal, darkDividerBright);
     }
 
     //badges
