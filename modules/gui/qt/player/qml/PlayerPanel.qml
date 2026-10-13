@@ -69,6 +69,12 @@ T.Popup {
     readonly property color textColor: dark ? theme.palette.darkFgA1 : theme.palette.lightFgA1
     readonly property color hoverColor: dark ? theme.palette.darkFg1 : theme.palette.lightFgB1
     readonly property color accentColor: theme.accent
+    readonly property color knobColor: dark ? theme.palette.darkFgA4 : theme.palette.lightBgA4
+
+    // What is filled in a well in the accent: a slider up to its handle, the
+    // half of a switch that says it is on.
+    readonly property color accentWellColor: dark ? Qt.darker(theme.accent, 3.8)
+                                                  : Qt.tint(theme.palette.lightBgA3, Qt.alpha(theme.accent, 0.35))
 
     readonly property real cornerRadius: VLCStyle.dp(10, VLCStyle.scale)
 

@@ -367,6 +367,21 @@ public slots:
     void setSecondarySubtitleDelayMS( int );
     float getSubtitleFPS( ) const;
     void setSubtitleFPS( float );
+
+    /**
+     * Turn an audio filter of what plays on or off, by the name of its
+     * module, and hand a setting to the audio output that plays if it has
+     * it. Neither is kept: that is what the options are for.
+     */
+    Q_INVOKABLE void enableAudioFilter( const QString& name, bool enable );
+    Q_INVOKABLE void applyAudioSetting( const QString& name, const QVariant& value );
+
+    /**
+     * Make the equalizer use one of its presets, by its name. What the
+     * equalizer reads are the bands and the gain of the preset, it does
+     * not load without them: they become options along with the name.
+     */
+    Q_INVOKABLE void setEqualizerPreset( const QString& name );
     int getSubtitleTextScale() const;
     void setSubtitleTextScale( int );
     int getSubtitleMargin() const;

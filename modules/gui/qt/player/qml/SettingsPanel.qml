@@ -61,6 +61,21 @@ PlayerPanel {
         return match ? parseInt(match[1], 16) : -1
     }
 
+    // Audio filters are a list of module names in an option. This says
+    // whether one is in it, and puts it in or takes it out, for what plays
+    // too.
+
+    readonly property var _audioFilters: String(audioFilterOption.value).split(":").filter(name => name !== "")
+
+    function _setAudioFilter(name: string, enable: bool) {
+        const filters = _audioFilters.filter(other => other !== name)
+        if (enable)
+            filters.push(name)
+
+        audioFilterOption.set(filters.join(":"))
+        Player.enableAudioFilter(name, enable)
+    }
+
     // Milliseconds as seconds with three decimals, the way delays are shown.
     function _seconds(ms: int) : string {
         return qsTr("%1 s").arg((ms / 1000).toFixed(3))
@@ -95,6 +110,44 @@ PlayerPanel {
 
     TabPage {
         Group {
+            title: qsTr("Defaults")
+            note: qsTr("For the next media that is opened.")
+
+            Option {
+                id: audioTrack
+                name: "audio-track"
+            }
+
+            Option {
+                id: audioLanguage
+                name: "audio-language"
+            }
+
+            FieldSetting {
+                title: qsTr("Audio Track")
+
+                // The option counts from zero and is -1 when no track is
+                // asked for.
+                text: (audioTrack.value >= 0) ? String(audioTrack.value + 1) : ""
+                placeholder: qsTr("Automatic")
+
+                onEdited: (text) => {
+                    const track = parseInt(text)
+                    audioTrack.set((track >= 1) ? track - 1 : -1)
+                }
+            }
+
+            FieldSetting {
+                title: qsTr("Audio Language")
+
+                text: audioLanguage.value
+                placeholder: qsTr("Any")
+
+                onEdited: (text) => audioLanguage.set(text.trim())
+            }
+        }
+
+        Group {
             title: qsTr("Synchronization")
 
             SliderSetting {
@@ -110,6 +163,126 @@ PlayerPanel {
                 onMoved: (value) => { Player.audioDelayMS = value }
 
                 scaleLabels: [qsTr("-10 s"), qsTr("0 s"), qsTr("+10 s")]
+            }
+        }
+
+        Group {
+            title: qsTr("Filters")
+
+            Option {
+                id: audioFilterOption
+                name: "audio-filter"
+            }
+
+            Option {
+                id: equalizerPreset
+                name: "equalizer-preset"
+            }
+
+            Option {
+                id: equalizerTwoPass
+                name: "equalizer-2pass"
+            }
+
+            Option {
+                id: pitchShift
+                name: "pitch-shift"
+            }
+
+            ToggleSetting {
+                title: qsTr("Equalizer")
+
+                checked: root._audioFilters.includes("equalizer")
+                onToggled: (checked) => {
+                    // It does not load without the bands of a preset.
+                    if (checked)
+                        Player.setEqualizerPreset(equalizerPreset.value)
+
+                    root._setAudioFilter("equalizer", checked)
+                }
+            }
+
+            ChoiceSetting {
+                title: qsTr("Preset")
+
+                // The names the equalizer knows its presets by
+                options: [
+                    { value: "flat", text: qsTr("Flat") },
+                    { value: "classical", text: qsTr("Classical") },
+                    { value: "club", text: qsTr("Club") },
+                    { value: "dance", text: qsTr("Dance") },
+                    { value: "fullbass", text: qsTr("Full bass") },
+                    { value: "fullbasstreble", text: qsTr("Full bass and treble") },
+                    { value: "fulltreble", text: qsTr("Full treble") },
+                    { value: "headphones", text: qsTr("Headphones") },
+                    { value: "largehall", text: qsTr("Large hall") },
+                    { value: "live", text: qsTr("Live") },
+                    { value: "party", text: qsTr("Party") },
+                    { value: "pop", text: qsTr("Pop") },
+                    { value: "reggae", text: qsTr("Reggae") },
+                    { value: "rock", text: qsTr("Rock") },
+                    { value: "ska", text: qsTr("Ska") },
+                    { value: "soft", text: qsTr("Soft") },
+                    { value: "softrock", text: qsTr("Soft rock") },
+                    { value: "techno", text: qsTr("Techno") }
+                ]
+
+                value: equalizerPreset.value
+
+                onChosen: (value) => {
+                    Player.setEqualizerPreset(value)
+                    equalizerPreset.set(value)
+                }
+            }
+
+            ToggleSetting {
+                title: qsTr("2 Pass")
+
+                checked: !!equalizerTwoPass.value
+                onToggled: (checked) => equalizerTwoPass.set(checked)
+            }
+
+            ToggleSetting {
+                title: qsTr("Compressor")
+
+                checked: root._audioFilters.includes("compressor")
+                onToggled: (checked) => root._setAudioFilter("compressor", checked)
+            }
+
+            ToggleSetting {
+                title: qsTr("Spatializer")
+
+                checked: root._audioFilters.includes("spatializer")
+                onToggled: (checked) => root._setAudioFilter("spatializer", checked)
+            }
+
+            ToggleSetting {
+                title: qsTr("Stereo Widener")
+
+                checked: root._audioFilters.includes("stereo_widen")
+                onToggled: (checked) => root._setAudioFilter("stereo_widen", checked)
+            }
+
+            SliderSetting {
+                title: qsTr("Adjust Pitch")
+                valueText: qsTr("%1 semitones").arg(Number(pitchShift.value).toFixed(1))
+                boxed: false
+
+                from: -12
+                to: 12
+                origin: 0
+                stepSize: 0.5
+                ticks: 3
+
+                value: pitchShift.value
+
+                // The filter that shifts the pitch is only there while there
+                // is something to shift.
+                onMoved: (value) => {
+                    pitchShift.set(value)
+                    root._setAudioFilter("scaletempo_pitch", value !== 0)
+                    Player.applyAudioSetting("pitch-shift", value)
+                }
             }
         }
     }
@@ -501,6 +674,251 @@ PlayerPanel {
             function onOptionChanged(name) {
                 if (name === option.name)
                     option.value = MainCtx.option(name)
+            }
+        }
+    }
+
+    // A setting that is on or off: its name and a switch.
+    component ToggleSetting: Item {
+        id: toggle
+
+        required property string title
+
+        // Bound to what the setting is, toggled() says what was asked for.
+        property bool checked: false
+
+        signal toggled(bool checked)
+
+        width: parent.width
+        height: VLCStyle.dp(48, VLCStyle.scale)
+
+        T.Label {
+            anchors.verticalCenter: parent.verticalCenter
+
+            x: VLCStyle.margin_xxsmall
+
+            text: toggle.title
+            font.pixelSize: VLCStyle.dp(14, VLCStyle.scale)
+            color: root.dimColor
+        }
+
+        T.AbstractButton {
+            id: switchButton
+
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+
+            width: VLCStyle.dp(68, VLCStyle.scale)
+            height: VLCStyle.dp(32, VLCStyle.scale)
+
+            Accessible.role: Accessible.CheckBox
+            Accessible.name: toggle.title
+            Accessible.checkable: true
+            Accessible.checked: toggle.checked
+
+            onClicked: toggle.toggled(!toggle.checked)
+
+            background: Rectangle {
+                radius: VLCStyle.dp(6, VLCStyle.scale)
+
+                color: root.wellColor
+
+                border.width: VLCStyle.focus_border
+                border.color: switchButton.visualFocus ? root.accentColor : "transparent"
+            }
+
+            contentItem: Item {
+                // The half the knob is not on says what the switch is at.
+                Rectangle {
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    x: toggle.checked ? VLCStyle.dp(3, VLCStyle.scale) : VLCStyle.dp(32, VLCStyle.scale)
+
+                    width: VLCStyle.dp(33, VLCStyle.scale)
+                    height: VLCStyle.dp(26, VLCStyle.scale)
+
+                    radius: VLCStyle.dp(3, VLCStyle.scale)
+
+                    color: toggle.checked ? root.accentWellColor : root.wellBorderColor
+
+                    T.Label {
+                        anchors.centerIn: parent
+
+                        text: toggle.checked ? qsTr("ON") : qsTr("OFF")
+                        font.pixelSize: VLCStyle.dp(12, VLCStyle.scale)
+                        color: toggle.checked ? root.accentColor : root.dimColor
+                    }
+                }
+
+                Rectangle {
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    x: toggle.checked ? VLCStyle.dp(39, VLCStyle.scale) : VLCStyle.dp(3, VLCStyle.scale)
+
+                    width: VLCStyle.dp(26, VLCStyle.scale)
+                    height: width
+
+                    radius: VLCStyle.dp(3, VLCStyle.scale)
+
+                    color: toggle.checked ? Qt.darker(root.accentColor, 1.23) : root.knobColor
+
+                    Behavior on x {
+                        NumberAnimation {
+                            duration: VLCStyle.duration_short
+                            easing.type: Easing.InOutSine
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // A setting that is one of a few things: its name and a field that opens
+    // the list of them.
+    component ChoiceSetting: Item {
+        id: choice
+
+        required property string title
+
+        // A list of { value, text }
+        property var options: []
+
+        // Bound to what the setting is, chosen() says what was asked for.
+        property var value
+
+        signal chosen(var value)
+
+        readonly property string _text: options.find(option => option.value === value)?.text ?? ""
+
+        width: parent.width
+        height: VLCStyle.dp(48, VLCStyle.scale)
+
+        T.Label {
+            anchors.verticalCenter: parent.verticalCenter
+
+            x: VLCStyle.margin_xxsmall
+
+            text: choice.title
+            font.pixelSize: VLCStyle.dp(14, VLCStyle.scale)
+            color: root.dimColor
+        }
+
+        T.AbstractButton {
+            id: choiceButton
+
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+
+            width: VLCStyle.dp(180, VLCStyle.scale)
+            height: VLCStyle.dp(36, VLCStyle.scale)
+
+            Accessible.role: Accessible.ComboBox
+            Accessible.name: choice.title
+
+            onClicked: choiceList.open()
+
+            background: Rectangle {
+                radius: VLCStyle.dp(6, VLCStyle.scale)
+
+                color: root.wellColor
+
+                border.width: VLCStyle.dp(2, VLCStyle.scale)
+                border.color: (choiceButton.visualFocus || choiceList.visible) ? root.accentColor
+                                                                             : root.wellBorderColor
+            }
+
+            contentItem: Item {
+                T.Label {
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    x: VLCStyle.dp(14, VLCStyle.scale)
+                    width: parent.width - x - VLCStyle.dp(34, VLCStyle.scale)
+
+                    text: choice._text
+                    elide: Text.ElideRight
+                    font.pixelSize: VLCStyle.dp(14, VLCStyle.scale)
+                    color: root.tabColor
+                }
+
+                Widgets.IconLabel {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    anchors.rightMargin: VLCStyle.dp(6, VLCStyle.scale)
+
+                    text: choiceList.visible ? VLCIcons.chevron_up : VLCIcons.chevron_down
+                    font.pixelSize: VLCStyle.icon_normal
+                    color: root.tabColor
+                }
+            }
+
+            T.Popup {
+                id: choiceList
+
+                y: parent.height + VLCStyle.margin_xxsmall
+
+                width: parent.width
+                height: Math.min(listView.contentHeight + 2 * padding, VLCStyle.dp(240, VLCStyle.scale))
+
+                padding: VLCStyle.dp(2, VLCStyle.scale)
+
+                background: Rectangle {
+                    radius: VLCStyle.dp(6, VLCStyle.scale)
+
+                    color: root.wellColor
+
+                    border.width: VLCStyle.dp(2, VLCStyle.scale)
+                    border.color: root.wellBorderColor
+                }
+
+                contentItem: ListView {
+                    id: listView
+
+                    clip: true
+
+                    boundsBehavior: Flickable.StopAtBounds
+
+                    model: choice.options
+
+                    delegate: T.AbstractButton {
+                        id: optionButton
+
+                        required property var modelData
+
+                        readonly property bool current: (modelData.value === choice.value)
+
+                        width: ListView.view.width
+                        height: VLCStyle.dp(32, VLCStyle.scale)
+
+                        text: modelData.text
+
+                        Accessible.name: text
+
+                        onClicked: {
+                            choiceList.close()
+                            choice.chosen(modelData.value)
+                        }
+
+                        background: Rectangle {
+                            radius: VLCStyle.dp(4, VLCStyle.scale)
+
+                            color: optionButton.current ? root.accentWellColor
+                                                        : (optionButton.hovered ? root.wellBorderColor
+                                                                                : "transparent")
+                        }
+
+                        contentItem: T.Label {
+                            leftPadding: VLCStyle.margin_small
+                            rightPadding: VLCStyle.margin_small
+
+                            verticalAlignment: Text.AlignVCenter
+
+                            text: optionButton.text
+                            elide: Text.ElideRight
+                            font.pixelSize: VLCStyle.dp(14, VLCStyle.scale)
+                            color: optionButton.current ? root.accentColor : root.tabColor
+                        }
+                    }
+                }
             }
         }
     }

@@ -22,6 +22,9 @@
 
 #include "dialogs/extensions/extensions_manager.hpp"
 #include "player_controller.hpp"
+
+// The presets of the equalizer, which only the equalizer and its settings know
+#include "../../../audio_filter/equalizer_presets.h"
 #include "player_controller_p.hpp"
 #include "util/shared_input_item.hpp"
 
@@ -1590,6 +1593,71 @@ void PlayerController::setSubtitleFPS(float fps)
     if( !d->isCurrentItemSynced() )
         return;
     vlc_player_SetAssociatedSubsFPS( d->m_player, fps );
+}
+
+void PlayerController::setEqualizerPreset(const QString& name)
+{
+    const QByteArray key = name.toUtf8();
+
+    for ( const eqz_preset_t& preset : eqz_preset_10b )
+    {
+        if ( key != preset.psz_name )
+            continue;
+
+        QStringList bands;
+        for ( int i = 0; i < preset.i_band; ++i )
+            bands += QString::number( preset.f_amp[i], 'f', 1 );
+        const QByteArray bandsValue = bands.join( ' ' ).toUtf8();
+
+        config_PutPsz( "equalizer-preset", preset.psz_name );
+        config_PutPsz( "equalizer-bands", bandsValue.constData() );
+        config_PutFloat( "equalizer-preamp", preset.f_preamp );
+
+        // An equalizer that is loaded listens to these on the audio output.
+        // One that is not takes the options when it loads.
+        SharedAOut aout = getAout();
+        if ( aout && var_Type( aout.get(), "equalizer-bands" ) != 0 )
+        {
+            var_SetString( aout.get(), "equalizer-preset", preset.psz_name );
+            var_SetString( aout.get(), "equalizer-bands", bandsValue.constData() );
+            var_SetFloat( aout.get(), "equalizer-preamp", preset.f_preamp );
+        }
+        return;
+    }
+}
+
+void PlayerController::enableAudioFilter(const QString& name, bool enable)
+{
+    Q_D(PlayerController);
+    vlc_player_aout_EnableFilter( d->m_player, qtu(name), enable );
+}
+
+void PlayerController::applyAudioSetting(const QString& name, const QVariant& value)
+{
+    SharedAOut aout = getAout();
+    if ( !aout )
+        return;
+
+    const QByteArray key = name.toUtf8();
+
+    // A filter that is not loaded has not created its settings there.
+    switch ( var_Type( aout.get(), key.constData() ) & VLC_VAR_CLASS )
+    {
+    case VLC_VAR_BOOL:
+        var_SetBool( aout.get(), key.constData(), value.toBool() );
+        break;
+    case VLC_VAR_INTEGER:
+        var_SetInteger( aout.get(), key.constData(), value.toLongLong() );
+        break;
+    case VLC_VAR_FLOAT:
+        var_SetFloat( aout.get(), key.constData(), value.toFloat() );
+        break;
+    case VLC_VAR_STRING:
+        var_SetString( aout.get(), key.constData(), value.toString().toUtf8().constData() );
+        break;
+    default:
+        break;
+    }
 }
 
 int PlayerController::getSubtitleTextScale() const
