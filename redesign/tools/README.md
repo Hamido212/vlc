@@ -53,3 +53,7 @@ presses, drags and releases (with `,1` at the end a picture is saved before
 the release). Several files in the queue: give the others in `-VlcArgs`.
 `m:17,76` is Ctrl+L (a key with a modifier held, set for VLC's thread only),
 `f:path` names a file in the file dialog VLC shows and accepts it.
+
+`package-release.py` packs `build-win64` into the zip of a release: without
+the `portable` settings of whoever built it, without the files a build moved
+aside, with a note on what it is.

@@ -27,8 +27,16 @@ of the same redesign.
 
 ## Trying it
 
-There are no downloads yet, it has to be built. On Windows that needs Docker
-Desktop and nothing else:
+For 64-bit Windows there is a preview build on the
+[releases page](https://github.com/Hamido212/vlc/releases): unpack it and
+start `vlc.exe`, nothing is installed. Read the notes there first, it is an
+experiment.
+
+Linux has the same interface and should build from this, but that was not
+tried here. macOS, Android and iOS have interfaces of their own in VLC, which
+this fork does not touch.
+
+To build it yourself on Windows, Docker Desktop is all that is needed:
 
 ```powershell
 .\redesign\docker-build.ps1     # everything, takes a while the first time
