@@ -40,6 +40,9 @@ FocusScope {
 
     readonly property int positionSliderY: controlBar.y + controlBar.sliderY
 
+    // Where what opens above the control bar has to stop
+    readonly property int topBarBottom: topBar.visible ? (topBar.y + topBar.height) : 0
+
     readonly property string coverSource: {
         if (Player.artwork &&
             Player.artwork.toString())

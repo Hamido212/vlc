@@ -1184,6 +1184,8 @@ libqml_module_player_a_QML = \
 	player/qml/TopBar.qml \
 	player/qml/TracksMenu.qml \
 	player/qml/TracksPanel.qml \
+	player/qml/PlayerPanel.qml \
+	player/qml/SettingsPanel.qml \
 	player/qml/TracksPage.qml \
 	player/qml/TracksPageAudio.qml \
 	player/qml/TracksPageSpeed.qml \
@@ -1223,7 +1225,7 @@ libqml_module_playercontrols_a_QML = \
 	player/qml/controlbarcontrols/LangButton.qml \
 	player/qml/controlbarcontrols/AudioButton.qml \
 	player/qml/controlbarcontrols/SubtitleButton.qml \
-	player/qml/controlbarcontrols/TracksPanelButton.qml \
+	player/qml/controlbarcontrols/PanelButton.qml \
 	player/qml/controlbarcontrols/LoopButton.qml \
 	player/qml/controlbarcontrols/MenuButton.qml \
 	player/qml/controlbarcontrols/NavigationBoxButton.qml \
@@ -1362,6 +1364,7 @@ libqml_module_widgets_a_QML = \
 	widgets/qml/TextAutoScroller.qml \
 	widgets/qml/SearchBox.qml \
 	widgets/qml/SliderExt.qml \
+	widgets/qml/BarSlider.qml \
 	widgets/qml/SortControl.qml \
 	widgets/qml/SpinBoxExt.qml \
 	widgets/qml/StackViewExt.qml \

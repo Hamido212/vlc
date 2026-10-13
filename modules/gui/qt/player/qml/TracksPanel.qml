@@ -28,7 +28,7 @@ import VLC.Util
 
 // The tracks of the current media and where they go, a tab for each kind:
 // what the audio and the subtitles buttons of the control bar open.
-T.Popup {
+PlayerPanel {
     id: root
 
     enum Tab {
@@ -37,237 +37,116 @@ T.Popup {
         Subtitles
     }
 
-    property int currentTab: TracksPanel.Tab.Subtitles
+    tabs: [
+        { icon: VLCIcons.video, text: qsTr("Video") },
+        { icon: VLCIcons.audio, text: qsTr("Audio") },
+        { icon: VLCIcons.subtitles, text: qsTr("Subtitles") }
+    ]
 
-    readonly property ColorContext colorContext: ColorContext {
-        id: theme
-        colorSet: ColorContext.Window
+    currentTab: TracksPanel.Tab.Subtitles
+
+    // Not a child: children are the pages.
+    readonly property Loader _settingsLoader: Loader {
+        active: false
+
+        sourceComponent: SettingsPanel { }
     }
 
-    // The panel is made of colors the color sets have no role for, they are
-    // taken from the palette by the name they have in the redesign.
+    // The settings that go with the tracks of a tab
+    function _showPreferences() {
+        const tab = [SettingsPanel.Tab.Video, SettingsPanel.Tab.Audio, SettingsPanel.Tab.Subtitles][currentTab]
+        const button = root.button
 
-    readonly property bool _dark: theme.palette.isDark
+        close()
 
-    readonly property color _panelColor: _dark ? Qt.alpha(theme.palette.darkBgB1, 0.95)
-                                               : Qt.alpha(theme.palette.lightBgB1, 0.8)
-    readonly property color _wellColor: _dark ? theme.palette.darkBgB2 : theme.palette.lightBgB2
-    readonly property color _dividerColor: _dark ? theme.palette.darkDividerDim : theme.palette.lightDividerDim
-
-    readonly property color _dimColor: _dark ? theme.palette.darkFgA3 : theme.palette.lightFgA3
-    readonly property color _tabColor: _dark ? theme.palette.darkFgA2 : theme.palette.lightFgA2
-    readonly property color _textColor: _dark ? theme.palette.darkFgA1 : theme.palette.lightFgA1
-    readonly property color _hoverColor: _dark ? theme.palette.darkFg1 : theme.palette.lightFgB1
-
-    readonly property real _radius: VLCStyle.dp(10, VLCStyle.scale)
-
-    width: VLCStyle.dp(400, VLCStyle.scale)
-    height: VLCStyle.dp(524, VLCStyle.scale)
-
-    padding: 0
-
-    background: Rectangle {
-        radius: root._radius
-        color: root._panelColor
+        _settingsLoader.active = true
+        _settingsLoader.item.button = button
+        _settingsLoader.item._closedAt = 0
+        _settingsLoader.item.toggle(tab)
     }
 
-    contentItem: ColumnLayout {
+    Section {
+        title: qsTr("Video Tracks")
+        tracks: Player.videoTracks
+    }
+
+    ColumnLayout {
         spacing: VLCStyle.dp(1, VLCStyle.scale)
 
-        Item {
-            // Tabs
-
-            Layout.fillWidth: true
-
-            implicitHeight: VLCStyle.dp(50, VLCStyle.scale)
-
-            // Only the corners at the top are round.
-            Rectangle {
-                anchors.fill: parent
-
-                radius: root._radius
-                color: root._wellColor
-            }
-
-            Rectangle {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-
-                height: root._radius
-                color: root._wellColor
-            }
-
-            Row {
-                anchors.fill: parent
-                anchors.leftMargin: VLCStyle.dp(6, VLCStyle.scale)
-                anchors.rightMargin: anchors.leftMargin
-
-                spacing: VLCStyle.dp(1, VLCStyle.scale)
-
-                Repeater {
-                    model: [
-                        { tab: TracksPanel.Tab.Video, icon: VLCIcons.video, text: qsTr("Video") },
-                        { tab: TracksPanel.Tab.Audio, icon: VLCIcons.audio, text: qsTr("Audio") },
-                        { tab: TracksPanel.Tab.Subtitles, icon: VLCIcons.subtitles, text: qsTr("Subtitles") }
-                    ]
-
-                    T.AbstractButton {
-                        id: tabButton
-
-                        required property var modelData
-
-                        readonly property bool current: (root.currentTab === modelData.tab)
-
-                        width: (parent.width - 2 * parent.spacing) / 3
-                        height: parent.height
-
-                        text: modelData.text
-
-                        Accessible.role: Accessible.PageTab
-                        Accessible.name: text
-                        Accessible.selected: current
-
-                        onClicked: root.currentTab = modelData.tab
-
-                        contentItem: Item {
-                            Row {
-                                anchors.horizontalCenter: parent.horizontalCenter
-
-                                y: VLCStyle.dp(14, VLCStyle.scale)
-
-                                spacing: VLCStyle.margin_xsmall
-
-                                Widgets.IconLabel {
-                                    text: tabButton.modelData.icon
-                                    font.pixelSize: VLCStyle.dp(20, VLCStyle.scale)
-                                    color: tabButton.current ? theme.accent : root._dimColor
-                                }
-
-                                T.Label {
-                                    anchors.verticalCenter: parent.verticalCenter
-
-                                    text: tabButton.text
-                                    font.pixelSize: VLCStyle.dp(12, VLCStyle.scale)
-                                    color: (tabButton.current || tabButton.hovered) ? root._tabColor : root._dimColor
-                                }
-                            }
-
-                            Rectangle {
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-                                anchors.bottom: parent.bottom
-                                anchors.leftMargin: VLCStyle.margin_xsmall
-                                anchors.rightMargin: VLCStyle.margin_xsmall
-
-                                height: VLCStyle.dp(2, VLCStyle.scale)
-
-                                visible: tabButton.current
-                                color: theme.accent
-                            }
-                        }
-                    }
-                }
-            }
+        Section {
+            title: qsTr("Embedded Tracks")
+            tracks: Player.audioTracks
         }
 
-        StackLayout {
-            // Same order as the tabs
+        Rectangle {
             Layout.fillWidth: true
-            Layout.fillHeight: true
 
-            currentIndex: root.currentTab
-
-            Section {
-                title: qsTr("Video Tracks")
-                tracks: Player.videoTracks
-            }
-
-            ColumnLayout {
-                spacing: VLCStyle.dp(1, VLCStyle.scale)
-
-                Section {
-                    title: qsTr("Embedded Tracks")
-                    tracks: Player.audioTracks
-                }
-
-                Rectangle {
-                    Layout.fillWidth: true
-
-                    implicitHeight: VLCStyle.dp(1, VLCStyle.scale)
-                    color: root._dividerColor
-                }
-
-                Section {
-                    title: qsTr("Output Device")
-                    tracks: Player.audioDevices
-                }
-            }
-
-            ColumnLayout {
-                spacing: VLCStyle.dp(1, VLCStyle.scale)
-
-                Section {
-                    title: qsTr("Embedded Tracks")
-                    tracks: Player.subtitleTracks
-                }
-
-                Section {
-                    // The tracks of a file that was added are listed with
-                    // the others above: this is where to add one.
-                    title: qsTr("External Tracks")
-                    tracks: null
-
-                    actions: Widgets.IconToolButton {
-                        text: VLCIcons.add
-                        description: qsTr("Add a subtitle file")
-
-                        // What is in a popup does not find the palette of
-                        // what the popup belongs to by itself.
-                        colorContext.palette: theme.palette
-
-                        onClicked: {
-                            root.close()
-                            DialogsProvider.loadSubtitlesFile()
-                        }
-                    }
-                }
-            }
+            implicitHeight: VLCStyle.dp(1, VLCStyle.scale)
+            color: root.dividerColor
         }
 
-        Item {
-            Layout.fillWidth: true
+        Section {
+            title: qsTr("Output Device")
+            tracks: Player.audioDevices
+        }
+    }
 
-            implicitHeight: VLCStyle.dp(72, VLCStyle.scale)
+    ColumnLayout {
+        spacing: VLCStyle.dp(1, VLCStyle.scale)
 
-            T.AbstractButton {
-                id: preferencesButton
+        Section {
+            title: qsTr("Embedded Tracks")
+            tracks: Player.subtitleTracks
+        }
 
-                anchors.fill: parent
-                anchors.margins: VLCStyle.dp(20, VLCStyle.scale)
+        Section {
+            // The tracks of a file that was added are listed with the others
+            // above: this is where to add one.
+            title: qsTr("External Tracks")
+            tracks: null
 
-                text: qsTr("Show Preferences")
+            actions: Widgets.IconToolButton {
+                text: VLCIcons.add
+                description: qsTr("Add a subtitle file")
 
-                Accessible.name: text
+                colorContext.palette: root.colorContext.palette
 
                 onClicked: {
                     root.close()
-                    DialogsProvider.extendedDialog()
+                    DialogsProvider.loadSubtitlesFile()
                 }
+            }
+        }
+    }
 
-                background: Rectangle {
-                    radius: VLCStyle.dp(4, VLCStyle.scale)
-                    color: root._wellColor
-                }
+    footer: Item {
+        width: parent.width
+        height: VLCStyle.dp(72, VLCStyle.scale)
 
-                contentItem: T.Label {
-                    text: preferencesButton.text
-                    font.pixelSize: VLCStyle.dp(14, VLCStyle.scale)
-                    color: preferencesButton.hovered ? root._tabColor : root._dimColor
+        T.AbstractButton {
+            id: preferencesButton
 
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
+            anchors.fill: parent
+            anchors.margins: VLCStyle.dp(20, VLCStyle.scale)
+
+            text: qsTr("Show Preferences")
+
+            Accessible.name: text
+
+            onClicked: root._showPreferences()
+
+            background: Rectangle {
+                radius: VLCStyle.dp(4, VLCStyle.scale)
+                color: root.wellColor
+            }
+
+            contentItem: T.Label {
+                text: preferencesButton.text
+                font.pixelSize: VLCStyle.dp(14, VLCStyle.scale)
+                color: preferencesButton.hovered ? root.tabColor : root.dimColor
+
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
             }
         }
     }
@@ -301,7 +180,7 @@ T.Popup {
 
                 text: section.title
                 font.pixelSize: VLCStyle.dp(14, VLCStyle.scale)
-                color: root._dimColor
+                color: root.dimColor
             }
 
             Row {
@@ -355,7 +234,7 @@ T.Popup {
 
                         text: VLCIcons.check
                         font.pixelSize: VLCStyle.icon_normal
-                        color: theme.accent
+                        color: root.accentColor
 
                         opacity: model.checked ? 1.0 : 0.0
                     }
@@ -368,7 +247,7 @@ T.Popup {
                         text: track.text
                         elide: Text.ElideRight
                         font.pixelSize: VLCStyle.dp(14, VLCStyle.scale)
-                        color: track.hovered ? root._hoverColor : root._textColor
+                        color: track.hovered ? root.hoverColor : root.textColor
                     }
                 }
             }

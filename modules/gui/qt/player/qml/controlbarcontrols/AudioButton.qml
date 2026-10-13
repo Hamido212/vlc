@@ -23,7 +23,8 @@ import VLC.Style
 import VLC.Player
 import VLC.Util
 
-TracksPanelButton {
+PanelButton {
+    panel: TracksPanel { }
     tab: TracksPanel.Tab.Audio
 
     text: VLCIcons.audio
