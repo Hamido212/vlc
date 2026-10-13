@@ -414,6 +414,23 @@ void MainCtx::setWindowExtendedMargin(unsigned int margin) {
 
 void MainCtx::loadPrefs(const bool callSignals)
 {
+    // The accent color that is set, the orange of the redesign if none is.
+    {
+        char *accent = var_InheritString(p_intf, "qt-accent-color");
+        QColor color;
+        if (accent && strcmp(accent, "default") && strcmp(accent, "system"))
+            color = QColor(qfu(accent));
+        free(accent);
+        if (!color.isValid())
+            color = QColor(QStringLiteral("#d37918"));
+        if (color != m_redesignAccent)
+        {
+            m_redesignAccent = color;
+            if (callSignals)
+                emit redesignAccentChanged();
+        }
+    }
+
     const auto loadFromVLCOption = [this, callSignals](auto &variable, const char *name
             , const std::function<void(MainCtx *)> signal)
     {

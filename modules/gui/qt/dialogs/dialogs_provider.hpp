@@ -287,6 +287,8 @@ public:
 
 signals:
     void releaseMouseEvents();
+    // The preferences are asked for, of the interface that has its own
+    void showRedesignPreferences();
     void showToolbarEditorDialog();
 
     //visiblity signal

@@ -61,6 +61,7 @@ moc_headers = files(
     'dialogs/preferences/expert_model.hpp',
     'dialogs/preferences/expert_view.hpp',
     'dialogs/preferences/preferences.hpp',
+    'dialogs/preferences/redesign_preferences.hpp',
     'dialogs/preferences/preferences_widgets.hpp',
     'dialogs/preferences/simple_preferences.hpp',
     'dialogs/sout/convert.hpp',
@@ -263,6 +264,7 @@ qt_plugin_sources = files(
     'dialogs/preferences/expert_model.hpp',
     'dialogs/preferences/expert_view.cpp',
     'dialogs/preferences/expert_view.hpp',
+    'dialogs/preferences/redesign_preferences.cpp',
     'dialogs/preferences/preferences.cpp',
     'dialogs/preferences/preferences.hpp',
     'dialogs/preferences/preferences_widgets.cpp',
@@ -733,6 +735,14 @@ qml_modules += {
    'outdir' : 'VLC/Player',
    'sources': files(
        'player/qml/ControlBar.qml',
+       'player/qml/redesign/RedesignPreferencesCatalog.qml',
+       'player/qml/redesign/RedesignPreferenceRow.qml',
+       'player/qml/redesign/RedesignPreferencesWindow.qml',
+       'player/qml/redesign/RedesignShortcutEditor.qml',
+       'player/qml/redesign/RedesignShortcuts.qml',
+       'player/qml/redesign/RedesignButton.qml',
+       'player/qml/redesign/RedesignIcon.qml',
+       'player/qml/redesign/RedesignTheme.qml',
        'player/qml/PlaybackSpeed.qml',
        'player/qml/LyricsFlickable.qml',
        'player/qml/MiniPlayer.qml',
@@ -961,6 +971,7 @@ qml_modules += {
 
 qml_tests = {
     'tst_FSM': files('tests/tst_FSM.qml'),
+    'tst_RedesignPreferences': files('tests/tst_RedesignPreferences.qml'),
 }
 
 qmllibs = []
