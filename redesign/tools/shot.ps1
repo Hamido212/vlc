@@ -109,6 +109,8 @@ if ($h -eq 0) { throw 'VLC did not create a main window within 20 seconds.' }
 [Win]::SetWindowPos($h, [IntPtr]::Zero, 0, 0, $Width, $Height, 0x0014) | Out-Null
 Start-Sleep -Seconds $Wait
 # The window takes the size of the video when that starts.
+$h = [Win]::FindWindow($p.Id)
+if ($h -eq 0) { throw 'The VLC window disappeared during video startup.' }
 [Win]::SetWindowPos($h, [IntPtr]::Zero, 0, 0, $Width, $Height, 0x0014) | Out-Null
 Start-Sleep -Milliseconds 1500
 

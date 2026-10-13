@@ -539,6 +539,28 @@ static int UpdateFormat(vout_display_t *vd, const video_format_t *fmtp, vlc_vide
          texture_format->fourcc != fmtp->i_chroma))
         return VLC_EGENERIC;
 
+    video_format_t unchanged = *fmtp;
+    unchanged.orientation = vd->source->orientation;
+    if (fmtp->orientation != vd->source->orientation &&
+        video_format_IsSimilar(&unchanged, vd->source) &&
+        texture_format == sys->picQuad.generic.textureFormat)
+    {
+        /* Keep the decoder's textures and update only the quad transform.
+         * The core updates the placement after accepting the new format. */
+        const video_orientation_t previous = sys->picQuad.quad_fmt.orientation;
+        sys->picQuad.quad_fmt.orientation = fmtp->orientation;
+        d3d11_device_lock(sys->d3d_dev);
+        const bool updated = D3D11_UpdateQuadPosition(vd, sys->d3d_dev, &sys->picQuad,
+                video_format_GetTransform(fmtp->orientation, sys->display.orientation));
+        d3d11_device_unlock(sys->d3d_dev);
+        if (!updated)
+        {
+            sys->picQuad.quad_fmt.orientation = previous;
+            return VLC_EGENERIC;
+        }
+        return VLC_SUCCESS;
+    }
+
     video_format_t fmt;
     video_format_Copy(&fmt, fmtp);
     video_format_Copy(&sys->picQuad.quad_fmt, &fmt);
@@ -1305,6 +1327,8 @@ static const d3d_format_t *SelectOutputFormat(vout_display_t *vd, const video_fo
     const d3d_format_t *res = nullptr;
 
     d3d11_video_context_t *vtcx_sys = GetD3D11ContextPrivate(vctx);
+    if (is_d3d11_opaque(fmt->i_chroma) && vtcx_sys == NULL)
+        return nullptr;
     if (vtcx_sys != NULL)
     {
         if (D3D11_DeviceSupportsFormat( sys->d3d_dev, vtcx_sys->format, D3D11_FORMAT_SUPPORT_SHADER_LOAD ))

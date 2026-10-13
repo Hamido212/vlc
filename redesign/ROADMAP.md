@@ -22,7 +22,7 @@ once the part runs in the Windows build and was looked at there.
     - [x] Negate Colors: visible activation and clean restoration on D3D11
     - [x] Image Adjust: live brightness slider and clean restoration
     - [x] Pixel crop fields: Top and Left changes and restoration
-    - [ ] Flip and rotation with hardware decoding
+    - [x] Flip and rotation with hardware decoding, including restoration
     - [ ] Renderer list in the Video tab
   - [ ] Playback: speed, sleep timer, what the bar shows
   - [ ] Presets for a show

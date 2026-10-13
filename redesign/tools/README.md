@@ -35,3 +35,7 @@ clip. It compares broad areas of the video to allow for the clip's moving
 graphics, while detecting both missing activation and failure to restore the
 original colors. Run with the default dark palette and no other video filters.
 Inspect its three window images as well as the numeric result.
+
+`test-transform.ps1` checks consecutive horizontal/vertical flips, 90/180/270
+degree rotations, and restoration to 0/None. It checks bar colors, portrait
+placement, and the timestamp's position; inspect its images as well.

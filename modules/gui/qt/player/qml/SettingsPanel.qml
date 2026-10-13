@@ -127,7 +127,7 @@ PlayerPanel {
 
         const type = _transformType(flip, rotation)
         if (type !== "") {
-            transformType.set(type)
+            _setVideoOption(transformType, type)
             _setVideoFilter("transform", true)
         }
     }

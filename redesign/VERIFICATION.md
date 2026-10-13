@@ -27,6 +27,28 @@ Hardware decoding and output: D3D11.
 Other filter switches, HDR output, remote resolution selection, and the Right
 and Bottom crop fields have not been checked at the image level yet.
 
+## Flip and rotation (2026-10-13)
+
+- The transform filter changes orientation without changing picture storage.
+  The core now asks capable displays to accept that orientation rather than
+  trying to convert it back to the original orientation.
+- The filter retains its input hardware video context for its output, and
+  releases the retained reference when it closes. D3D11 rejects opaque input
+  without a compatible context.
+- Recreating D3D11 textures for a pure orientation change caused a driver
+  access violation in the first experiment. The final path updates only the
+  quad transform, under the D3D11 device lock. The existing core restoration
+  path resets the orientation after removing the filter.
+- Filter proxy variables persist across restarts. Changing only the saved
+  `transform-type` left subsequent selections on the first orientation. The
+  settings panel now updates both the saved and live option.
+- Seen and checked on D3D11: horizontal and vertical flips, consecutive
+  90/180/270 degree rotations, and returning to 0/None. The vertical flip moves
+  the clip's embedded timestamp to the bottom left; 90/270 use portrait
+  placement. `test-transform.ps1` verifies these states from the window images.
+- Software decoding, other output backends, HDR transforms, and combined
+  flip/rotation selections have not been verified yet.
+
 ## Build and test environment
 
 - Use `make` for changes to `src/` or the D3D11 output module; use `qt` for

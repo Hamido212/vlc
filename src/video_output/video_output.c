@@ -960,14 +960,16 @@ static void ChangeFilters(vout_thread_sys_t *vout)
 
         /* Shallow local copy */
         es_format_t tmp = *p_fmt_current;
-        /* Assign the same chroma to compare everything except the chroma */
+        /* Chroma and orientation changes can be handled by the display
+         * without converting the filtered pictures back to the source. */
         tmp.i_codec = fmt_target.i_codec;
         tmp.video.i_chroma = fmt_target.video.i_chroma;
+        tmp.video.orientation = fmt_target.video.orientation;
 
         int ret = VLC_EGENERIC;
 
-        bool only_chroma_changed = es_format_IsSimilar(&tmp, &fmt_target);
-        if (only_chroma_changed)
+        bool only_chroma_or_orientation_changed = es_format_IsSimilar(&tmp, &fmt_target);
+        if (only_chroma_or_orientation_changed)
         {
             picture_pool_t *new_private_pool =
                     picture_pool_NewFromFormat(&p_fmt_current->video,
@@ -976,7 +978,7 @@ static void ChangeFilters(vout_thread_sys_t *vout)
             {
                 msg_Dbg(&vout->obj, "Changing vout format to %4.4s",
                                     (const char *) &p_fmt_current->video.i_chroma);
-                /* Only the chroma changed, request the vout to update the format */
+                /* Ask the display to accept the new chroma or orientation. */
                 ret = vout_SetDisplayFormat(sys->display, &p_fmt_current->video,
                                             vctx_current);
                 if (ret != VLC_SUCCESS)
