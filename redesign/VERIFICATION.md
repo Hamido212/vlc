@@ -129,6 +129,20 @@ clips in the queue, panel opened with the queue button of the control bar.
 - The tabs for bookmarks and chapters of the design are not there yet, they
   come with their own item of the roadmap.
 
+## Linux (2026-10-14)
+
+Built with `docker-build-linux.ps1` in `vlc-debian-unstable:20260611225331`,
+the image of the "debian" job of VLC's CI, with its libraries and Qt.
+
+- The whole tree builds, the Qt interface with the redesign included.
+- Seen with `shot`: the top bar, the framed video playing the test clip
+  (software decoding, `xcb_render`), and the control bar with its buttons.
+- The volume cone is not drawn there: the image has only the GIF, ICO and
+  JPEG plugins of Qt, and the cone is an SVG, as is VLC's cover placeholder.
+- Not tried: anything with a pointer, the panels, hardware decoding, Wayland,
+  a real desktop. The changes to the Direct3D 11 output are for Windows only;
+  flip and rotate use other code on Linux and were not tried there.
+
 ## Build and test environment
 
 - Use `make` for changes to `src/` or the D3D11 output module; use `qt` for
