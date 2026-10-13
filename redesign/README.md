@@ -10,6 +10,11 @@ This fork implements the VLC interface redesign by
 The design is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 by Juxtopposed. VLC itself stays under its own licenses, see `COPYING`.
 
+The SVG export of the Figma icon library in `redesign/icons/figma` and the
+list of paint styles the palette was checked against come from
+[Olmo Gutierrez' implementation](https://github.com/Olmo-Gutierrez/VLC-juxtopposed)
+of the same redesign, as does the idea for the frame around the video.
+
 This is an unofficial project, it is not affiliated with VideoLAN.
 
 ## Building on Windows
@@ -21,4 +26,17 @@ VideoLAN's CI uses and reuses their prebuilt third-party libraries.
 .\redesign\docker-build.ps1        # everything, takes a while the first time
 .\redesign\docker-build.ps1 qt     # after changing only modules/gui/qt
 .\build-win64\vlc.exe
+```
+
+The build keeps its settings in `build-win64\portable`, delete that folder to
+start over with the defaults.
+
+## Icons
+
+VLC draws its icons with a font, `modules/gui/qt/pixmaps/VLCIcons.ttf`. The
+glyphs listed in `VLCIcons.json` with a path in `icons/redesign/` are made
+from the Figma icons:
+
+```powershell
+.\redesign\icons\update.ps1
 ```
