@@ -1592,6 +1592,50 @@ void PlayerController::setSubtitleFPS(float fps)
     vlc_player_SetAssociatedSubsFPS( d->m_player, fps );
 }
 
+int PlayerController::getSubtitleTextScale() const
+{
+    Q_D(const PlayerController);
+    vlc_player_locker lock{ d->m_player };
+    return vlc_player_GetSubtitleTextScale( d->m_player );
+}
+
+void PlayerController::setSubtitleTextScale(int scale)
+{
+    Q_D(PlayerController);
+    {
+        vlc_player_locker lock{ d->m_player };
+        if ( vlc_player_GetSubtitleTextScale( d->m_player ) == (unsigned)scale )
+            return;
+        vlc_player_SetSubtitleTextScale( d->m_player, scale );
+    }
+    // The text renderer of a video output looks the scale up from there,
+    // and does not get to the player.
+    for ( const auto& vout : getVouts() )
+    {
+        if ( var_Type( vout.get(), "sub-text-scale" ) == 0 )
+            var_Create( vout.get(), "sub-text-scale", VLC_VAR_INTEGER );
+        var_SetInteger( vout.get(), "sub-text-scale", scale );
+    }
+    config_PutInt( "sub-text-scale", scale );
+    emit subtitleTextScaleChanged();
+}
+
+int PlayerController::getSubtitleMargin() const
+{
+    return config_GetInt( "sub-margin" );
+}
+
+void PlayerController::setSubtitleMargin(int margin)
+{
+    if ( config_GetInt( "sub-margin" ) == margin )
+        return;
+
+    config_PutInt( "sub-margin", margin );
+    for ( const auto& vout : getVouts() )
+        var_SetInteger( vout.get(), "sub-margin", margin );
+    emit subtitleMarginChanged();
+}
+
 //TITLE/CHAPTER/MENU
 
 void PlayerController::sectionPrev()

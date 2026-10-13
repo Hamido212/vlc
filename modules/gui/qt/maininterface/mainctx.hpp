@@ -284,6 +284,14 @@ public:
 
     Q_INVOKABLE bool backdropBlurRequested() const { return var_InheritBool(p_intf, "qt-backdrop-blur"); }
 
+    /**
+     * Options of VLC by their name, for settings that have no property of
+     * their own. A value that is set is saved: it is what things read when
+     * they start, what is already running does not hear of it.
+     */
+    Q_INVOKABLE QVariant option(const QString& name) const;
+    Q_INVOKABLE void setOption(const QString& name, const QVariant& value);
+
     Q_INVOKABLE static inline void setCursor(Qt::CursorShape cursor) { QApplication::setOverrideCursor(QCursor(cursor)); }
     Q_INVOKABLE static inline void restoreCursor(void) { QApplication::restoreOverrideCursor(); }
 
@@ -554,6 +562,7 @@ protected slots:
     void onVOutChanged( bool );
 
 signals:
+    void optionChanged(const QString& name);
     void fullscreenInterfaceToggled( bool );
     void setInterfaceVisibible(bool, bool requestActivate = false);
     void setInterfaceFullScreen( bool );
@@ -619,6 +628,7 @@ signals:
     void usingTouchChanged();
 
 private:
+    QTimer* m_optionSaveTimer = nullptr;
     void loadPrefs(bool callSignals);
     void loadFromSettingsImpl(bool callSignals);
 };

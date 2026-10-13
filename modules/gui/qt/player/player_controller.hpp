@@ -170,6 +170,10 @@ public:
     Q_PROPERTY(int subtitleDelayMS READ getSubtitleDelayMS WRITE setSubtitleDelayMS NOTIFY subtitleDelayChanged FINAL)
     Q_PROPERTY(int secondarySubtitleDelayMS READ getSecondarySubtitleDelayMS WRITE setSecondarySubtitleDelayMS NOTIFY secondarySubtitleDelayChanged FINAL)
     Q_PROPERTY(float subtitleFPS READ getSubtitleFPS WRITE setSubtitleFPS NOTIFY subtitleFPSChanged FINAL)
+    // Size of the text of the subtitles in percent, and how far from the
+    // bottom of the video they are in pixels. Both are kept as options.
+    Q_PROPERTY(int subtitleTextScale READ getSubtitleTextScale WRITE setSubtitleTextScale NOTIFY subtitleTextScaleChanged FINAL)
+    Q_PROPERTY(int subtitleMargin READ getSubtitleMargin WRITE setSubtitleMargin NOTIFY subtitleMarginChanged FINAL)
     Q_PROPERTY(TimedText currentLyric READ getCurrentLyric NOTIFY currentLyricChanged FINAL)
     Q_PROPERTY(bool hasLyrics READ hasLyrics NOTIFY hasLyricsChanged FINAL)
     Q_PROPERTY(QList<TimedText> syltLyrics READ getSyltLyrics NOTIFY syltLyricsChanged FINAL)
@@ -363,6 +367,10 @@ public slots:
     void setSecondarySubtitleDelayMS( int );
     float getSubtitleFPS( ) const;
     void setSubtitleFPS( float );
+    int getSubtitleTextScale() const;
+    void setSubtitleTextScale( int );
+    int getSubtitleMargin() const;
+    void setSubtitleMargin( int );
 
     //title/chapters/menu
     TitleListModel* getTitles();
@@ -475,6 +483,8 @@ signals:
     void subtitleDelayChanged(VLCDuration);
     void secondarySubtitleDelayChanged(VLCDuration);
     void subtitleFPSChanged(float);
+    void subtitleTextScaleChanged();
+    void subtitleMarginChanged();
 
     //title/chapters/menu
     void hasTitlesChanged( bool );

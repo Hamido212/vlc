@@ -627,6 +627,67 @@ void MainCtx::setPinVideoControls(bool pinVideoControls)
     emit pinVideoControlsChanged();
 }
 
+QVariant MainCtx::option(const QString& name) const
+{
+    const QByteArray key = name.toUtf8();
+
+    switch (config_GetType(key.constData()))
+    {
+    case VLC_VAR_BOOL:
+        return config_GetInt(key.constData()) != 0;
+    case VLC_VAR_INTEGER:
+        return QVariant::fromValue<qlonglong>(config_GetInt(key.constData()));
+    case VLC_VAR_FLOAT:
+        return config_GetFloat(key.constData());
+    case VLC_VAR_STRING:
+    {
+        char* value = config_GetPsz(key.constData());
+        const QString ret = qfu(value);
+        free(value);
+        return ret;
+    }
+    default:
+        return {};
+    }
+}
+
+void MainCtx::setOption(const QString& name, const QVariant& value)
+{
+    const QByteArray key = name.toUtf8();
+
+    switch (config_GetType(key.constData()))
+    {
+    case VLC_VAR_BOOL:
+        config_PutInt(key.constData(), value.toBool());
+        break;
+    case VLC_VAR_INTEGER:
+        config_PutInt(key.constData(), value.toLongLong());
+        break;
+    case VLC_VAR_FLOAT:
+        config_PutFloat(key.constData(), value.toFloat());
+        break;
+    case VLC_VAR_STRING:
+        config_PutPsz(key.constData(), value.toString().toUtf8().constData());
+        break;
+    default:
+        return;
+    }
+
+    // A slider sets its option many times in a row.
+    if (!m_optionSaveTimer)
+    {
+        m_optionSaveTimer = new QTimer(this);
+        m_optionSaveTimer->setSingleShot(true);
+        m_optionSaveTimer->setInterval(1000);
+        connect(m_optionSaveTimer, &QTimer::timeout, this, [this]() {
+            config_SaveConfigFile(p_intf);
+        });
+    }
+    m_optionSaveTimer->start();
+
+    emit optionChanged(name);
+}
+
 void MainCtx::setPinOpacity(float pinOpacity)
 {
     if (m_pinOpacity == pinOpacity)

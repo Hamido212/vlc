@@ -49,6 +49,18 @@ PlayerPanel {
 
     preferredHeight: VLCStyle.dp(946, VLCStyle.scale)
 
+    // An option that holds a color is a number, 0xRRGGBB. This is how it
+    // is shown and typed.
+    function _colorText(rgb: int) : string {
+        return "#" + (rgb & 0xFFFFFF).toString(16).padStart(6, "0").toUpperCase()
+    }
+
+    // The number for what was typed, or -1 if that is not a color.
+    function _colorValue(text: string) : int {
+        const match = /^\s*#?([0-9a-fA-F]{6})\s*$/.exec(text)
+        return match ? parseInt(match[1], 16) : -1
+    }
+
     // Milliseconds as seconds with three decimals, the way delays are shown.
     function _seconds(ms: int) : string {
         return qsTr("%1 s").arg((ms / 1000).toFixed(3))
@@ -104,6 +116,44 @@ PlayerPanel {
 
     TabPage {
         Group {
+            title: qsTr("Defaults")
+            note: qsTr("For the next media that is opened.")
+
+            Option {
+                id: subTrack
+                name: "sub-track"
+            }
+
+            Option {
+                id: subLanguage
+                name: "sub-language"
+            }
+
+            FieldSetting {
+                title: qsTr("Subtitle Track")
+
+                // The option counts from zero and is -1 when no track is
+                // asked for.
+                text: (subTrack.value >= 0) ? String(subTrack.value + 1) : ""
+                placeholder: qsTr("Automatic")
+
+                onEdited: (text) => {
+                    const track = parseInt(text)
+                    subTrack.set((track >= 1) ? track - 1 : -1)
+                }
+            }
+
+            FieldSetting {
+                title: qsTr("Subtitle Language")
+
+                text: subLanguage.value
+                placeholder: qsTr("Any")
+
+                onEdited: (text) => subLanguage.set(text.trim())
+            }
+        }
+
+        Group {
             title: qsTr("Synchronization")
 
             SliderSetting {
@@ -131,6 +181,162 @@ PlayerPanel {
 
                 value: Player.subtitleFPS
                 onMoved: (value) => { Player.subtitleFPS = value }
+            }
+        }
+
+        Group {
+            title: qsTr("Appearance")
+            note: qsTr("The size and the offset change right away, the rest with the next video.")
+
+            Option {
+                id: subFont
+                name: "freetype-font"
+            }
+
+            Option {
+                id: subColor
+                name: "freetype-color"
+            }
+
+            Option {
+                id: subOutlineColor
+                name: "freetype-outline-color"
+            }
+
+            Option {
+                id: subOutlineThickness
+                name: "freetype-outline-thickness"
+            }
+
+            Option {
+                id: subBackgroundOpacity
+                name: "freetype-background-opacity"
+            }
+
+            FieldSetting {
+                title: qsTr("Subtitle Font")
+
+                text: subFont.value
+
+                // Only a font that is installed is taken, under the name it
+                // is installed with.
+                onEdited: (text) => {
+                    const wanted = text.trim().toLowerCase()
+                    const family = Qt.fontFamilies().find(name => name.toLowerCase() === wanted)
+                    if (family !== undefined)
+                        subFont.set(family)
+                }
+            }
+
+            FieldSetting {
+                title: qsTr("Text Color")
+
+                text: root._colorText(subColor.value)
+                swatch: text
+
+                onEdited: (text) => {
+                    const rgb = root._colorValue(text)
+                    if (rgb >= 0)
+                        subColor.set(rgb)
+                }
+            }
+
+            FieldSetting {
+                title: qsTr("Outline Color")
+
+                text: root._colorText(subOutlineColor.value)
+                swatch: text
+
+                onEdited: (text) => {
+                    const rgb = root._colorValue(text)
+                    if (rgb >= 0)
+                        subOutlineColor.set(rgb)
+                }
+            }
+
+            FieldSetting {
+                title: qsTr("Subtitle Offset")
+
+                text: qsTr("%1px").arg(Player.subtitleMargin)
+
+                onEdited: (text) => {
+                    const margin = parseInt(text)
+                    if (!isNaN(margin)) {
+                        Player.subtitleMargin = Math.max(0, margin)
+
+                        // The player applies it, this is what saves it.
+                        MainCtx.setOption("sub-margin", Math.max(0, margin))
+                    }
+                }
+            }
+
+            SliderSetting {
+                title: qsTr("Font Size")
+                valueText: (Player.subtitleTextScale === 100) ? qsTr("Auto")
+                                                              : qsTr("%1 %").arg(Player.subtitleTextScale)
+                boxed: false
+
+                from: 50
+                to: 300
+                stepSize: 10
+                ticks: 6
+
+                value: Player.subtitleTextScale
+                onMoved: (value) => {
+                    Player.subtitleTextScale = Math.round(value)
+
+                    // The player applies it, this is what saves it.
+                    MainCtx.setOption("sub-text-scale", Math.round(value))
+                }
+            }
+
+            SliderSetting {
+                // The option is a number, these are the steps it has names for.
+                readonly property var _steps: [
+                    { thickness: 0, text: qsTr("None") },
+                    { thickness: 2, text: qsTr("Thin") },
+                    { thickness: 4, text: qsTr("Normal") },
+                    { thickness: 6, text: qsTr("Thick") }
+                ]
+
+                readonly property int _step: {
+                    let closest = 0
+                    for (let i = 1; i < _steps.length; ++i) {
+                        if (Math.abs(_steps[i].thickness - subOutlineThickness.value)
+                                < Math.abs(_steps[closest].thickness - subOutlineThickness.value))
+                            closest = i
+                    }
+                    return closest
+                }
+
+                title: qsTr("Outline Thickness")
+                valueText: _steps[_step].text
+                boxed: false
+
+                from: 0
+                to: 3
+                stepSize: 1
+                ticks: 4
+
+                value: _step
+                onMoved: (value) => subOutlineThickness.set(_steps[Math.round(value)].thickness)
+            }
+
+            SliderSetting {
+                // The option goes from 0 to 255.
+                readonly property int _percent: Math.round(subBackgroundOpacity.value * 100 / 255)
+
+                title: qsTr("Background Opacity")
+                valueText: qsTr("%1 %").arg(_percent)
+                boxed: false
+
+                from: 0
+                to: 100
+                stepSize: 10
+                ticks: 11
+
+                value: _percent
+                onMoved: (value) => subBackgroundOpacity.set(Math.round(value * 255 / 100))
             }
         }
     }
@@ -217,6 +423,9 @@ PlayerPanel {
 
         required property string title
 
+        // Something to know about the settings of the group
+        property string note: ""
+
         default property alias settings: settingsColumn.data
 
         width: parent.width
@@ -251,9 +460,153 @@ PlayerPanel {
             width: parent.width - 2 * x
 
             topPadding: VLCStyle.dp(10, VLCStyle.scale)
-            bottomPadding: VLCStyle.dp(20, VLCStyle.scale)
+            bottomPadding: (group.note !== "") ? VLCStyle.dp(10, VLCStyle.scale)
+                                               : VLCStyle.dp(20, VLCStyle.scale)
 
             spacing: VLCStyle.dp(5, VLCStyle.scale)
+        }
+
+        T.Label {
+            x: VLCStyle.margin_large
+            width: parent.width - 2 * x
+
+            visible: (group.note !== "")
+
+            bottomPadding: VLCStyle.dp(20, VLCStyle.scale)
+
+            text: group.note
+            wrapMode: Text.WordWrap
+            font.pixelSize: VLCStyle.dp(12, VLCStyle.scale)
+            color: root.dimColor
+        }
+    }
+
+    // An option of VLC, see MainCtx.option(). It takes no room in a group.
+    component Option: Item {
+        id: option
+
+        required property string name
+
+        property var value: MainCtx.option(name)
+
+        function set(value) {
+            MainCtx.setOption(name, value)
+        }
+
+        visible: false
+
+        Connections {
+            target: MainCtx
+
+            function onOptionChanged(name) {
+                if (name === option.name)
+                    option.value = MainCtx.option(name)
+            }
+        }
+    }
+
+    // A setting that is typed: its name and a field. The field can show the
+    // color that is typed in it.
+    component FieldSetting: Item {
+        id: field
+
+        required property string title
+
+        property string text: ""
+        property string placeholder: ""
+
+        // A color, as it would be typed, or nothing for no color
+        property string swatch: ""
+
+        signal edited(string text)
+
+        width: parent.width
+        height: VLCStyle.dp(48, VLCStyle.scale)
+
+        T.Label {
+            anchors.verticalCenter: parent.verticalCenter
+
+            x: VLCStyle.margin_xxsmall
+
+            text: field.title
+            font.pixelSize: VLCStyle.dp(14, VLCStyle.scale)
+            color: root.dimColor
+        }
+
+        Rectangle {
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+
+            width: VLCStyle.dp(140, VLCStyle.scale)
+            height: VLCStyle.dp(36, VLCStyle.scale)
+
+            radius: VLCStyle.dp(6, VLCStyle.scale)
+
+            color: root.wellColor
+
+            border.width: VLCStyle.dp(2, VLCStyle.scale)
+            border.color: input.activeFocus ? root.accentColor : root.wellBorderColor
+
+            TextInput {
+                id: input
+
+                anchors.fill: parent
+                anchors.leftMargin: VLCStyle.dp(14, VLCStyle.scale)
+                anchors.rightMargin: swatchRect.visible ? VLCStyle.dp(32, VLCStyle.scale)
+                                                        : VLCStyle.dp(14, VLCStyle.scale)
+
+                verticalAlignment: TextInput.AlignVCenter
+
+                clip: true
+                selectByMouse: true
+
+                font.pixelSize: VLCStyle.dp(14, VLCStyle.scale)
+                color: root.tabColor
+                selectionColor: root.accentColor
+                selectedTextColor: root.wellColor
+
+                Accessible.name: field.title
+
+                // What is typed stays until it is entered, then the field
+                // shows what the setting became.
+                text: field.text
+
+                onEditingFinished: {
+                    field.edited(text)
+                    text = Qt.binding(function() { return field.text })
+                }
+
+                T.Label {
+                    anchors.fill: parent
+
+                    verticalAlignment: Text.AlignVCenter
+
+                    visible: (input.text === "") && !input.activeFocus
+
+                    text: field.placeholder
+                    font: input.font
+                    color: root.dimColor
+                }
+            }
+
+            Rectangle {
+                id: swatchRect
+
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: parent.right
+                anchors.rightMargin: VLCStyle.dp(5, VLCStyle.scale)
+
+                width: VLCStyle.dp(22, VLCStyle.scale)
+                height: width
+
+                radius: VLCStyle.dp(2, VLCStyle.scale)
+
+                visible: (field.swatch !== "")
+                color: visible ? field.swatch : "transparent"
+
+                border.width: VLCStyle.dp(1.5, VLCStyle.scale)
+                border.color: Qt.rgba(1, 1, 1, 0.21)
+            }
         }
     }
 
@@ -265,6 +618,10 @@ PlayerPanel {
 
         required property string title
         required property string valueText
+
+        // The value in a box, as something that is set, or as plain text for
+        // what is more of a level.
+        property bool boxed: true
 
         property alias from: slider.from
         property alias to: slider.to
@@ -287,7 +644,7 @@ PlayerPanel {
 
         Item {
             width: parent.width
-            height: VLCStyle.dp(56, VLCStyle.scale)
+            height: setting.boxed ? VLCStyle.dp(56, VLCStyle.scale) : VLCStyle.dp(37, VLCStyle.scale)
 
             T.Label {
                 anchors.verticalCenter: parent.verticalCenter
@@ -299,9 +656,23 @@ PlayerPanel {
                 color: root.dimColor
             }
 
+            T.Label {
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: parent.right
+                anchors.rightMargin: VLCStyle.margin_xxsmall
+
+                visible: !setting.boxed
+
+                text: setting.valueText
+                font.pixelSize: VLCStyle.dp(14, VLCStyle.scale)
+                color: root.dimColor
+            }
+
             Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
+
+                visible: setting.boxed
 
                 width: VLCStyle.dp(140, VLCStyle.scale)
                 height: VLCStyle.dp(36, VLCStyle.scale)
