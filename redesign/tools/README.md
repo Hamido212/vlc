@@ -61,3 +61,6 @@ aside, with a note on what it is.
 
 `xwd-to-png.py` is for the Linux test in Docker: it turns the screen Xvfb
 keeps in a file into a PNG, see `container-build-linux.sh`.
+
+`-VlcDir` runs another build than `build-win64`, such as the unpacked zip of
+a release, to check what is handed out before it is.
