@@ -129,6 +129,31 @@ clips in the queue, panel opened with the queue button of the control bar.
 - The tabs for bookmarks and chapters of the design are not there yet, they
   come with their own item of the roadmap.
 
+## Preferences startup (fork PR #6, 2026-10-14)
+
+- Branch: `adopt-dsojevic-preferences`. The Windows Qt build completed with
+  six jobs and exit code 0. No Linux build was started.
+- Removed the five unstyled `QtQuick.Controls` imports. Remaining Controls
+  imports and resource registrations under `modules/gui/qt` predate this PR.
+- The first attempt did not create a window within 20 seconds. The one
+  retry exposed a gray QWindow and the assertion: the log reported
+  `Popup is not a type` in `Widgets/ComboBoxExt.qml`. The dev processes were
+  stopped immediately. Both used combo boxes now have their own template
+  delegates and popups, without that dependency.
+- Seen after rebuilding: the player at 1440x1080, General and Controls in
+  the separate preferences window, and the Keyboard Shortcuts popup.
+  `preferences-main.png`, `preferences-controls-replaced.png`,
+  `preferences-controls-page.png` and `preferences-shortcuts-startup.png`
+  were captured with `shot.ps1` and inspected. Preferences were 1348x1119
+  at the current 1.25 interface scale. This is startup verification, not
+  yet a comparison of every category with Figma.
+- Search placeholders, text fields, selection fields and toggle states
+  are visible. The imported SVG icons are missing; the layout still differs
+  from Figma. Hover, tooltips and shortcut editing were not tested here.
+- `shot.ps1` can select the second VLC window with `n:` and stops its dev
+  process when the log reports a QML loading error. A gray QWindow alone
+  no longer counts as a successful startup in that test.
+
 ## Build and test environment
 
 - Use `make` for changes to `src/` or the D3D11 output module; use `qt` for
