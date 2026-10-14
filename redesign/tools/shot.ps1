@@ -22,8 +22,7 @@ param(
     #   "p:ms"     wait for a filter or player event
     #   "e:text"   replace the focused field, then press Enter
     #   "c:x,y"    double click there
-    #   "n:"       go on with the second window VLC shows, the preferences
-    #              for one: the steps and pictures after it are of that window
+    #   "n:"       select the second window shown by this VLC process
     #   "f:path"   name that file in the file dialog VLC shows and accept it
     #   "m:mod,code"    press a key while a modifier is held, by their virtual
     #              key codes ("m:17,76" is Ctrl+L)
@@ -114,6 +113,22 @@ public class Win {
         var name = new System.Text.StringBuilder(256);
         GetClassName(h, name, name.Capacity);
         return name.ToString();
+    }
+    public static IntPtr FindOtherWindow(uint processId, IntPtr main) {
+        IntPtr result = IntPtr.Zero;
+        long largestArea = 0;
+        EnumWindows((h, data) => {
+            uint owner;
+            GetWindowThreadProcessId(h, out owner);
+            RECT rect;
+            if (owner == processId && h != main && IsWindowVisible(h)
+                && ClassOf(h).Contains("QWindow") && GetWindowRect(h, out rect)) {
+                long area = (long)(rect.R - rect.L) * (rect.B - rect.T);
+                if (area > largestArea) { largestArea = area; result = h; }
+            }
+            return true;
+        }, IntPtr.Zero);
+        return result;
     }
     // Gives the file dialog a process shows the name of a file and accepts
     // it, with messages to the dialog. False if there is no such dialog.
@@ -215,6 +230,13 @@ if ($h -eq 0) { throw 'The VLC window disappeared during video startup.' }
 [Win]::SetWindowPos($h, [IntPtr]::Zero, 0, 0, $Width, $Height, 0x0014) | Out-Null
 Start-Sleep -Milliseconds 1500
 
+# A failed QML load can leave a gray QWindow next to an assertion dialog.
+# Finding that window does not mean the interface started.
+if ((Test-Path $log) -and (Select-String -Path $log -Pattern 'qt error: qml loading' -Quiet)) {
+    Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+    throw "VLC could not load its QML interface; the dev process was stopped. See $log."
+}
+
 # Positions are given as they are in the picture, which is of the whole
 # window: this is where what the window draws in starts in it.
 $wr = New-Object Win+RECT
@@ -230,6 +252,7 @@ function Shot([string]$path) {
     $reply = [IntPtr]::Zero
     # Avoid waiting forever in PrintWindow when the Qt event loop is blocked.
     if ([Win]::SendMessageTimeout($h, 0, [IntPtr]::Zero, [IntPtr]::Zero, 3, 2000, [ref]$reply) -eq [IntPtr]::Zero) {
+        Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
         throw 'The VLC window is not responding; PrintWindow was skipped.'
     }
     $r = New-Object Win+RECT

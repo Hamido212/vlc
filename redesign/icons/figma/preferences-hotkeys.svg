@@ -1,0 +1,21 @@
+<!-- Derived from hotkeys.svg in VLC Redesign by Juxtopposed.
+     Design licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
+     https://www.figma.com/community/file/1691465999134370980/vlc-redesign
+     Eight zero-length round strokes are represented as equivalent filled dots
+     so the existing icon-font pipeline preserves the keyboard keys. -->
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="name=hotkeys, direction=default, state=default, value=default, EQ=default, two-tone=no">
+<g id="Frame">
+<path id="Vector 9" d="M9 16H15" stroke="#8F8F8F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle id="Vector 10" cx="6" cy="9" r="0.75" fill="#8F8F8F"/>
+<circle id="Vector 14" cx="6" cy="12" r="0.75" fill="#8F8F8F"/>
+<circle id="Vector 11" cx="10" cy="9" r="0.75" fill="#8F8F8F"/>
+<circle id="Vector 15" cx="10" cy="12" r="0.75" fill="#8F8F8F"/>
+<circle id="Vector 12" cx="14" cy="9" r="0.75" fill="#8F8F8F"/>
+<circle id="Vector 16" cx="14" cy="12" r="0.75" fill="#8F8F8F"/>
+<circle id="Vector 13" cx="18" cy="9" r="0.75" fill="#8F8F8F"/>
+<circle id="Vector 17" cx="18" cy="12" r="0.75" fill="#8F8F8F"/>
+<rect id="Rectangle 1" x="1.75" y="4.75" width="20.5" height="14.5" rx="3.25" stroke="#8F8F8F" stroke-width="1.5" stroke-linejoin="round"/>
+</g>
+</g>
+</svg>

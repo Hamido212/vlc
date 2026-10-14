@@ -137,6 +137,11 @@
         {"key":"album", "path": "./icons/redesign/album.svg"},
         {"key":"genre", "path": "./icons/redesign/genre.svg"},
         {"key":"playback_settings", "path": "./icons/redesign/playback-settings.svg"},
-        {"key":"move", "path": "./icons/redesign/move.svg"}
+        {"key":"move", "path": "./icons/redesign/move.svg"},
+        {"key":"interface_settings", "path": "./icons/redesign/interface.svg"},
+        {"key":"privacy", "path": "./icons/redesign/privacy.svg"},
+        {"key":"plugins", "path": "./icons/redesign/plugins.svg"},
+        {"key":"preferences_hotkeys", "path": "./icons/redesign/preferences-hotkeys.svg"},
+        {"key":"preferences_video", "path": "./icons/redesign/video.svg"}
     ]
 }

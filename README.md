@@ -28,6 +28,12 @@ of the same redesign.
 is a third one, with a preferences window and a shortcut editor that this one
 does not have yet.
 
+The preferences window and shortcut editor started from
+[dsojevic's VLC fork](https://github.com/dsojevic/vlc/tree/juxtopposed-redesign)
+at `43283e42a8`. They now use template controls and a catalog checked against
+the local Figma reference. The remaining differences are recorded in
+[redesign/VERIFICATION.md](redesign/VERIFICATION.md).
+
 ## Trying it
 
 For 64-bit Windows there is a preview build on the
@@ -130,12 +136,18 @@ once the part runs in the Windows build and was looked at there.
 
 - [ ] Open network stream, new playlist
 - [ ] Add subtitles to a file, a folder or a playlist
-- [ ] Keyboard shortcuts
-- [ ] Settings with its categories
-  - David Sojevic's fork has both. Taking them over was started and builds,
-    but they are written with QtQuick.Controls, which VLC's Qt for Windows
-    has no styles for: the interface does not load with them. They have to
-    be redone with QtQuick.Templates first.
+- [x] Keyboard shortcuts
+  - [x] The nine reference actions, editing and saving, a conflict cancelled,
+        and the saved shortcut still present after a restart
+  - [ ] Hover controls, tooltips and actual global hotkey actions: not tried
+- [x] Settings with its categories
+  - [x] The 13 categories and their available expanded sections compared
+        with the local reference in the Windows build
+  - [x] Dark and light appearance, accent selection, native equalizer bands
+        and preamp, with edits still present after a restart
+  - [ ] Missing reference rows, actions and unresolved presets: listed in
+        [redesign/VERIFICATION.md](redesign/VERIFICATION.md) and the
+        [reference audit](redesign/design/preferences-audit.md)
 - [ ] Customize mode: move the controls around, profiles
 - [ ] Onboarding
 

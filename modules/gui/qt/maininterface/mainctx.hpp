@@ -28,6 +28,7 @@
 
 #include <QtQuick/QQuickView>
 #include <QApplication>
+#include <QColor>
 #include <QQuickItem>
 #include <QTimer>
 
@@ -151,6 +152,7 @@ class MainCtx : public QObject
 
     // NOTE: This is useful when we want to prioritize player hotkeys over QML keyboard navigation.
     Q_PROPERTY(bool preferHotkeys READ preferHotkeys WRITE setPreferHotkeys NOTIFY preferHotkeysChanged FINAL)
+    Q_PROPERTY(QColor redesignAccent READ redesignAccent NOTIFY redesignAccentChanged FINAL)
 
     //Property for Activating bgCone in player view
     Q_PROPERTY(bool bgCone READ isbgCone WRITE setbgCone NOTIFY bgConeToggled FINAL)
@@ -392,6 +394,7 @@ public:
     void setAcrylicActive(bool newAcrylicActive);
 
     bool preferHotkeys() const;
+    QColor redesignAccent() const { return m_redesignAccent; }
     void setPreferHotkeys(bool enable);
 
     QWindow *intfMainWindow() const;
@@ -488,6 +491,8 @@ protected:
     bool m_smoothScroll = true;
 
     bool m_preferHotkeys = false;
+    // The accent of the preferences window, see loadPrefs()
+    QColor m_redesignAccent = QColor(QStringLiteral("#d37918"));
 
     int m_maxVolume = 125;
 
@@ -606,6 +611,7 @@ signals:
     void smoothScrollChanged();
 
     void preferHotkeysChanged();
+    void redesignAccentChanged();
 
     void useGlobalShortcutsChanged( bool );
 

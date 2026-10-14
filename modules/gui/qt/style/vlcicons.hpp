@@ -147,6 +147,11 @@ class VLCIcons : public QObject {
     Q_PROPERTY(QChar genre MEMBER genre CONSTANT FINAL)
     Q_PROPERTY(QChar playback_settings MEMBER playback_settings CONSTANT FINAL)
     Q_PROPERTY(QChar move MEMBER move CONSTANT FINAL)
+    Q_PROPERTY(QChar interface_settings MEMBER interface_settings CONSTANT FINAL)
+    Q_PROPERTY(QChar privacy MEMBER privacy CONSTANT FINAL)
+    Q_PROPERTY(QChar plugins MEMBER plugins CONSTANT FINAL)
+    Q_PROPERTY(QChar preferences_hotkeys MEMBER preferences_hotkeys CONSTANT FINAL)
+    Q_PROPERTY(QChar preferences_video MEMBER preferences_video CONSTANT FINAL)
 
 
 public:
@@ -290,6 +295,11 @@ public:
     static constexpr inline QChar genre{ u'\ue082' };
     static constexpr inline QChar playback_settings{ u'\ue083' };
     static constexpr inline QChar move{ u'\ue084' };
+    static constexpr inline QChar interface_settings{ u'\ue085' };
+    static constexpr inline QChar privacy{ u'\ue086' };
+    static constexpr inline QChar plugins{ u'\ue087' };
+    static constexpr inline QChar preferences_hotkeys{ u'\ue088' };
+    static constexpr inline QChar preferences_video{ u'\ue089' };
 
 };
 

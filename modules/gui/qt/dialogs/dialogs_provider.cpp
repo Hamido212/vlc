@@ -289,6 +289,13 @@ const QEvent::Type DialogEvent::DialogEvent_Type =
 
 void DialogsProvider::prefsDialog()
 {
+    // The main interface has preferences of its own, see
+    // RedesignPreferencesWindow.qml.
+    if (p_intf->p_mi) {
+        emit showRedesignPreferences();
+        return;
+    }
+
     if (Q_LIKELY(!m_prefsDialog))
     {
         m_prefsDialog = new PrefsDialog( nullptr, p_intf );
