@@ -154,6 +154,134 @@ clips in the queue, panel opened with the queue button of the control bar.
   process when the log reports a QML loading error. A gray QWindow alone
   no longer counts as a successful startup in that test.
 
+## Preferences and shortcuts comparison (fork PR #6, 2026-10-14)
+
+Reference: the 19 Settings frames and Keyboard Shortcuts frame `2437:14832`
+in the local Figma export, `tokens.json` and the local settings reference PNG.
+[Preferences reference audit](design/preferences-audit.md) records the frame
+IDs, exact labels, geometry, native option sources and unresolved mappings.
+The imported dsojevic interface remains the implementation source; Figma is
+the design reference. No Figma API was used.
+
+- Branch: `adopt-dsojevic-preferences`, implementation commit `af218592e1`.
+  The final Windows Qt build completed with six jobs and exit code 0.
+  No Linux build was started.
+- All captures and interactions used `tools/shot.ps1`: `PostMessage` for
+  clicks, keys and scrolling; `PrintWindow(hwnd, dc, 2)` for window images;
+  `SetWindowPos` without activation or a change in stacking order for size.
+  No real mouse, keyboard or desktop screenshot was used.
+- Seen: the player at 1440x1080; preferences at 1310x1081, corresponding to
+  the authored 1048x865 frame at the current 1.25 interface scale; Keyboard
+  Shortcuts at 1310x1000, corresponding to 1048x800 at that scale.
+- Seen and compared: General, Interface, Privacy, Controls, Playback,
+  Video, Audio, Subtitles, Library, Network, Performance, Recording and
+  Extensions, at the top and after scrolling to the bottom. The separate
+  window shows Search, the App/Media/System navigation groups, category
+  titles and Close. The retained groups and rows follow the local frames.
+- Seen and compared: the expanded Advanced Options for General, Interface,
+  Playback, Video, Audio, Subtitles and Performance. The other frames show
+  the affordance without additional referenced rows; no rows were invented.
+- Seen: Dark and Light palettes, a purple accent swatch, and the return to
+  Dark with the default accent. Text, fields, toggle states, slider marks,
+  color chips and the generated category icons are visible.
+- Seen: searching preferences for gamma leaves its slider as the result;
+  searching Keyboard Shortcuts for fullscreen leaves its three matching
+  Basic actions. These checks are recorded in `search.png` and
+  `shortcuts-search.png`; other search terms and selector combinations
+  were not tried.
+- In this Windows build, Check for updates automatically is visible. The
+  four General system-log rows are absent and their empty Developer Options
+  heading is hidden: Write to the system log, Include debug messages in the
+  system log, System log identity and System log facility. These are native
+  Syslog options whose module is conditional, rather than missing catalog
+  mappings. Other platform and plugin availability must not be inferred from
+  an option's presence in the source alone.
+
+Images are in [screenshots/preferences](screenshots/preferences/):
+`general.png`, `interface.png`, `privacy.png`, `controls.png`, `playback.png`,
+`video.png`, `audio.png`, `subtitles.png`, `library.png`, `network.png`,
+`performance.png`, `recording.png` and `extensions.png`, with corresponding
+`-bottom.png` captures. The seven expanded pages have `-advanced.png`
+captures. `light.png` and `accent.png` record the palette checks.
+
+Keyboard Shortcuts:
+
+- Seen: the nine referenced Basic and Playback rows, Search, the All Fields
+  selector, local/global shortcut columns, Cancel and Save.
+- Seen: changing the fullscreen shortcut from F to F12, saving, restarting
+  VLC and seeing F12 again. F was then restored and the editor reopened to
+  confirm it.
+- Seen: assigning N to fullscreen opens the conflict dialog. Cancel keeps
+  the existing F and N assignments. The Yes/reassignment path was not tried.
+- Images: `shortcuts.png`, `shortcuts-persisted.png`,
+  `shortcuts-restored.png`, `shortcuts-conflict.png` and
+  `shortcuts-conflict-cancel.png`. Editing and persistence were checked;
+  triggering the player actions or registering global shortcuts was not.
+
+Equalizer:
+
+- The user approved VLC's native band representation inside Figma's opaque
+  784x489 equalizer instance. This is a presentation exception; the XML does
+  not establish its internal band layout.
+- Seen: ten bands (60, 170, 310 and 600 Hz; 1, 3, 6, 12, 14 and 16 kHz),
+  a separate Preamp, gain readouts and the Classical preset. The native
+  range is -20 to +20 dB with 0.1 dB steps.
+- Seen: the 60 Hz band at 5.2 dB and Preamp at 5.1 dB; both remained after
+  restarting VLC and the other bands retained their values. The log reports
+  an equalizer loaded at 48 kHz with ten bands. No audible comparison or
+  live effect on a playing output was checked.
+- Seen: Flat restores all bands to 0.0 dB and Preamp to 12.0 dB. The
+  equalizer was switched off again. The alternative ISO frequencies were
+  not tried.
+- Images: `equalizer-expanded.png`, `equalizer-preset.png`,
+  `equalizer-edited.png`, `equalizer-persisted.png`, `equalizer-flat.png`
+  and `equalizer-restored.png`.
+
+The following Figma rows remain omitted. These are unresolved mappings or
+actions, distinct from native options hidden by the running build:
+
+| Category | Missing Figma rows | Reason |
+|---|---|---|
+| General | Interface language; Developer mode; Show minor warnings; Additional command line options; Open configurations folder; Reset all settings | No current language/minor-warning/arbitrary command-line config. `qt-verbose` controls Qt logging, not a developer mode. Folder opening and global reset are not wired actions. |
+| Interface | Use a custom skin; Remember window size and position; Auto-hide the controls; Hide after; Popup duration; Show cover art in the window when playing audio; Fullscreen controls sensitivity | Skin selection requires an interface restart, rather than a boolean. Geometry/autohide/duration option names have no current definitions. `qt-bgcone` controls an idle logo. Low/Medium/High sensitivity values are unspecified. |
+| Privacy | Never remember items matching; Clear history now; second Last.fm username | The recent-item filter is obsolete. The existing media-library clear-history action is not wired. The duplicate label is ambiguous and the user approved omitting it. |
+| Controls | Double click on the video; Reverse scroll direction in Mouse and Remotes; Web remote control | No persistent double-click selector or reverse-scroll config. Enabling the HTTP interface and its lifecycle are not wired. |
+| Playback | Show thumbnail while scrubbing; Time-shift buffer size | No persistent thumbnail option. The authored Medium preset does not specify a value for the native byte-count option. |
+| Video | Reset picture; Size; Monitor pixel aspect ratio; Time-shift buffer size | Compound picture reset is not wired. Snapshot width/height exist but the combined size presets are unspecified. No persistent monitor-pixel-aspect option; Medium time-shift size remains unspecified. |
+| Audio | Output device; Startup volume; Night mode; Spatial audio; Spatial audio mode; Pitch shift; Resampling quality; Visualization size | No generic device model. Startup volume combines unverified remember/scalar behavior. No defined night-mode filter profile. Spatial audio is a renderer/converter and the headphone option is obsolete. Pitch gain alone would not enable its filter. Balanced resampling and Match window size presets are unspecified. |
+| Subtitles | Size values; Shadow; Shadow distance; Background; Vertical position; Show feedback for; Ignore styling in ASS and SSA subtitles; Visualization size | Units and toggle/restore behavior are unspecified. Small, None, Bottom and Match window lack verified preset mappings. No persistent OSD feedback-duration option; `subsdec-formatted` controls USF rather than ASS/SSA styling. |
+| Library | Fetch titles and artwork | The native network-metadata boolean does not establish the authored multi-level policy. |
+| Network | Buffering; Cipher preference | Individual cache values and a raw GnuTLS priority string exist; Normal and Balanced preset mappings are unspecified. |
+| Performance | Hardware-accelerated decoding; Give VLC real-time priority; Process priority; Rescan plugins; Encoder | The imported hardware option is obsolete and the current boolean/device selector does not establish Automatic semantics. Windows high priority is above-normal/high, not real-time. Numeric priority is absent. Plugin-cache reset is startup-only and the live action is not wired. Encoder is obsolete. |
+| Recording | Discover cast devices | RendererManager has a scan action, not a persistent discovery boolean. |
+| Extensions | Extension list; Search; Find more extensions; Add; Remove | The imported preference adapter has no add-on management model or actions. |
+
+Known presentation differences remain: native enums are retained for playback
+position and screensaver behavior; subtitle Font size uses a native percentage
+and Outline thickness uses native choices; Aspect ratio, Crop, Zoom and Decoder use raw native
+values instead of unverified authored presets. Cast quality is present with
+VLC's High/Medium/Low/Low CPU choices; the Figma Automatic example is not a
+native choice. Inter font matching remains open. The exported video icon is
+a screen outline; the reference PNG's clapperboard detail remains open.
+
+The user approved the inherited nine accent swatch colors, correcting
+"track changew" to "track changes", omitting the second Last.fm username,
+and the native equalizer bands. These exceptions are not claimed as exact
+Figma paint or component matches.
+
+One long run through advanced pages froze. Its dev process was stopped.
+The controls now use inline template tooltips, and shorter repeat runs
+completed, but the cause of that freeze has not been proven. After changing
+the Qt DLL, the initial launch timed out in two equalizer-build tests; exactly
+one retry each loaded the interface. The final test logs had no QML loading
+errors. The dev build can still require forced termination after closing.
+
+Not checked: hover, tooltips, clearing shortcuts on hover, global shortcut
+registration, conflict reassignment with Yes, other search combinations, external
+services, audible filter effects or persistence of most individual settings.
+The captures verify the visible pages and the specified edits, not every
+setting's effect or complete Figma fidelity.
+
 ## Build and test environment
 
 - Use `make` for changes to `src/` or the D3D11 output module; use `qt` for

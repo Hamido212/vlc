@@ -15,6 +15,13 @@ list of paint styles the palette was checked against come from
 [Olmo Gutierrez' implementation](https://github.com/Olmo-Gutierrez/VLC-juxtopposed)
 of the same redesign, as does the idea for the frame around the video.
 
+The preferences window and keyboard shortcut editor started from
+[dsojevic's VLC fork](https://github.com/dsojevic/vlc/tree/juxtopposed-redesign)
+at `43283e42a8`. The Windows version uses styled QtQuick.Templates controls
+and a curated catalog based on the local Figma reference. The comparison,
+approved exceptions and missing rows are in [VERIFICATION.md](VERIFICATION.md)
+and [design/preferences-audit.md](design/preferences-audit.md).
+
 This is an unofficial project, it is not affiliated with VideoLAN.
 
 ## Building on Windows
