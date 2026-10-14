@@ -31,11 +31,13 @@ param(
     #              with ",1" at the end a picture is saved before the release,
     #              next to -Out with "-drag" in its name
     [string]$Click = "",
-    [switch]$KeepOpen
+    [switch]$KeepOpen,
+    # Another build than build-win64, the unpacked zip of a release for one
+    [string]$VlcDir = ''
 )
 
 $ErrorActionPreference = 'Stop'
-$vlcDir = (Resolve-Path (Join-Path $PSScriptRoot '../../build-win64')).Path
+$vlcDir = (Resolve-Path $(if ($VlcDir) { $VlcDir } else { Join-Path $PSScriptRoot '../../build-win64' })).Path
 $log = "$vlcDir\portable\vlc.log"
 
 Add-Type -AssemblyName System.Drawing
