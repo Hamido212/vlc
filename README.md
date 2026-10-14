@@ -24,9 +24,6 @@ VLC stays under its own licenses (see below and `COPYING`). The SVG export of
 the icons and a few ideas come from
 [Olmo Gutierrez' implementation](https://github.com/Olmo-Gutierrez/VLC-juxtopposed)
 of the same redesign.
-[David Sojevic's fork](https://github.com/dsojevic/vlc/tree/juxtopposed-redesign)
-is a third one, with a preferences window and a shortcut editor that this one
-does not have yet.
 
 The preferences window and shortcut editor started from
 [dsojevic's VLC fork](https://github.com/dsojevic/vlc/tree/juxtopposed-redesign)

@@ -114,22 +114,6 @@ public class Win {
         GetClassName(h, name, name.Capacity);
         return name.ToString();
     }
-    public static IntPtr FindOtherWindow(uint processId, IntPtr main) {
-        IntPtr result = IntPtr.Zero;
-        long largestArea = 0;
-        EnumWindows((h, data) => {
-            uint owner;
-            GetWindowThreadProcessId(h, out owner);
-            RECT rect;
-            if (owner == processId && h != main && IsWindowVisible(h)
-                && ClassOf(h).Contains("QWindow") && GetWindowRect(h, out rect)) {
-                long area = (long)(rect.R - rect.L) * (rect.B - rect.T);
-                if (area > largestArea) { largestArea = area; result = h; }
-            }
-            return true;
-        }, IntPtr.Zero);
-        return result;
-    }
     // Gives the file dialog a process shows the name of a file and accepts
     // it, with messages to the dialog. False if there is no such dialog.
     public static bool AnswerFileDialog(uint processId, string path) {
