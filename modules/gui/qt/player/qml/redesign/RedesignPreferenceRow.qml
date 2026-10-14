@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls as C
+import QtQuick.Templates as T
+import VLC.Widgets as Widgets
+import VLC.Style
 
 ColumnLayout {
     id: root
@@ -44,9 +46,11 @@ ColumnLayout {
             text: root.label || root.description.title || ""
             color: theme.foreground; font.pixelSize: theme.dp(14)
             wrapMode: Text.WordWrap
-            C.ToolTip.text: root.description.help || ""
-            C.ToolTip.visible: helpHover.hovered && C.ToolTip.text.length > 0
-            C.ToolTip.delay: 500
+            Widgets.ToolTipExt {
+                text: root.description.help || ""
+                visible: helpHover.hovered && text.length > 0
+                delay: 500
+            }
             HoverHandler { id: helpHover }
         }
         Loader {
@@ -102,7 +106,7 @@ ColumnLayout {
     }
     Component {
         id: choiceEditor
-        C.ComboBox {
+        T.ComboBox {
             id: choice
             objectName: "preferenceChoiceEditor"
             implicitHeight: theme.dp(34)
@@ -112,9 +116,32 @@ ColumnLayout {
                 return -1
             }
             font.pixelSize: theme.dp(14)
-            palette.text: theme.foreground; palette.buttonText: theme.foreground
-            palette.base: theme.field; palette.button: theme.background
-            palette.window: theme.panel; palette.highlight: theme.selected; palette.highlightedText: theme.bright
+            padding: theme.dp(6)
+            contentItem: Text {
+                text: choice.displayText; color: theme.foreground; font: choice.font
+                verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight
+                rightPadding: theme.dp(24)
+            }
+            indicator: Widgets.IconLabel {
+                x: choice.width - width - choice.rightPadding
+                y: (choice.height - height) / 2
+                text: VLCIcons.expand; font.pixelSize: theme.dp(20); color: theme.foreground
+            }
+            delegate: T.ItemDelegate {
+                width: choice.width; height: theme.dp(34); padding: theme.dp(6)
+                contentItem: Text { text: modelData.label; color: theme.foreground; font: choice.font; verticalAlignment: Text.AlignVCenter }
+                background: Rectangle { color: choice.highlightedIndex === index ? theme.selected : theme.panel }
+            }
+            popup: T.Popup {
+                y: choice.height; width: choice.width; padding: 1
+                contentItem: ListView {
+                    clip: true; implicitHeight: Math.min(contentHeight, theme.dp(300))
+                    model: choice.popup.visible ? choice.delegateModel : null
+                    currentIndex: choice.highlightedIndex
+                    T.ScrollBar.vertical: Widgets.ScrollBarExt { }
+                }
+                background: Rectangle { color: theme.panel; border.color: theme.border; radius: theme.dp(4) }
+            }
             background: Rectangle { radius: theme.dp(4); color: theme.background; border.color: choice.activeFocus ? theme.accent : theme.border }
             onActivated: root.commit(currentValue)
         }
@@ -124,7 +151,7 @@ ColumnLayout {
         ColumnLayout {
             implicitHeight: theme.dp(48)
             spacing: theme.dp(2)
-            C.Slider {
+            T.Slider {
                 id: slider
                 objectName: "preferenceSliderEditor"
                 Layout.fillWidth: true
@@ -175,7 +202,7 @@ ColumnLayout {
         RowLayout {
             implicitHeight: theme.dp(34)
             spacing: theme.dp(10)
-            C.TextField {
+            T.TextField {
                 id: field
                 objectName: "preferenceTextEditor"
                 Layout.fillWidth: true; Layout.fillHeight: true
@@ -183,6 +210,9 @@ ColumnLayout {
                 text: root.currentValue === undefined ? "" : String(root.currentValue)
                 color: invalid ? "#e56b6b" : theme.foreground; font.pixelSize: theme.dp(14)
                 selectByMouse: true
+                padding: theme.dp(6)
+                verticalAlignment: TextInput.AlignVCenter
+                selectionColor: theme.accent; selectedTextColor: theme.bright
                 echoMode: root.description.kind === "password" ? TextInput.Password : TextInput.Normal
                 inputMethodHints: root.description.kind === "integer" || root.description.kind === "float" ? Qt.ImhFormattedNumbersOnly : Qt.ImhNone
                 Accessible.name: root.label || root.description.title

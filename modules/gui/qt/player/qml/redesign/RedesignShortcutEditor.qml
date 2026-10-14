@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls as C
+import QtQuick.Templates as T
+import VLC.Widgets as Widgets
+import VLC.Style
 
-C.Popup {
+T.Popup {
     id: root
     property real scaleFactor: 1
     property color accentColor: "#d37918"
@@ -35,7 +37,7 @@ C.Popup {
     x: (parent.width - width) / 2; y: (parent.height - height) / 2
     padding: theme.dp(20)
     modal: true; focus: true
-    closePolicy: C.Popup.NoAutoClose
+    closePolicy: T.Popup.NoAutoClose
     background: Rectangle { color: theme.background; radius: theme.dp(12); border.color: theme.border }
     onAboutToShow: { recordingName = ""; search.clear(); filter.currentIndex = 0 }
     onOpened: if (!recordingName.length) search.forceActiveFocus()
@@ -51,20 +53,49 @@ C.Popup {
         }
         RowLayout {
             Layout.fillWidth: true; Layout.preferredHeight: theme.dp(34); Layout.maximumHeight: theme.dp(34)
-            C.TextField {
+            T.TextField {
                 id: search
                 objectName: "shortcutSearch"
                 Layout.fillWidth: true; Layout.fillHeight: true
                 placeholderText: qsTr("Search Keyboard Shortcuts…")
                 color: theme.foreground; placeholderTextColor: theme.foreground
                 font.pixelSize: theme.dp(14); selectByMouse: true
+                padding: theme.dp(6); verticalAlignment: TextInput.AlignVCenter
+                selectionColor: theme.accent; selectedTextColor: theme.bright
                 background: Rectangle { radius: theme.dp(5); color: theme.panel; border.color: search.activeFocus ? theme.accent : "transparent" }
+                Text {
+                    anchors.left: parent.left; anchors.leftMargin: search.leftPadding
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: search.placeholderText; font: search.font; color: search.placeholderTextColor
+                    visible: !search.text.length && !search.preeditText.length
+                }
             }
-            C.ComboBox {
+            T.ComboBox {
                 id: filter
                 Layout.preferredWidth: theme.dp(200); Layout.fillHeight: true
                 model: [qsTr("All Fields"), qsTr("Action"), qsTr("Hotkey"), qsTr("Global Hotkey")]
-                palette.buttonText: theme.foreground; palette.text: theme.foreground; palette.base: theme.panel; palette.window: theme.panel
+                padding: theme.dp(6); font.pixelSize: theme.dp(14)
+                contentItem: Text {
+                    text: filter.displayText; color: theme.foreground; font: filter.font
+                    verticalAlignment: Text.AlignVCenter; rightPadding: theme.dp(24)
+                }
+                indicator: Widgets.IconLabel {
+                    x: filter.width - width - filter.rightPadding; y: (filter.height - height) / 2
+                    text: VLCIcons.expand; font.pixelSize: theme.dp(20); color: theme.foreground
+                }
+                delegate: T.ItemDelegate {
+                    width: filter.width; height: theme.dp(34); padding: theme.dp(6)
+                    contentItem: Text { text: modelData; color: theme.foreground; font: filter.font; verticalAlignment: Text.AlignVCenter }
+                    background: Rectangle { color: filter.highlightedIndex === index ? theme.selected : theme.panel }
+                }
+                popup: T.Popup {
+                    y: filter.height; width: filter.width; padding: 1
+                    contentItem: ListView {
+                        implicitHeight: contentHeight; model: filter.popup.visible ? filter.delegateModel : null
+                        currentIndex: filter.highlightedIndex
+                    }
+                    background: Rectangle { color: theme.panel; border.color: theme.border; radius: theme.dp(4) }
+                }
                 background: Rectangle { radius: theme.dp(5); color: theme.panel; border.color: filter.activeFocus ? theme.accent : "transparent" }
             }
         }
@@ -80,7 +111,7 @@ C.Popup {
             objectName: "shortcutList"
             Layout.fillWidth: true; Layout.fillHeight: true
             clip: true; model: root.filteredRows
-            C.ScrollBar.vertical: C.ScrollBar { }
+            T.ScrollBar.vertical: Widgets.ScrollBarExt { }
             delegate: Item {
                 id: row
                 required property int index

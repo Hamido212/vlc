@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import QtQuick
-import QtQuick.Controls as C
+import QtQuick.Templates as T
+import QtQuick.Layouts
 import VLC.MainInterface
 import VLC.Dialogs
 
@@ -36,15 +37,33 @@ RedesignShortcutEditor {
             conflictDialog.open()
         } else draft.assignShortcut(name, shortcut)
     }
-    C.Dialog {
+    T.Dialog {
         id: conflictDialog
         parent: root.contentItem
         anchors.centerIn: parent
         width: Math.min(root.availableWidth, root.theme.dp(440))
         modal: true
         title: qsTr("Shortcut already in use")
-        standardButtons: C.Dialog.Yes | C.Dialog.Cancel
-        palette.window: root.theme.panel; palette.text: root.theme.bright; palette.buttonText: root.theme.bright; palette.button: root.theme.background
+        padding: root.theme.dp(16)
+        header: Text {
+            text: conflictDialog.title
+            padding: root.theme.dp(16)
+            color: root.theme.bright; font.pixelSize: root.theme.dp(16)
+        }
+        footer: RowLayout {
+            spacing: root.theme.dp(12)
+            Item { Layout.fillWidth: true }
+            RedesignButton {
+                scaleFactor: root.scaleFactor; lightTheme: root.lightTheme; accentColor: root.accentColor
+                caption: qsTr("Cancel"); text: caption
+                onClicked: conflictDialog.reject()
+            }
+            RedesignButton {
+                scaleFactor: root.scaleFactor; lightTheme: root.lightTheme; accentColor: root.accentColor
+                caption: qsTr("Yes"); text: caption; accent: true
+                onClicked: conflictDialog.accept()
+            }
+        }
         background: Rectangle { color: root.theme.panel; radius: root.theme.dp(8); border.color: root.theme.border }
         contentItem: Text { id: conflictText; color: root.theme.bright; font.pixelSize: root.theme.dp(14); wrapMode: Text.WordWrap }
         onAccepted: draft.assignShortcut(root.pendingName, root.pendingShortcut, true)

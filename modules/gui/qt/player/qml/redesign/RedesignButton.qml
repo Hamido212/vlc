@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import QtQuick
 import QtQuick.Templates as T
-import QtQuick.Controls as C
+import VLC.Widgets as Widgets
 
 T.Button {
     id: root
@@ -23,9 +23,11 @@ T.Button {
     focusPolicy: Qt.StrongFocus
     Accessible.name: text
     Accessible.role: Accessible.Button
-    C.ToolTip.text: text
-    C.ToolTip.visible: text.length > 0 && (hovered || visualFocus)
-    C.ToolTip.delay: 650
+    Widgets.ToolTipExt {
+        text: root.text
+        visible: text.length > 0 && (root.hovered || root.visualFocus)
+        delay: 650
+    }
 
     background: Rectangle {
         radius: theme.dp(6)

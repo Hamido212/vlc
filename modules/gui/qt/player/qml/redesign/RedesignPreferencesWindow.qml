@@ -2,7 +2,8 @@
 import QtQuick
 import QtQuick.Window
 import QtQuick.Layouts
-import QtQuick.Controls as C
+import QtQuick.Templates as T
+import VLC.Widgets as Widgets
 import VLC.MainInterface
 import VLC.Style
 import VLC.Dialogs
@@ -58,21 +59,30 @@ Window {
             id: navigation
             width: theme.dp(250); anchors.top: parent.top; anchors.bottom: parent.bottom
             color: theme.panel
-            C.TextField {
+            T.TextField {
                 id: searchField
                 anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top
                 anchors.margins: theme.dp(20); height: theme.dp(34)
                 placeholderText: qsTr("Search settings")
                 color: theme.foreground; placeholderTextColor: theme.foreground
                 font.pixelSize: theme.dp(14); selectByMouse: true
+                padding: theme.dp(6); verticalAlignment: TextInput.AlignVCenter
+                selectionColor: theme.accent; selectedTextColor: theme.bright
                 background: Rectangle { color: theme.background; radius: theme.dp(4); border.color: searchField.activeFocus ? theme.accent : theme.border }
+                Text {
+                    anchors.left: parent.left; anchors.leftMargin: searchField.leftPadding
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: searchField.placeholderText; font: searchField.font; color: searchField.placeholderTextColor
+                    visible: !searchField.text.length && !searchField.preeditText.length
+                }
                 onTextEdited: root.search = text
                 onTextChanged: if (!text.length) root.search = ""
             }
-            C.ScrollView {
+            T.ScrollView {
                 anchors.top: searchField.bottom; anchors.bottom: parent.bottom; anchors.left: parent.left; anchors.right: parent.right
                 anchors.topMargin: theme.dp(18)
                 clip: true
+                T.ScrollBar.vertical: Widgets.ScrollBarExt { }
                 Column {
                     width: navigation.width
                     Repeater {
@@ -135,12 +145,13 @@ Window {
             iconName: "close"; text: qsTr("Close settings")
             onClicked: root.closeSettings()
         }
-        C.ScrollView {
+        T.ScrollView {
             id: scroll
             anchors.top: parent.top; anchors.topMargin: theme.dp(68)
             anchors.left: navigation.right; anchors.right: parent.right; anchors.bottom: footer.top
             anchors.leftMargin: theme.dp(24); anchors.rightMargin: theme.dp(24)
             clip: true
+            T.ScrollBar.vertical: Widgets.ScrollBarExt { }
             contentWidth: availableWidth
             Column {
                 width: scroll.availableWidth
