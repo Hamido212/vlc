@@ -30,11 +30,13 @@ param(
     #              with ",1" at the end a picture is saved before the release,
     #              next to -Out with "-drag" in its name
     [string]$Click = "",
-    [switch]$KeepOpen
+    [switch]$KeepOpen,
+    # Another build than build-win64, the unpacked zip of a release for one
+    [string]$VlcDir = ''
 )
 
 $ErrorActionPreference = 'Stop'
-$vlcDir = (Resolve-Path (Join-Path $PSScriptRoot '../../build-win64')).Path
+$vlcDir = (Resolve-Path $(if ($VlcDir) { $VlcDir } else { Join-Path $PSScriptRoot '../../build-win64' })).Path
 $log = "$vlcDir\portable\vlc.log"
 
 Add-Type -AssemblyName System.Drawing
@@ -160,6 +162,27 @@ public class Win {
         SendMessage(edit, 0x000C, IntPtr.Zero, path);
         PostMessage(dialog, 0x0111, (IntPtr)1, IntPtr.Zero);
         return true;
+    }
+    // The largest window a process shows besides one of them: a dialog or
+    // a second window of the player. Zero if there is none.
+    public static IntPtr FindOtherWindow(uint processId, IntPtr main) {
+        IntPtr result = IntPtr.Zero;
+        long largestArea = 0;
+        EnumWindows((h, data) => {
+            uint owner;
+            GetWindowThreadProcessId(h, out owner);
+            RECT rect;
+            if (owner == processId && h != main && IsWindowVisible(h) && ClassOf(h).Contains("QWindow")
+                && GetWindowRect(h, out rect)) {
+                long area = (long)(rect.R - rect.L) * (rect.B - rect.T);
+                if (area > largestArea) {
+                    largestArea = area;
+                    result = h;
+                }
+            }
+            return true;
+        }, IntPtr.Zero);
+        return result;
     }
     public struct RECT { public int L, T, R, B; }
     public struct POINT { public int X, Y; }

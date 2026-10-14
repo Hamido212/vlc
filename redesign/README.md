@@ -38,6 +38,27 @@ VideoLAN's CI uses and reuses their prebuilt third-party libraries.
 The build keeps its settings in `build-win64\portable`, delete that folder to
 start over with the defaults.
 
+## Building on Linux
+
+On Linux itself this is VLC's usual build (`./bootstrap`, `./configure`,
+`make`, then `./vlc` from the build directory), with Qt 6 and its SVG image
+plugin installed.
+
+From Windows, the same can be done in VideoLAN's Debian image, to see that a
+change still compiles and runs there:
+
+```powershell
+.\redesign\docker-build-linux.ps1          # everything, takes a while the first time
+.\redesign\docker-build-linux.ps1 qt       # after changing only modules/gui/qt
+.\redesign\docker-build-linux.ps1 shot -Media clip-m.mp4
+```
+
+`shot` starts the player on a screen that is only in memory, plays the file
+from `redesign\tools\Videos` and puts a picture of the screen and the log
+into `build-linux\`. That image has no SVG plugin for Qt, so the volume cone
+and the cover placeholder are missing in its pictures. The build stays in a
+Docker volume and is of no use outside of the image.
+
 ## Icons
 
 VLC draws its icons with a font, `modules/gui/qt/pixmaps/VLCIcons.ttf`. The

@@ -24,6 +24,9 @@ VLC stays under its own licenses (see below and `COPYING`). The SVG export of
 the icons and a few ideas come from
 [Olmo Gutierrez' implementation](https://github.com/Olmo-Gutierrez/VLC-juxtopposed)
 of the same redesign.
+[David Sojevic's fork](https://github.com/dsojevic/vlc/tree/juxtopposed-redesign)
+is a third one, with a preferences window and a shortcut editor that this one
+does not have yet.
 
 The preferences window and shortcut editor started from
 [dsojevic's VLC fork](https://github.com/dsojevic/vlc/tree/juxtopposed-redesign)
@@ -38,9 +41,14 @@ For 64-bit Windows there is a preview build on the
 start `vlc.exe`, nothing is installed. Read the notes there first, it is an
 experiment.
 
-Linux has the same interface and should build from this, but that was not
-tried here. macOS, Android and iOS have interfaces of their own in VLC, which
-this fork does not touch.
+On Linux it builds and runs: the player comes up with the redesign and plays
+(tried in VideoLAN's Debian image, on a screen that is only in memory, see
+[redesign/README.md](redesign/README.md)). There is no Linux download, as a
+build is tied to the libraries of the distribution it was made on. macOS,
+Android and iOS have interfaces of their own in VLC, which this fork does not
+touch.
+
+![The player on Linux](redesign/screenshots/linux.png)
 
 To build it yourself on Windows, Docker Desktop is all that is needed:
 

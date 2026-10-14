@@ -57,3 +57,10 @@ the release). Several files in the queue: give the others in `-VlcArgs`.
 `package-release.py` packs `build-win64` into the zip of a release: without
 the `portable` settings of whoever built it, without the files a build moved
 aside, with a note on what it is.
+`n:` goes on with the second window VLC shows, such as a dialog of its own.
+
+`xwd-to-png.py` is for the Linux test in Docker: it turns the screen Xvfb
+keeps in a file into a PNG, see `container-build-linux.sh`.
+
+`-VlcDir` runs another build than `build-win64`, such as the unpacked zip of
+a release, to check what is handed out before it is.
