@@ -1175,6 +1175,7 @@ libqml_module_player_a_QML = \
 	player/qml/ControlBar.qml \
 	player/qml/redesign/RedesignPreferencesCatalog.qml \
 	player/qml/redesign/RedesignPreferenceRow.qml \
+	player/qml/redesign/RedesignEqualizer.qml \
 	player/qml/redesign/RedesignPreferencesWindow.qml \
 	player/qml/redesign/RedesignShortcutEditor.qml \
 	player/qml/redesign/RedesignShortcuts.qml \

@@ -42,9 +42,12 @@ RedesignShortcutEditor {
         parent: root.contentItem
         anchors.centerIn: parent
         width: Math.min(root.availableWidth, root.theme.dp(440))
+        implicitHeight: implicitContentHeight + topPadding + bottomPadding
+                        + implicitHeaderHeight + implicitFooterHeight + 2 * spacing
         modal: true
         title: qsTr("Shortcut already in use")
         padding: root.theme.dp(16)
+        spacing: root.theme.dp(12)
         header: Text {
             text: conflictDialog.title
             padding: root.theme.dp(16)

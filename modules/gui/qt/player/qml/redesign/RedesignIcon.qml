@@ -1,58 +1,70 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// Toolbar glyphs adapted, recentered and recolored from VLC Redesign by
+// Glyphs from VLC Redesign by
 // Juxtopposed (https://www.juxtopposed.com/), design licensed CC BY 4.0:
 // https://creativecommons.org/licenses/by/4.0/
 // https://www.figma.com/community/file/1691465999134370980/vlc-redesign
 // This file's implementation code is GPL-2.0-or-later.
 import QtQuick
+import VLC.Widgets as Widgets
+import VLC.Style
 
-Image {
+Widgets.IconLabel {
     id: root
     property string name
-    property color color: "#8f8f8f"
-    sourceSize: Qt.size(width * Screen.devicePixelRatio, height * Screen.devicePixelRatio)
-    fillMode: Image.PreserveAspectFit
-    readonly property var paths: {
-    "cone": "<g transform=\"translate(-13 -8)\"><path d=\"M29.7912 22.4111L30.1798 23.5778C29.014 24.4334 27.2264 25.2111 25.0502 25.2111C22.7963 25.2111 21.0864 24.4334 19.9206 23.5778L20.3092 22.4111H18.5216C18.133 22.4111 17.8999 22.6445 17.7444 22.9556L16.0345 29.4889C15.8791 29.9556 16.2677 30.5 16.8118 30.5H33.211C33.755 30.5 34.0659 30.0334 33.9882 29.4889L32.2006 22.9556C32.1229 22.6445 31.812 22.4111 31.4234 22.4111H29.7912Z\" fill=\"COLOR\" />\n<path d=\"M20.8535 20.1552C21.7862 20.8552 23.1852 21.4774 24.9728 21.4774C26.7603 21.4774 28.1593 20.7774 29.092 20.1552L28.0039 16.4219C27.3044 16.8885 26.294 17.1997 24.9728 17.1997C23.6515 17.1997 22.6411 16.8108 21.9416 16.4219L20.8535 20.1552Z\" fill=\"COLOR\" />\n<path d=\"M22.9517 12.8444L23.6512 10.4333C24.0398 9.18889 25.8274 9.18889 26.216 10.4333L26.9155 12.8444C26.3714 13 25.7496 13.1556 24.9724 13.1556C24.1952 13.1556 23.5734 13 22.9517 12.8444Z\" fill=\"COLOR\" />\n</g>",
-    "more": "<g transform=\"translate(-53 -8)\"><path d=\"M71.0063 19.9951L71.0062 19.9951\" stroke=\"COLOR\" stroke-width=\"3\" stroke-linecap=\"round\" />\n<path d=\"M65.0063 19.9951L65.0062 19.9951\" stroke=\"COLOR\" stroke-width=\"3\" stroke-linecap=\"round\" />\n<path d=\"M59.0063 19.9951L59.0062 19.9951\" stroke=\"COLOR\" stroke-width=\"3\" stroke-linecap=\"round\" />\n</g>",
-    "sidebar": "<g transform=\"translate(-91 -8)\"><path d=\"M97 11.75H109C110.243 11.75 111.25 12.7574 111.25 14V26C111.25 27.2426 110.243 28.25 109 28.25H97C95.7574 28.25 94.75 27.2426 94.75 26V14C94.75 12.7574 95.7574 11.75 97 11.75Z\" stroke=\"COLOR\" stroke-width=\"1.5\" />\n<rect x=\"97\" y=\"14\" width=\"2\" height=\"12\" rx=\"0.5\" fill=\"COLOR\" />\n</g>",
-    "folder": "<g transform=\"translate(-143 -8)\"><path d=\"M164 25V17.5408C164 16.1376 162.862 15 161.459 15H156.803C155.677 15 154.625 14.4371 154 13.5C153.375 12.5629 152.323 12 151.197 12H148.598C147.163 12 146 13.163 146 14.5976V25C146 26.6569 147.343 28 149 28H161C162.657 28 164 26.6569 164 25Z\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n</g>",
-    "minimize": "<g transform=\"translate(-1776 -8)\"><path d=\"M1782 20H1794\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n</g>",
-    "maximize": "<g transform=\"translate(-1812 -8)\"><path d=\"M1830 14H1818V26H1830V14Z\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n</g>",
-    "fullscreen": "<g transform=\"translate(-1848 -8)\"><path d=\"M1857.6 14H1854V17.6M1862.4 14H1866V17.6M1866 22.4V26H1862.4M1857.6 26H1854V22.4\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n</g>",
-    "close": "<g transform=\"translate(-1884 -8)\"><path d=\"M1891 15L1901 25\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n<path d=\"M1901 15L1891 25\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n</g>",
-    "previous": "<g transform=\"translate(-23.5 -1041)\"><path d=\"M33 1058V1048H31V1058H33Z\" fill=\"COLOR\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n<path d=\"M40 1058V1048L34 1053L40 1058Z\" fill=\"COLOR\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n</g>",
-    "play": "<g transform=\"translate(-73 -1041)\"><path d=\"M82 1057.96V1048.04C82 1047.21 82.9571 1046.74 83.6139 1047.26L89.9851 1052.21C90.4999 1052.61 90.4999 1053.39 89.9851 1053.79L83.6139 1058.74C82.9571 1059.26 82 1058.79 82 1057.96Z\" fill=\"COLOR\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n</g>",
-    "next": "<g transform=\"translate(-123.5 -1041)\"><path d=\"M131 1058V1048L137 1053L131 1058Z\" fill=\"COLOR\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n<path d=\"M138 1058V1048H140V1058H138Z\" fill=\"COLOR\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n</g>",
-    "volume": "<g transform=\"translate(-1597 -1041)\"><path d=\"M1607.55 1045.74L1600.55 1049.29C1600.21 1049.46 1600 1049.81 1600 1050.19V1053V1055.81C1600 1056.19 1600.21 1056.54 1600.55 1056.71L1607.55 1060.26C1608.21 1060.6 1609 1060.12 1609 1059.37V1053V1046.63C1609 1045.88 1608.21 1045.4 1607.55 1045.74Z\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n<path d=\"M1612 1052L1612 1054\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n<path d=\"M1615 1051L1615 1055\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n<path d=\"M1618 1049L1618 1057\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n</g>",
-    "audio": "<g transform=\"translate(-1739 -1041)\"><path d=\"M1751 1044V1062\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n<path d=\"M1755 1047V1059\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n<path d=\"M1759 1050V1056\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n<path d=\"M1747 1049V1057\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n<path d=\"M1743 1052V1054\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n</g>",
-    "subtitles": "<g transform=\"translate(-1781 -1041)\"><path d=\"M1786 1054H1794M1796.5 1054H1800\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n<path d=\"M1786 1057H1789M1795 1057H1800M1792.5 1057H1791.5\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n<rect x=\"1782.75\" y=\"1045.75\" width=\"20.5\" height=\"14.5\" rx=\"3.25\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linejoin=\"round\" />\n</g>",
-    "settings": "<g transform=\"translate(-1823 -1041)\"><path d=\"M1835.4 1044H1834.5C1833.61 1044 1832.88 1044.72 1832.88 1045.61C1832.88 1046.18 1832.58 1046.71 1832.09 1047L1831.12 1047.57C1830.61 1047.87 1829.99 1047.88 1829.47 1047.59C1828.69 1047.14 1827.7 1047.41 1827.24 1048.18L1826.83 1048.88C1826.38 1049.66 1826.64 1050.66 1827.43 1051.11C1827.93 1051.39 1828.24 1051.92 1828.25 1052.49L1828.27 1053.57C1828.28 1054.16 1827.97 1054.7 1827.46 1054.99C1826.69 1055.43 1826.42 1056.42 1826.87 1057.19L1827.28 1057.88C1827.75 1058.67 1828.75 1058.94 1829.55 1058.49C1830.05 1058.2 1830.66 1058.2 1831.17 1058.48L1832.16 1059.01C1832.67 1059.29 1832.99 1059.83 1832.99 1060.41C1832.99 1061.29 1833.7 1062 1834.57 1062H1835.5C1836.39 1062 1837.12 1061.28 1837.12 1060.39C1837.12 1059.82 1837.42 1059.29 1837.91 1059L1838.88 1058.43C1839.39 1058.13 1840.01 1058.12 1840.53 1058.41C1841.31 1058.86 1842.3 1058.59 1842.76 1057.82L1843.17 1057.12C1843.62 1056.34 1843.36 1055.34 1842.57 1054.89C1842.07 1054.61 1841.76 1054.08 1841.75 1053.51L1841.73 1052.43C1841.72 1051.84 1842.03 1051.3 1842.54 1051.01C1843.31 1050.57 1843.58 1049.58 1843.13 1048.81L1842.73 1048.14C1842.26 1047.35 1841.24 1047.08 1840.44 1047.55C1839.92 1047.86 1839.27 1047.86 1838.75 1047.55L1837.81 1047C1837.32 1046.71 1837.02 1046.18 1837.02 1045.61C1837.02 1044.72 1836.29 1044 1835.4 1044Z\" stroke=\"COLOR\" stroke-width=\"1.5\" />\n<path d=\"M1833.5 1055.62V1050.62L1837.5 1053.12L1833.5 1055.62Z\" fill=\"COLOR\" stroke=\"COLOR\" stroke-width=\"0.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n</g>",
-    "queue": "<g transform=\"translate(-1873 -1041)\"><path d=\"M1881 1053H1893\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n<path d=\"M1877 1053H1878\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n<path d=\"M1881 1048H1893\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n<path d=\"M1877 1048H1878\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n<path d=\"M1881 1058H1893\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n<path d=\"M1877 1058H1878\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n</g>",
-    "edit": "<path d=\"m5 16-1 4 4-1L20 7l-3-3Z M14 7l3 3\" fill=\"none\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/>",
-    "pause": "<path d=\"M9 6v12M15 6v12\" stroke=\"COLOR\" stroke-width=\"3\" stroke-linecap=\"round\"/>",
-    "add": "<path d=\"M12 5v14M5 12h14\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>",
-    "back": "<path d=\"m10 7-5 5 5 5M5 12h14\" fill=\"none\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>",
-    "forward": "<path d=\"m14 7 5 5-5 5M5 12h14\" fill=\"none\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>",
-    "search": "<circle cx=\"10.5\" cy=\"10.5\" r=\"6.5\" fill=\"none\" stroke=\"COLOR\" stroke-width=\"1.5\"/><path d=\"m16 16 5 5\" stroke=\"COLOR\" stroke-width=\"1.5\"/>",
-    "expand": "<path d=\"M14 4h6v6M20 4l-9 9M10 5H5v14h14v-5\" fill=\"none\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/>",
-    "home": "<path d=\"m4 10 8-6 8 6v10H4Z\" fill=\"none\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/><path d=\"M10 20v-6h4v6\" fill=\"none\" stroke=\"COLOR\" stroke-width=\"1.5\"/>",
-    "videos": "<path d=\"M4 5h6l2 3h8v12H4Z\" fill=\"COLOR\"/><path d=\"m10 11 5 3-5 3Z\" fill=\"#1b1b1b\"/>",
-    "music": "<path d=\"M4 5h6l2 3h8v12H4Z\" fill=\"none\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/><path d=\"M14 16v-5l3-1\" fill=\"none\" stroke=\"COLOR\" stroke-width=\"1.5\"/><ellipse cx=\"12\" cy=\"16\" rx=\"2\" ry=\"1.5\" fill=\"COLOR\"/>",
-    "network": "<circle cx=\"12\" cy=\"12\" r=\"2\" fill=\"COLOR\"/><path d=\"M7 7a7 7 0 0 0 0 10M17 7a7 7 0 0 1 0 10M4 4a11 11 0 0 0 0 16M20 4a11 11 0 0 1 0 16\" fill=\"none\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>",
-    "history": "<path d=\"M4 10a8 8 0 1 1 0 5M4 5v5h5M12 7v5l3 2\" fill=\"none\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>",
-    "sort": "<path d=\"M7 4v16m-4-4 4 4 4-4M17 20V4m-4 4 4-4 4 4\" fill=\"none\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/>",
-    "check": "<path d=\"m5 12 4 4L19 6\" fill=\"none\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>",
-    "stop": "<rect x=\"7\" y=\"7\" width=\"10\" height=\"10\" rx=\"1\" fill=\"COLOR\"/>",
-    "muted": "<path d=\"m4 9 7-4v14l-7-4H1V9Zm11 0 6 6m0-6-6 6\" fill=\"none\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/>",
-    "video": "<rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\" fill=\"none\" stroke=\"COLOR\" stroke-width=\"1.5\"/><path d=\"m10 9 5 3-5 3Z\" fill=\"COLOR\"/>",
-    "grid": "<path d=\"M4 4h6v6H4Zm10 0h6v6h-6ZM4 14h6v6H4Zm10 0h6v6h-6Z\" fill=\"none\" stroke=\"COLOR\" stroke-width=\"1.5\"/>",
-    "repeat": "<path d=\"M5 9V6h13l-3-3m3 3-3 3M19 15v3H6l3 3m-3-3 3-3\" fill=\"none\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/>",
-    "shuffle": "<path d=\"M3 6h3l12 12h3m-3-3 3 3-3 3M3 18h3L18 6h3m-3-3 3 3-3 3\" fill=\"none\" stroke=\"COLOR\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/>"
-}
+    color: "#969696"
+    font.pixelSize: Math.min(width, height)
+    readonly property var glyphs: ({
+        "cone": VLCIcons.cone,
+        "more": VLCIcons.more,
+        "sidebar": VLCIcons.panel_left,
+        "folder": VLCIcons.folder,
+        "library": VLCIcons.folder,
+        "minimize": VLCIcons.window_minimize,
+        "maximize": VLCIcons.window_maximize,
+        "fullscreen": VLCIcons.fullscreen,
+        "close": VLCIcons.close,
+        "previous": VLCIcons.previous,
+        "play": VLCIcons.play_filled,
+        "playback": VLCIcons.play,
+        "next": VLCIcons.next,
+        "volume": VLCIcons.volume_high,
+        "audio": VLCIcons.audio,
+        "subtitles": VLCIcons.subtitles,
+        "settings": VLCIcons.settings,
+        "general": VLCIcons.preferences,
+        "preferences": VLCIcons.preferences,
+        "interface": VLCIcons.interface_settings,
+        "privacy": VLCIcons.privacy,
+        "controls": VLCIcons.preferences_hotkeys,
+        "performance": VLCIcons.preferences,
+        "recording": VLCIcons.record,
+        "record": VLCIcons.record,
+        "extensions": VLCIcons.plugins,
+        "queue": VLCIcons.queue,
+        "edit": VLCIcons.edit,
+        "pause": VLCIcons.pause_filled,
+        "add": VLCIcons.add,
+        "back": VLCIcons.back,
+        "forward": VLCIcons.arrow_right,
+        "arrow_right": VLCIcons.arrow_right,
+        "chevron_right": VLCIcons.ic_fluent_chevron_right_24,
+        "info": VLCIcons.info,
+        "search": VLCIcons.search,
+        "expand": VLCIcons.chevron_down,
+        "home": VLCIcons.home,
+        "videos": VLCIcons.topbar_video,
+        "music": VLCIcons.music,
+        "network": VLCIcons.stream,
+        "history": VLCIcons.refresh,
+        "sort": VLCIcons.sort,
+        "check": VLCIcons.check,
+        "stop": VLCIcons.stop,
+        "muted": VLCIcons.volume_muted,
+        "video": VLCIcons.preferences_video,
+        "grid": VLCIcons.grid,
+        "repeat": VLCIcons.repeat_all,
+        "shuffle": VLCIcons.shuffle
+    })
 
-    source: "data:image/svg+xml;utf8," + encodeURIComponent(
-        '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">'
-        + (paths[name] || "").split("COLOR").join(color.toString()) + "</svg>")
-    Accessible.ignored: true
+    text: glyphs[name] || ""
 }

@@ -10,9 +10,28 @@
 #include <QGuiApplication>
 #include <QScreen>
 #include <QKeyEvent>
+#include <QLocale>
 #include "util/vlchotkeyconverter.hpp"
+#include "../../../../audio_filter/equalizer_presets.h"
 
 namespace {
+const eqz_preset_t* equalizerPresetForName(const QString& name)
+{
+    for (const auto& preset : eqz_preset_10b)
+        if (name.compare(qfu(preset.psz_name), Qt::CaseInsensitive) == 0)
+            return &preset;
+    return nullptr;
+}
+
+QString equalizerBandsString(const QVariantList& gains)
+{
+    QStringList bands;
+    const QLocale locale(QLocale::C);
+    for (const auto& gain : gains)
+        bands.append(locale.toString(gain.toDouble(), 'g', 9));
+    return bands.join(QLatin1Char(' '));
+}
+
 QString categoryFor(const QString& name, int subcat)
 {
     if (name.startsWith(QLatin1String("key-")) || name.startsWith(QLatin1String("global-key-"))
@@ -125,6 +144,81 @@ QVariant RedesignPreferences::value(const QString& name) const
     return it == m_edits.cend() ? read(name.toUtf8()) : *it;
 }
 
+QVariantMap RedesignPreferences::equalizerPreset(const QString& name) const
+{
+    const auto* preset = equalizerPresetForName(name);
+    if (!preset) return {};
+    QVariantList gains;
+    for (int i = 0; i < EQZ_BANDS_MAX; ++i)
+        gains.append(std::clamp(preset->f_amp[i], -20.f, 20.f));
+    return {{QStringLiteral("gains"), gains},
+        {QStringLiteral("preamp"), std::clamp(preset->f_preamp, -20.f, 20.f)}};
+}
+
+QVariantMap RedesignPreferences::equalizerState() const
+{
+    if (!config_FindConfig("equalizer-bands") || !config_FindConfig("equalizer-preamp")
+        || !config_FindConfig("equalizer-vlcfreqs")) return {};
+
+    static const char* const vlcLabels[EQZ_BANDS_MAX] = {
+        N_("60 Hz"), N_("170 Hz"), N_("310 Hz"), N_("600 Hz"), N_("1 KHz"),
+        N_("3 KHz"), N_("6 KHz"), N_("12 KHz"), N_("14 KHz"), N_("16 KHz")};
+    static const char* const isoLabels[EQZ_BANDS_MAX] = {
+        N_("31 Hz"), N_("63 Hz"), N_("125 Hz"), N_("250 Hz"), N_("500 Hz"),
+        N_("1 KHz"), N_("2 KHz"), N_("4 KHz"), N_("8 KHz"), N_("16 KHz")};
+    const bool vlcFrequencies = value(QStringLiteral("equalizer-vlcfreqs")).toBool();
+    const auto* frequencies = vlcFrequencies ? f_vlc_frequency_table_10b : f_iso_frequency_table_10b;
+    const auto* labels = vlcFrequencies ? vlcLabels : isoLabels;
+    QVariantList frequencyValues, frequencyLabels, gains;
+    for (int i = 0; i < EQZ_BANDS_MAX; ++i) {
+        frequencyValues.append(frequencies[i]);
+        frequencyLabels.append(qtr(labels[i]));
+        gains.append(0.f);
+    }
+
+    const QString preset = value(QStringLiteral("equalizer-preset")).toString();
+    const QString bands = value(QStringLiteral("equalizer-bands")).toString().simplified();
+    if (bands.isEmpty()) {
+        const auto data = equalizerPreset(preset);
+        if (!data.isEmpty()) gains = data.value(QStringLiteral("gains")).toList();
+    } else {
+        const auto values = bands.split(QLatin1Char(' '), Qt::SkipEmptyParts);
+        const QLocale locale(QLocale::C);
+        for (int i = 0; i < EQZ_BANDS_MAX && i < values.size(); ++i) {
+            bool valid;
+            const float gain = locale.toFloat(values[i], &valid);
+            if (!valid || !std::isfinite(gain)) break;
+            gains[i] = std::clamp(gain, -20.f, 20.f);
+        }
+    }
+    return {{QStringLiteral("frequencyLabels"), frequencyLabels},
+        {QStringLiteral("frequencies"), frequencyValues}, {QStringLiteral("gains"), gains},
+        {QStringLiteral("preamp"), value(QStringLiteral("equalizer-preamp"))},
+        {QStringLiteral("preset"), preset}, {QStringLiteral("minimum"), -20},
+        {QStringLiteral("maximum"), 20}};
+}
+
+bool RedesignPreferences::stageEqualizerPreset(const QString& name)
+{
+    return stage(QStringLiteral("equalizer-preset"), name);
+}
+
+bool RedesignPreferences::stageEqualizerBand(int index, double gain)
+{
+    if (index < 0 || index >= EQZ_BANDS_MAX || !std::isfinite(gain)
+        || gain < -20. || gain > 20.) return false;
+    auto gains = equalizerState().value(QStringLiteral("gains")).toList();
+    if (gains.size() != EQZ_BANDS_MAX) return false;
+    gains[index] = float(gain);
+    return stage(QStringLiteral("equalizer-bands"), equalizerBandsString(gains));
+}
+
+bool RedesignPreferences::stageEqualizerPreamp(double gain)
+{
+    if (!std::isfinite(gain) || gain < -20. || gain > 20.) return false;
+    return stage(QStringLiteral("equalizer-preamp"), float(gain));
+}
+
 QVariantMap RedesignPreferences::describe(const QString& name) const
 {
     if (name == QLatin1String("redesign-repeat") || name == QLatin1String("redesign-after-playback")) {
@@ -203,6 +297,13 @@ QVariantMap RedesignPreferences::describe(const QString& name) const
 
 bool RedesignPreferences::stage(const QString& name, const QVariant& proposed)
 {
+    if (name == QLatin1String("equalizer-preset")) {
+        const auto data = equalizerPreset(proposed.toString());
+        if (data.isEmpty() || !config_FindConfig("equalizer-preset")
+            || !config_FindConfig("equalizer-bands") || !config_FindConfig("equalizer-preamp")) return false;
+        if (!stage(QStringLiteral("equalizer-bands"), equalizerBandsString(data.value(QStringLiteral("gains")).toList()))
+            || !stageEqualizerPreamp(data.value(QStringLiteral("preamp")).toDouble())) return false;
+    }
     if (name == QLatin1String("redesign-repeat") || name == QLatin1String("redesign-after-playback")) {
         const int choice = proposed.toInt();
         if (choice < 0 || choice > 2) return false;
@@ -213,6 +314,14 @@ bool RedesignPreferences::stage(const QString& name, const QVariant& proposed)
     if (name.startsWith(QLatin1String("filter:"))) {
         const auto parts = name.split(QLatin1Char(':'));
         if (parts.size() != 3 || !module_exists(parts[2].toUtf8().constData())) return false;
+        if (proposed.toBool() && parts[1] == QLatin1String("audio-filter")
+            && parts[2] == QLatin1String("equalizer")
+            && value(QStringLiteral("equalizer-bands")).toString().trimmed().isEmpty()) {
+            // The filter needs explicit bands even when no audio output is running.
+            const auto gains = equalizerState().value(QStringLiteral("gains")).toList();
+            if (gains.size() != EQZ_BANDS_MAX
+                || !stage(QStringLiteral("equalizer-bands"), equalizerBandsString(gains))) return false;
+        }
         auto filters = value(parts[1]).toString().split(QLatin1Char(':'), Qt::SkipEmptyParts);
         filters.removeAll(parts[2]);
         if (proposed.toBool()) filters.append(parts[2]);
@@ -321,36 +430,22 @@ QString RedesignPreferences::chooseColor(const QString& initial)
 
 QVariantList RedesignPreferences::shortcutCatalog() const
 {
-    struct Shortcut { QString name, title, group; int groupOrder, order; };
-    QList<Shortcut> shortcuts;
-    const QStringList basic{QStringLiteral("key-toggle-fullscreen"), QStringLiteral("key-leave-fullscreen"), QStringLiteral("key-position"), QStringLiteral("key-intf-show")};
-    const QStringList playback{QStringLiteral("key-play-pause"), QStringLiteral("key-stop"), QStringLiteral("key-next"), QStringLiteral("key-prev"), QStringLiteral("key-program-sid-next"), QStringLiteral("key-program-sid-prev")};
-    for (const auto& entry : m_catalog) {
-        if (!entry.name.startsWith(QLatin1String("key-"))) continue;
-        Shortcut row{entry.name, entry.title, qtr("Other"), 5, 1000};
-        if (basic.contains(entry.name)) { row.group = qtr("Basic"); row.groupOrder = 0; row.order = basic.indexOf(entry.name); }
-        else if (playback.contains(entry.name)) { row.group = qtr("Playback"); row.groupOrder = 1; row.order = playback.indexOf(entry.name); }
-        else if (entry.name.contains(QLatin1String("sub"))) { row.group = qtr("Subtitles"); row.groupOrder = 4; }
-        else if (entry.name.contains(QLatin1String("audio")) || entry.name.contains(QLatin1String("vol-"))) { row.group = qtr("Audio"); row.groupOrder = 2; }
-        else if (entry.name.contains(QLatin1String("aspect")) || entry.name.contains(QLatin1String("crop")) || entry.name.contains(QLatin1String("zoom")) || entry.name.contains(QLatin1String("snapshot")) || entry.name.contains(QLatin1String("deinterlace"))) { row.group = qtr("Video"); row.groupOrder = 3; }
-        else if (entry.name.contains(QLatin1String("jump")) || entry.name.contains(QLatin1String("rate")) || entry.name.contains(QLatin1String("frame"))) { row.group = qtr("Playback"); row.groupOrder = 1; }
-        if (entry.name == QLatin1String("key-toggle-fullscreen")) row.title = qtr("Toggle fullscreen");
-        else if (entry.name == QLatin1String("key-leave-fullscreen")) row.title = qtr("Exit fullscreen / close dialog");
-        else if (entry.name == QLatin1String("key-position")) row.title = qtr("Show playback position and time");
-        else if (entry.name == QLatin1String("key-intf-show")) row.title = qtr("Show interface controls in fullscreen");
-        else if (entry.name == QLatin1String("key-play-pause")) row.title = qtr("Play / pause");
-        else if (entry.name == QLatin1String("key-stop")) row.title = qtr("Stop playback");
-        else if (entry.name == QLatin1String("key-next")) row.title = qtr("Next track");
-        else if (entry.name == QLatin1String("key-prev")) row.title = qtr("Previous track");
-        shortcuts.append(row);
-    }
-    std::sort(shortcuts.begin(), shortcuts.end(), [](const Shortcut& a, const Shortcut& b) {
-        if (a.groupOrder != b.groupOrder) return a.groupOrder < b.groupOrder;
-        if (a.order != b.order) return a.order < b.order;
-        return QString::localeAwareCompare(a.title, b.title) < 0;
-    });
+    struct Shortcut { QString name, title, group; };
+    const Shortcut shortcuts[] = {
+        {QStringLiteral("key-toggle-fullscreen"), qtr("Toggle fullscreen"), qtr("Basic")},
+        {QStringLiteral("key-leave-fullscreen"), qtr("Exit fullscreen / close dialog"), qtr("Basic")},
+        {QStringLiteral("key-position"), qtr("Show playback position and time"), qtr("Basic")},
+        {QStringLiteral("key-intf-show"), qtr("Show interface controls in fullscreen"), qtr("Basic")},
+        {QStringLiteral("key-play-pause"), qtr("Play / pause"), qtr("Playback")},
+        {QStringLiteral("key-stop"), qtr("Stop playback"), qtr("Playback")},
+        {QStringLiteral("key-next"), qtr("Next track"), qtr("Playback")},
+        {QStringLiteral("key-prev"), qtr("Previous track"), qtr("Playback")},
+        {QStringLiteral("key-program-sid-next"), qtr("Next program / Service ID"), qtr("Playback")},
+    };
     QVariantList result;
     for (const auto& row : shortcuts) {
+        const auto* cfg = config_FindConfig(row.name.toUtf8().constData());
+        if (!cfg || cfg->i_type != CONFIG_ITEM_KEY) continue;
         const QString global = QStringLiteral("global-") + row.name;
         result.append(QVariantMap{{QStringLiteral("name"), row.name}, {QStringLiteral("title"), row.title},
             {QStringLiteral("group"), row.group}, {QStringLiteral("globalName"), config_FindConfig(global.toUtf8().constData()) ? global : QString()}});

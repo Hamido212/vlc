@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import QtQuick
 import QtQuick.Templates as T
-import VLC.Widgets as Widgets
 
 T.Button {
     id: root
@@ -23,14 +22,22 @@ T.Button {
     focusPolicy: Qt.StrongFocus
     Accessible.name: text
     Accessible.role: Accessible.Button
-    Widgets.ToolTipExt {
+    T.ToolTip {
+        id: captionTip
         text: root.text
         visible: text.length > 0 && (root.hovered || root.visualFocus)
         delay: 650
+        x: 0; y: -implicitHeight - theme.dp(4)
+        padding: theme.dp(8)
+        implicitWidth: Math.min(theme.dp(320), captionText.implicitWidth + leftPadding + rightPadding)
+        implicitHeight: captionText.implicitHeight + topPadding + bottomPadding
+        Component.onCompleted: if (popupType !== undefined) popupType = 0 // Popup.Item
+        contentItem: Text { id: captionText; text: captionTip.text; color: theme.bright; font.pixelSize: theme.dp(14); wrapMode: Text.WordWrap }
+        background: Rectangle { color: theme.field; border.color: theme.border; radius: theme.dp(4) }
     }
 
     background: Rectangle {
-        radius: theme.dp(6)
+        radius: theme.dp(2)
         color: root.accent ? theme.accent : (root.down || root.selected) ? theme.selected : root.hovered ? theme.hover : "transparent"
         border.width: root.visualFocus ? theme.dp(2) : 0
         border.color: theme.accent
@@ -41,11 +48,11 @@ T.Button {
         implicitHeight: contentRow.implicitHeight
         Row {
         id: contentRow
-        spacing: theme.dp(6)
+        spacing: theme.dp(10)
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: root.leftAligned ? undefined : parent.horizontalCenter
         anchors.left: root.leftAligned ? parent.left : undefined
-        anchors.leftMargin: theme.dp(12)
+        anchors.leftMargin: theme.dp(10)
         RedesignIcon {
             width: root.iconName ? root.iconSize : 0
             height: root.iconSize

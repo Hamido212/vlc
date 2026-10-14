@@ -35,6 +35,11 @@ public:
     Q_INVOKABLE QString chooseColor(const QString& initial);
     Q_INVOKABLE QVariantMap describe(const QString& name) const;
     Q_INVOKABLE QVariant value(const QString& name) const;
+    Q_INVOKABLE QVariantMap equalizerState() const;
+    Q_INVOKABLE QVariantMap equalizerPreset(const QString& name) const;
+    Q_INVOKABLE bool stageEqualizerPreset(const QString& name);
+    Q_INVOKABLE bool stageEqualizerBand(int index, double gain);
+    Q_INVOKABLE bool stageEqualizerPreamp(double gain);
     Q_INVOKABLE bool stage(const QString& name, const QVariant& value);
     Q_INVOKABLE void reset(const QString& name);
     Q_INVOKABLE void discard();

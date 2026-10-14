@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import QtQuick
-import QtQuick.Layouts
 import QtQuick.Templates as T
 import VLC.Widgets as Widgets
 import VLC.Style
@@ -26,43 +25,55 @@ T.Popup {
     function valueFor(name) { return String(values[name] || "") }
     function displayValue(name) {
         const value = valueFor(name).split("\t")[0]
+        if (value.toLocaleLowerCase() === "esc") return "esc"
         return value.length === 1 ? value.toUpperCase() : value
     }
     signal captureRequested(string name, int key, int modifiers)
     signal clearRequested(string name)
     signal saveRequested()
     signal cancelRequested()
-    width: Math.min(theme.dp(1048), parent.width - theme.dp(30))
-    height: Math.min(theme.dp(800), parent.height - theme.dp(30))
+    width: Math.min(theme.dp(1048), parent.width)
+    height: Math.min(theme.dp(800), parent.height)
     x: (parent.width - width) / 2; y: (parent.height - height) / 2
-    padding: theme.dp(20)
+    padding: 0
     modal: true; focus: true
     closePolicy: T.Popup.NoAutoClose
     background: Rectangle { color: theme.background; radius: theme.dp(12); border.color: theme.border }
     onAboutToShow: { recordingName = ""; search.clear(); filter.currentIndex = 0 }
     onOpened: if (!recordingName.length) search.forceActiveFocus()
 
-    ColumnLayout {
+    contentItem: Item {
         Keys.onEscapePressed: root.cancelRequested()
-        anchors.fill: parent
-        spacing: theme.dp(16)
-        RowLayout {
-            Layout.fillWidth: true; Layout.preferredHeight: theme.dp(36); Layout.maximumHeight: theme.dp(36)
-            Text { Layout.fillWidth: true; text: qsTr("Keyboard Shortcuts"); color: theme.foreground; font.pixelSize: theme.dp(14) }
-            RedesignButton { scaleFactor: root.scaleFactor; lightTheme: root.lightTheme; accentColor: root.accentColor; iconName: "close"; text: qsTr("Close shortcut editor"); onClicked: root.cancelRequested() }
+        Item {
+            x: theme.dp(9); y: theme.dp(9)
+            width: parent.width - theme.dp(18); height: theme.dp(32)
+            Text {
+                x: theme.dp(10); anchors.verticalCenter: parent.verticalCenter
+                text: qsTr("Keyboard Shortcuts"); color: theme.foreground; font.pixelSize: theme.dp(14)
+            }
+            RedesignButton {
+                anchors.right: parent.right; width: theme.dp(32); height: theme.dp(32)
+                scaleFactor: root.scaleFactor; lightTheme: root.lightTheme; accentColor: root.accentColor
+                iconName: "close"; text: qsTr("Close shortcut editor"); onClicked: root.cancelRequested()
+            }
         }
-        RowLayout {
-            Layout.fillWidth: true; Layout.preferredHeight: theme.dp(34); Layout.maximumHeight: theme.dp(34)
+        Item {
+            x: theme.dp(9); y: theme.dp(53)
+            width: parent.width - theme.dp(18); height: theme.dp(34)
             T.TextField {
                 id: search
                 objectName: "shortcutSearch"
-                Layout.fillWidth: true; Layout.fillHeight: true
-                placeholderText: qsTr("Search Keyboard Shortcuts…")
+                width: parent.width - theme.dp(210); height: parent.height
+                placeholderText: qsTr("Search Keyboard Shortcuts...")
                 color: theme.foreground; placeholderTextColor: theme.foreground
                 font.pixelSize: theme.dp(14); selectByMouse: true
-                padding: theme.dp(6); verticalAlignment: TextInput.AlignVCenter
+                padding: theme.dp(6); leftPadding: theme.dp(42); verticalAlignment: TextInput.AlignVCenter
                 selectionColor: theme.accent; selectedTextColor: theme.bright
                 background: Rectangle { radius: theme.dp(5); color: theme.panel; border.color: search.activeFocus ? theme.accent : "transparent" }
+                RedesignIcon {
+                    x: theme.dp(8); anchors.verticalCenter: parent.verticalCenter
+                    width: theme.dp(24); height: width; name: "search"; color: theme.foreground
+                }
                 Text {
                     anchors.left: parent.left; anchors.leftMargin: search.leftPadding
                     anchors.verticalCenter: parent.verticalCenter
@@ -72,9 +83,9 @@ T.Popup {
             }
             T.ComboBox {
                 id: filter
-                Layout.preferredWidth: theme.dp(200); Layout.fillHeight: true
+                anchors.right: parent.right; width: theme.dp(200); height: parent.height
                 model: [qsTr("All Fields"), qsTr("Action"), qsTr("Hotkey"), qsTr("Global Hotkey")]
-                padding: theme.dp(6); font.pixelSize: theme.dp(14)
+                padding: theme.dp(6); leftPadding: theme.dp(12); rightPadding: theme.dp(8); font.pixelSize: theme.dp(14)
                 contentItem: Text {
                     text: filter.displayText; color: theme.foreground; font: filter.font
                     verticalAlignment: Text.AlignVCenter; rightPadding: theme.dp(24)
@@ -99,61 +110,92 @@ T.Popup {
                 background: Rectangle { radius: theme.dp(5); color: theme.panel; border.color: filter.activeFocus ? theme.accent : "transparent" }
             }
         }
-        Row {
-            Layout.fillWidth: true; Layout.preferredHeight: theme.dp(44); Layout.maximumHeight: theme.dp(44)
-            Text { width: parent.width * .376; text: qsTr("Action"); color: theme.foreground; font.pixelSize: theme.dp(14) }
-            Text { width: parent.width * .268; horizontalAlignment: Text.AlignHCenter; text: qsTr("Hotkey"); color: theme.foreground; font.pixelSize: theme.dp(14) }
-            Item { width: parent.width * .088; height: 1 }
-            Text { width: parent.width * .268; horizontalAlignment: Text.AlignHCenter; text: qsTr("Global Hotkey"); color: theme.foreground; font.pixelSize: theme.dp(14) }
-        }
-        ListView {
-            id: list
-            objectName: "shortcutList"
-            Layout.fillWidth: true; Layout.fillHeight: true
-            clip: true; model: root.filteredRows
-            T.ScrollBar.vertical: Widgets.ScrollBarExt { }
-            delegate: Item {
-                id: row
-                required property int index
-                required property var modelData
-                readonly property bool groupStart: index === 0 || root.filteredRows[index - 1].group !== modelData.group
-                width: list.width; height: theme.dp(46 + (groupStart ? 56 : 0))
-                Column {
-                    visible: row.groupStart
-                    width: parent.width
-                    Rectangle { width: parent.width; height: theme.dp(1); color: theme.border }
-                    Text { topPadding: theme.dp(20); text: row.modelData.group; color: theme.foreground; font.pixelSize: theme.dp(16) }
-                }
-                Row {
-                    anchors.bottom: parent.bottom; width: parent.width; height: theme.dp(42)
-                    Text {
-                        width: parent.width * .376; height: parent.height
-                        verticalAlignment: Text.AlignVCenter
-                        text: row.modelData.title; color: theme.bright; font.pixelSize: theme.dp(14)
-                        elide: Text.ElideRight; rightPadding: theme.dp(16)
-                    }
-                    Loader {
-                        width: parent.width * .268; height: theme.dp(34); anchors.verticalCenter: parent.verticalCenter
-                        property string actionName: row.modelData.title
-                        property string optionName: row.modelData.name
-                        sourceComponent: hotkeyCell
-                    }
-                    Item { width: parent.width * .088; height: 1 }
-                    Loader {
-                        width: parent.width * .268; height: theme.dp(34); anchors.verticalCenter: parent.verticalCenter
-                        property string actionName: row.modelData.title
-                        property string optionName: row.modelData.globalName
-                        sourceComponent: hotkeyCell
-                    }
-                }
+        Item {
+            x: theme.dp(20); y: theme.dp(116)
+            width: parent.width - theme.dp(40); height: parent.height - y - theme.dp(72)
+            Row {
+                width: parent.width; height: theme.dp(25)
+                Text { width: parent.width * 488 / 1008; text: qsTr("Action"); color: theme.foreground; font.pixelSize: theme.dp(14) }
+                Text { width: parent.width * 332 / 1008; text: qsTr("Hotkey"); color: theme.foreground; font.pixelSize: theme.dp(14) }
+                Text { width: parent.width * 93 / 1008; text: qsTr("Global Hotkey"); color: theme.foreground; font.pixelSize: theme.dp(14) }
             }
-            Text { anchors.centerIn: parent; visible: list.count === 0; text: qsTr("No matching shortcuts"); color: theme.foreground; font.pixelSize: theme.dp(14) }
+            ListView {
+                id: list
+                objectName: "shortcutList"
+                y: theme.dp(45); width: parent.width; height: parent.height - y
+                clip: true; model: root.filteredRows
+                T.ScrollBar.vertical: Widgets.ScrollBarExt {
+                    id: scrollBar
+                    padding: root.theme.dp(2)
+                    visible: size < 1
+                    background: Rectangle { color: root.theme.panel; radius: width / 2; visible: scrollBar.interacting }
+                    contentItem: Rectangle {
+                        implicitWidth: root.theme.dp(6); implicitHeight: root.theme.dp(6)
+                        radius: width / 2; color: root.theme.foreground
+                    }
+                }
+                delegate: Item {
+                    id: row
+                    required property int index
+                    required property var modelData
+                    readonly property bool groupStart: index === 0 || root.filteredRows[index - 1].group !== modelData.group
+                    readonly property real groupOffset: groupStart && index > 0 ? theme.dp(11) : 0
+                    readonly property real rowY: groupStart ? theme.dp(68) + groupOffset : 0
+                    width: list.width
+                    height: rowY + theme.dp(index === list.count - 1 ? 33 : 47)
+                    Item {
+                        visible: row.groupStart
+                        y: row.groupOffset; width: parent.width; height: theme.dp(48)
+                        Rectangle { width: parent.width; height: theme.dp(1); color: theme.border }
+                        Text { y: theme.dp(20); height: theme.dp(28); text: row.modelData.group; color: theme.foreground; font.pixelSize: theme.dp(16) }
+                    }
+                    Item {
+                        y: row.rowY; width: parent.width; height: theme.dp(33)
+                        Text {
+                            y: theme.dp(4); width: parent.width * 290 / 1008; height: theme.dp(25)
+                            verticalAlignment: Text.AlignVCenter
+                            text: row.modelData.title; color: theme.bright; font.pixelSize: theme.dp(14)
+                            elide: Text.ElideRight
+                        }
+                        Loader {
+                            x: parent.width * 379 / 1008; width: parent.width * 270 / 1008; height: parent.height
+                            property string actionName: row.modelData.title
+                            property string optionName: row.modelData.name
+                            sourceComponent: hotkeyCell
+                        }
+                        Loader {
+                            x: parent.width * 738 / 1008; width: parent.width * 270 / 1008; height: parent.height
+                            property string actionName: row.modelData.title
+                            property string optionName: row.modelData.globalName
+                            sourceComponent: hotkeyCell
+                        }
+                    }
+                }
+                Text { anchors.centerIn: parent; visible: list.count === 0; text: qsTr("No matching shortcuts"); color: theme.foreground; font.pixelSize: theme.dp(14) }
+            }
         }
-        RowLayout {
-            Layout.fillWidth: true; Layout.preferredHeight: theme.dp(36); Layout.maximumHeight: theme.dp(36)
-            RedesignButton { objectName: "shortcutCancel"; scaleFactor: root.scaleFactor; lightTheme: root.lightTheme; accentColor: root.accentColor; caption: qsTr("Cancel"); text: caption; onClicked: root.cancelRequested() }
-            Text { Layout.fillWidth: true; text: root.errorMessage; color: "#e56b6b"; wrapMode: Text.WordWrap; font.pixelSize: theme.dp(12) }
-            RedesignButton { objectName: "shortcutSave"; scaleFactor: root.scaleFactor; lightTheme: root.lightTheme; accentColor: root.accentColor; caption: qsTr("Save"); text: caption; accent: true; enabled: root.dirty; onClicked: root.saveRequested() }
+        Item {
+            anchors.bottom: parent.bottom; width: parent.width; height: theme.dp(72)
+            RedesignButton {
+                id: cancel
+                objectName: "shortcutCancel"
+                x: theme.dp(20); y: theme.dp(20); width: theme.dp(100); height: theme.dp(32)
+                scaleFactor: root.scaleFactor; lightTheme: root.lightTheme; accentColor: root.accentColor
+                caption: qsTr("Cancel"); text: caption; onClicked: root.cancelRequested()
+            }
+            Text {
+                anchors.left: cancel.right; anchors.right: save.left; anchors.verticalCenter: parent.verticalCenter
+                anchors.margins: theme.dp(16)
+                text: root.errorMessage; color: "#e56b6b"; wrapMode: Text.WordWrap; font.pixelSize: theme.dp(12)
+            }
+            RedesignButton {
+                id: save
+                objectName: "shortcutSave"
+                anchors.right: parent.right; anchors.rightMargin: theme.dp(20)
+                y: theme.dp(20); width: theme.dp(100); height: theme.dp(32)
+                scaleFactor: root.scaleFactor; lightTheme: root.lightTheme; accentColor: root.accentColor
+                caption: qsTr("Save"); text: caption; accent: true; enabled: root.dirty; onClicked: root.saveRequested()
+            }
         }
     }
     Component {
@@ -177,7 +219,7 @@ T.Popup {
                 horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
                 elide: Text.ElideRight; leftPadding: theme.dp(26); rightPadding: theme.dp(26)
             }
-            RedesignIcon { anchors.right: parent.right; anchors.rightMargin: theme.dp(8); anchors.verticalCenter: parent.verticalCenter; width: theme.dp(18); height: width; name: "edit"; color: theme.foreground; visible: !clear.hovered }
+            RedesignIcon { anchors.right: parent.right; anchors.rightMargin: theme.dp(5); anchors.verticalCenter: parent.verticalCenter; width: theme.dp(24); height: width; name: "edit"; color: theme.foreground; visible: !clear.hovered }
             RedesignButton {
                 id: clear
                 anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter

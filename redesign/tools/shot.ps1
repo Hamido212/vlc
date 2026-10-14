@@ -229,6 +229,7 @@ function Shot([string]$path) {
     $reply = [IntPtr]::Zero
     # Avoid waiting forever in PrintWindow when the Qt event loop is blocked.
     if ([Win]::SendMessageTimeout($h, 0, [IntPtr]::Zero, [IntPtr]::Zero, 3, 2000, [ref]$reply) -eq [IntPtr]::Zero) {
+        Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
         throw 'The VLC window is not responding; PrintWindow was skipped.'
     }
     $r = New-Object Win+RECT
